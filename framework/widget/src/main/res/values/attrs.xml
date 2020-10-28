@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <declare-styleable name="VoteProgress">
+    <attr name="leftColor" format="color"></attr>
+    <attr name="rightColor" format="color"></attr>
+    <attr name="spaceColor" format="color"></attr>
+    <attr name="spaceWidth" format="dimension"></attr>
+  </declare-styleable>
+
+  <!--针对圆角布局/ImageView的属性-->
+  <attr name="round_as_circle" format="boolean" />
+  <attr name="round_corner" format="dimension" />
+  <attr name="round_corner_top_left" format="dimension" />
+  <attr name="round_corner_top_right" format="dimension" />
+  <attr name="round_corner_bottom_left" format="dimension" />
+  <attr name="round_corner_bottom_right" format="dimension" />
+
+  <!--真正用于解析的属性-->
+  <declare-styleable name="RCAttrs">
+    <attr name="round_as_circle" />
+    <attr name="round_corner" />
+    <attr name="round_corner_top_left" />
+    <attr name="round_corner_top_right" />
+    <attr name="round_corner_bottom_left" />
+    <attr name="round_corner_bottom_right" />
+  </declare-styleable>
+
+  <!--用于在xml中提示用的-->
+  <declare-styleable name="RCRelativeLayout">
+    <attr name="round_corner" />
+    <attr name="round_corner_top_left" />
+    <attr name="round_corner_top_right" />
+    <attr name="round_corner_bottom_left" />
+    <attr name="round_corner_bottom_right" />
+  </declare-styleable>
+
+</resources>
