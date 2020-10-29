@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  style="@style/Widget.RefreshLayout">
+
+  <androidx.recyclerview.widget.RecyclerView style="@style/Widget.RecyclerView" />
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
