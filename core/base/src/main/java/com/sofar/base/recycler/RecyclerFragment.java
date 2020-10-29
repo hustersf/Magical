@@ -1,6 +1,7 @@
 package com.sofar.base.recycler;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +19,12 @@ import com.sofar.base.page.PageListObserver;
 
 public abstract class RecyclerFragment<MODEL> extends BaseFragment implements PageListObserver {
 
+  private final static String TAG = "RecyclerFragment";
+
+  @Nullable
   private SwipeRefreshLayout mRefreshLayout;
   private View mRootView;
-  protected RecyclerView mRecyclerView;
+  private RecyclerView mRecyclerView;
   private RecyclerView.OnScrollListener mAutoLoadEventDetector;
 
   private RecyclerAdapter<MODEL> mOriginAdapter;
@@ -94,20 +98,47 @@ public abstract class RecyclerFragment<MODEL> extends BaseFragment implements Pa
     }
   }
 
+  @NonNull
   public RecyclerView getRecyclerView() {
     return mRecyclerView;
   }
 
+  @NonNull
   public RecyclerAdapter<MODEL> getOriginAdapter() {
     return mOriginAdapter;
   }
 
+  @NonNull
   public PageList<?, MODEL> getPageList() {
     return mPageList;
   }
 
   private void refresh() {
     mPageList.refresh();
+  }
+
+  @Override
+  public void onStartLoading(boolean firstPage, boolean cache) {
+    Log.d(TAG, "onStartLoading");
+  }
+
+  @Override
+  public void onFinishLoading(boolean firstPage, boolean cache) {
+    Log.d(TAG, "onFinishLoading");
+    if (mRefreshLayout != null) {
+      mRefreshLayout.setRefreshing(false);
+    }
+
+    mOriginAdapter.setList(mPageList.getItems());
+    mOriginAdapter.notifyDataSetChanged();
+  }
+
+  @Override
+  public void onError(boolean firstPage, Throwable throwable) {
+    Log.d(TAG, "onError=" + throwable.toString());
+    if (mRefreshLayout != null) {
+      mRefreshLayout.setRefreshing(false);
+    }
   }
 }
 

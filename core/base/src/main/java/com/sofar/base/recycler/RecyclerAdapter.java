@@ -108,7 +108,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVi
    * 子类创建具体的ViewBinder
    */
   @NonNull
-  protected abstract RecyclerViewBinder onCreateViewBinder(int viewType);
+  protected abstract RecyclerViewBinder<T> onCreateViewBinder(int viewType);
 
   /**
    * @param wrapped 是否被{@link}
