@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/learn_root"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <TextView
+    android:id="@+id/word"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="100dp"
+    android:textColor="@color/white"
+    android:textSize="30dp"
+    android:textStyle="bold" />
+
+  <ImageView
+    android:id="@+id/voice"
+    android:layout_width="20dp"
+    android:layout_height="20dp"
+    android:layout_alignTop="@id/word"
+    android:layout_alignBottom="@+id/word"
+    android:layout_marginLeft="5dp"
+    android:layout_toRightOf="@+id/word"
+    android:src="@drawable/audio_play_icon" />
+
+  <TextView
+    android:id="@+id/sound"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/word"
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="10dp"
+    android:textColor="@color/white"
+    android:textSize="12dp" />
+
+  <TextView
+    android:id="@+id/chinese"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/sound"
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="40dp"
+    android:textColor="@color/white"
+    android:textSize="14dp"
+    android:textStyle="bold" />
+
+  <LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_centerHorizontal="true"
+    android:layout_marginBottom="100dp"
+    android:orientation="horizontal">
+
+    <TextView
+      android:id="@+id/left"
+      android:layout_width="100dp"
+      android:layout_height="40dp"
+      android:gravity="center"
+      android:text="上一个"
+      android:textColor="@color/white"
+      android:textSize="16dp" />
+
+    <TextView
+      android:id="@+id/right"
+      android:layout_width="100dp"
+      android:layout_height="40dp"
+      android:layout_marginLeft="20dp"
+      android:gravity="center"
+      android:text="下一个"
+      android:textColor="@color/white"
+      android:textSize="16dp" />
+
+  </LinearLayout>
+
+
+</RelativeLayout>

@@ -68,4 +68,5 @@ dependencies {
     implementation project(':framework:widget')
     implementation project(':framework:network')
     implementation project(':framework:download')
+    implementation project(':framework:player')
 }

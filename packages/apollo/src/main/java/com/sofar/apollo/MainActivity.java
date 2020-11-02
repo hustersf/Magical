@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-import com.sofar.apollo.book.BookListFragment;
+import com.sofar.apollo.home.HomeFragment;
+import com.sofar.apollo.mock.MockManager;
+import com.sofar.apollo.word.WordDataManager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -14,7 +16,9 @@ public class MainActivity extends AppCompatActivity {
     setContentView(R.layout.activity_main);
 
     getSupportFragmentManager().beginTransaction()
-      .replace(R.id.fragment_container, new BookListFragment())
+      .replace(R.id.fragment_container, new HomeFragment())
       .commitAllowingStateLoss();
+
+    WordDataManager.get().setWords(MockManager.get().convertData(this));
   }
 }

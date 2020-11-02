@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/home_root"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <LinearLayout
+    android:id="@+id/learn_layout"
+    android:layout_width="150dp"
+    android:layout_height="60dp"
+    android:layout_above="@+id/home_tab"
+    android:layout_marginLeft="20dp"
+    android:layout_marginBottom="40dp"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Learn"
+      android:textColor="@color/white"
+      android:textSize="20dp"
+      android:textStyle="bold" />
+
+    <TextView
+      android:id="@+id/learn_count"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="2dp"
+      android:text="4000"
+      android:textColor="@color/theme_color"
+      android:textSize="14dp" />
+
+  </LinearLayout>
+
+  <LinearLayout
+    android:id="@+id/review_layout"
+    android:layout_width="150dp"
+    android:layout_height="60dp"
+    android:layout_above="@+id/home_tab"
+    android:layout_alignParentRight="true"
+    android:layout_marginRight="20dp"
+    android:layout_marginBottom="40dp"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Review"
+      android:textColor="@color/white"
+      android:textSize="20dp"
+      android:textStyle="bold" />
+
+    <TextView
+      android:id="@+id/review_count"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="2dp"
+      android:text="10"
+      android:textColor="@color/theme_color"
+      android:textSize="14dp" />
+
+  </LinearLayout>
+
+  <com.sofar.apollo.home.HomeTabBar
+    android:id="@+id/home_tab"
+    android:layout_width="match_parent"
+    android:layout_height="44dp"
+    android:layout_alignParentBottom="true" />
+
+</RelativeLayout>
