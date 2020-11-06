@@ -1,14 +1,13 @@
 package com.sofar.apollo;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 
 import com.sofar.apollo.home.HomeFragment;
 import com.sofar.apollo.mock.MockManager;
 import com.sofar.apollo.word.WordDataManager;
+import com.sofar.base.BaseActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {

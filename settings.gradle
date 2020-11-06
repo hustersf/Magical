@@ -12,3 +12,7 @@ include ':framework:image'
 
 include 'core:base'
 include 'core:skin'
+include 'core:login'
+include 'core:share'
+
+include 'external:social-sdk'

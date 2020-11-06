@@ -64,6 +64,9 @@ dependencies {
 
     implementation project(':core:base')
     implementation project(':core:skin')
+    implementation project(':core:login')
+    implementation project(':core:share')
+
     implementation project(':framework:utility')
     implementation project(':framework:widget')
     implementation project(':framework:network')

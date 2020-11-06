@@ -1,0 +1,11 @@
+apply from: rootProject.file('library.gradle')
+
+dependencies {
+    implementation project(':external:social-sdk')
+    implementation project(':core:base')
+    implementation project(':framework:network')
+}
+
+
+
+
