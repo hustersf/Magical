@@ -63,7 +63,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     implementation project(':core:base')
-    implementation project(':core:skin')
     implementation project(':core:login')
     implementation project(':core:share')
 
@@ -73,4 +72,5 @@ dependencies {
     implementation project(':framework:download')
     implementation project(':framework:player')
     implementation project(':framework:image')
+    implementation project(':framework:skin')
 }

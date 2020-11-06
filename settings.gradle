@@ -1,7 +1,7 @@
 rootProject.name = "Magical"
 
-include 'packages:apollo'
-include 'packages:diana'
+include ':packages:apollo'
+include ':packages:diana'
 
 include ':framework:widget'
 include ':framework:utility'
@@ -9,10 +9,10 @@ include ':framework:network'
 include ':framework:download'
 include ':framework:player'
 include ':framework:image'
+include ':framework:skin'
 
-include 'core:base'
-include 'core:skin'
-include 'core:login'
-include 'core:share'
+include ':core:base'
+include ':core:login'
+include ':core:share'
 
-include 'external:social-sdk'
+include ':external:social-sdk'
