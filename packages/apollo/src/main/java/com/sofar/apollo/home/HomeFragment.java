@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.sofar.apollo.R;
+import com.sofar.apollo.home.viewbinder.HomeAuthorViewBinder;
 import com.sofar.apollo.home.viewbinder.HomeContext;
 import com.sofar.apollo.home.viewbinder.HomeLearnViewBinder;
 import com.sofar.apollo.home.viewbinder.HomeReviewViewBinder;
@@ -36,6 +37,7 @@ public class HomeFragment extends BaseFragment {
     viewBinder.addViewBinder(new HomeTabViewBinder());
     viewBinder.addViewBinder(new HomeLearnViewBinder());
     viewBinder.addViewBinder(new HomeReviewViewBinder());
+    viewBinder.addViewBinder(new HomeAuthorViewBinder());
     HomeContext homeContext = new HomeContext();
     viewBinder.create(view);
     viewBinder.bind(homeContext);

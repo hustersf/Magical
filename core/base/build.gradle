@@ -8,7 +8,7 @@ dependencies {
     api 'io.reactivex.rxjava2:rxjava:2.1.0'
 
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
-    implementation project(':framework:utility')
+    api project(':framework:utility')
     implementation 'androidx.lifecycle:lifecycle-process:2.2.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
 }

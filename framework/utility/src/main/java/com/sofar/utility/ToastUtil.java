@@ -8,10 +8,16 @@ import androidx.annotation.NonNull;
 public class ToastUtil {
 
   public static void startShort(@NonNull Context context, String text) {
-    Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+    innerToast(context, text, Toast.LENGTH_SHORT);
   }
 
   public static void startLong(@NonNull Context context, String text) {
-    Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+    innerToast(context, text, Toast.LENGTH_LONG);
+  }
+
+  private static void innerToast(@NonNull Context context, String text, int duration) {
+    Toast toast = Toast.makeText(context, null, duration);
+    toast.setText(text);
+    toast.show();
   }
 }

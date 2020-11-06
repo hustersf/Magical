@@ -2,7 +2,9 @@ package com.sofar.login.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
 
   /**
    * 用户id
@@ -27,5 +29,9 @@ public class User {
    */
   @SerializedName("gender")
   public String gender;
+
+  public void clear() {
+    this.userId = "";
+  }
 
 }

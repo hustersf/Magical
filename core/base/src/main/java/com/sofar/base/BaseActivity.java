@@ -12,6 +12,13 @@ import com.sofar.base.callback.ActivityCallback;
 
 public class BaseActivity extends AppCompatActivity {
 
+  // 设置启动和退出Activity的动画
+  public static final String START_EXIT_PAGE_ANIMATION = "start_exit_page_animation";
+  public static final String START_ENTER_PAGE_ANIMATION = "start_enter_page_animation";
+  public static final String FINISH_EXIT_PAGE_ANIMATION = "finish_exit_page_animation";
+  public static final String FINISH_ENTER_PAGE_ANIMATION = "finish_enter_page_animation";
+  public static final int NO_ANIM = 0;
+
   // activity请求回调相关
   private SparseArray<ActivityCallback> callbacks = new SparseArray<>();
   private static final int REQUEST_CODE = 100;
@@ -42,7 +49,7 @@ public class BaseActivity extends AppCompatActivity {
   /**
    * Activity回调成功
    */
-  public void setActivityResultOK(Intent intent) {
+  public void setActivityResultOK(@Nullable Intent intent) {
     if (intent == null) {
       setResult(Activity.RESULT_OK, new Intent());
     } else {
@@ -54,7 +61,7 @@ public class BaseActivity extends AppCompatActivity {
   /**
    * Activity回调失败
    */
-  public void setActivityResultCancel(Intent intent) {
+  public void setActivityResultCancel(@Nullable Intent intent) {
     if (intent == null) {
       setResult(Activity.RESULT_CANCELED, new Intent());
     } else {
@@ -77,5 +84,21 @@ public class BaseActivity extends AppCompatActivity {
     } else {
       callback.onCancel(data);
     }
+  }
+
+  @Override
+  public void startActivity(Intent intent) {
+    super.startActivity(intent);
+    overridePendingTransition(
+      getIntent().getIntExtra(START_ENTER_PAGE_ANIMATION, R.anim.right_slide_in),
+      getIntent().getIntExtra(START_EXIT_PAGE_ANIMATION, R.anim.placeholder_anim));
+  }
+
+  @Override
+  public void finish() {
+    super.finish();
+    overridePendingTransition(
+      getIntent().getIntExtra(FINISH_ENTER_PAGE_ANIMATION, NO_ANIM),
+      getIntent().getIntExtra(FINISH_EXIT_PAGE_ANIMATION, R.anim.right_slide_out));
   }
 }

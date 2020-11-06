@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
   android:id="@+id/home_root"
   android:layout_width="match_parent"
   android:layout_height="match_parent">
+
+  <com.sofar.base.widget.StatusBarView
+    android:id="@+id/status_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+
+  <com.sofar.image.widget.SofarImageView
+    android:id="@+id/author"
+    android:layout_width="40dp"
+    android:layout_height="40dp"
+    android:layout_below="@id/status_view"
+    android:layout_marginLeft="@dimen/widget_padding_left"
+    app:roundAsCircle="true" />
 
   <LinearLayout
     android:id="@+id/learn_layout"

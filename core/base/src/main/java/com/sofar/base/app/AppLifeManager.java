@@ -58,6 +58,19 @@ public class AppLifeManager {
     return null;
   }
 
+  /**
+   * 清空所有的Activity
+   */
+  public void finishAllActivity() {
+    for (WeakReference<Activity> weakReference : pages) {
+      Activity activity = weakReference.get();
+      if (activity != null) {
+        activity.finish();
+      }
+    }
+    pages.clear();
+  }
+
   void addActivity(@NonNull Activity activity) {
     synchronized (pages) {
       pages.add(new WeakReference<>(activity));

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@color/background">
+
+  <com.sofar.base.widget.StatusBarView
+    android:id="@+id/status_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+
+  <com.sofar.image.widget.SofarImageView
+    android:id="@+id/author"
+    android:layout_width="80dp"
+    android:layout_height="80dp"
+    android:layout_below="@id/status_view"
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="64dp"
+    app:roundAsCircle="true" />
+
+  <TextView
+    android:id="@+id/name"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/author"
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="10dp"
+    android:textColor="@color/main_text_color"
+    android:textSize="16dp" />
+
+  <TextView
+    android:id="@+id/logout"
+    android:layout_width="match_parent"
+    android:layout_height="44dp"
+    android:layout_alignParentBottom="true"
+    android:layout_centerHorizontal="true"
+    android:layout_marginLeft="30dp"
+    android:layout_marginRight="30dp"
+    android:layout_marginBottom="100dp"
+    android:background="@drawable/button_confirm"
+    android:gravity="center"
+    android:text="退出登录"
+    android:textColor="@color/white"
+    android:textSize="16dp" />
+
+</RelativeLayout>

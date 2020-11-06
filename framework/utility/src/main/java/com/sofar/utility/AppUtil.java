@@ -7,6 +7,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Process;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -94,5 +95,12 @@ public class AppUtil {
     return versionCode;
   }
 
+  /**
+   * 杀掉app
+   */
+  public static void exitApp() {
+    Process.killProcess(Process.myPid());
+    System.exit(0);
+  }
 
 }
