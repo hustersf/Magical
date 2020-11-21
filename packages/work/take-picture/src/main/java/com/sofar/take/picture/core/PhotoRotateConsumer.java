@@ -22,10 +22,10 @@ import io.reactivex.functions.Consumer;
 public class PhotoRotateConsumer implements Consumer<String> {
 
   @NonNull
-  public BaseActivity activity;
+  public PhotoHelper helper;
 
-  public PhotoRotateConsumer(@NonNull BaseActivity activity) {
-    this.activity = activity;
+  public PhotoRotateConsumer(@NonNull PhotoHelper helper) {
+    this.helper = helper;
   }
 
   @Override

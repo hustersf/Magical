@@ -1,25 +1,24 @@
 package com.sofar.take.picture.core;
 
 import com.sofar.take.picture.model.ImageInfo;
-import com.sofar.take.picture.ui.PhotoPreviewActivity;
 
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
 /**
- * 图片预览
+ * 给图片添加上 所属任务的id
  */
-public class PhotoPreviewConsumer implements Consumer<ImageInfo> {
+public class PhotoAddTaskIdConsumer implements Consumer<ImageInfo> {
 
   @NonNull
   public PhotoHelper helper;
 
-  public PhotoPreviewConsumer(@NonNull PhotoHelper helper) {
+  public PhotoAddTaskIdConsumer(@NonNull PhotoHelper helper) {
     this.helper = helper;
   }
 
   @Override
   public void accept(ImageInfo imageInfo) throws Exception {
-    PhotoPreviewActivity.launch(helper.activity, imageInfo);
+    imageInfo.taskId = helper.taskId;
   }
 }

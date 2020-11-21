@@ -1,18 +1,22 @@
 package com.sofar.take.picture.model;
 
-import android.content.Context;
-
 import java.io.Serializable;
+
 import com.sofar.take.picture.core.PhotoHelper;
 
 /**
  * 图片信息
- * {@link PhotoHelper#getPhotoDir(Context)}
- * {@link PhotoHelper#getPhotoThumbDir(Context)}
- *
+ * {@link PhotoHelper#getPhotoDir()}
+ * {@link PhotoHelper#getPhotoThumbDir()}
+ * <p>
  * 图片名字+上述目录可唯一确定图片路径
  */
 public class ImageInfo implements Serializable {
+
+  /**
+   * 图片生成时所属于的任务id
+   */
+  public long taskId;
 
   /**
    * 图片名字

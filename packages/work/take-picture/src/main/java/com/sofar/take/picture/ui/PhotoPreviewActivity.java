@@ -39,6 +39,9 @@ public class PhotoPreviewActivity extends BaseActivity {
   TextView recaptureTv;
   TextView deleteTv;
 
+  @NonNull
+  PhotoHelper helper;
+
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -65,11 +68,12 @@ public class PhotoPreviewActivity extends BaseActivity {
 
   private void updateImageInfo(Intent intent) {
     imageInfo = (ImageInfo) intent.getSerializableExtra(KEY_PHOTO);
+    helper = new PhotoHelper(this, imageInfo.taskId);
     showPhoto();
   }
 
   private void showPhoto() {
-    Uri uri = Uri.fromFile(new File(PhotoHelper.getPhotoThumbDir(this), imageInfo.name));
+    Uri uri = Uri.fromFile(new File(helper.getPhotoThumbDir(), imageInfo.name));
     if (imageInfo.width > 0 && imageInfo.height > 0) {
       photoView.setAspectRatio(1.0f * imageInfo.width / imageInfo.height);
     }
@@ -90,14 +94,14 @@ public class PhotoPreviewActivity extends BaseActivity {
   }
 
   private void rotateImage(int degrees) {
-    File file = new File(PhotoHelper.getPhotoDir(this), imageInfo.name);
+    File file = new File(helper.getPhotoDir(), imageInfo.name);
     Bitmap srcBt = BitmapFactory.decodeFile(file.getAbsolutePath());
     Bitmap bitmap = BitmapUtil.rotateBitmap(srcBt, degrees);
     PhotoHelper.saveBitmapFile(bitmap, file);
   }
 
   private void rotateThumb(int degrees) {
-    File file = new File(PhotoHelper.getPhotoThumbDir(this), imageInfo.name);
+    File file = new File(helper.getPhotoThumbDir(), imageInfo.name);
     Bitmap srcBt = BitmapFactory.decodeFile(file.getAbsolutePath());
     Bitmap bitmap = BitmapUtil.rotateBitmap(srcBt, degrees);
     PhotoHelper.saveBitmapFile(bitmap, file);
@@ -110,14 +114,14 @@ public class PhotoPreviewActivity extends BaseActivity {
   }
 
   private void capture() {
-    PhotoObserveProvider.start(this);
+
   }
 
   private void delete() {
-    File file = new File(PhotoHelper.getPhotoDir(this), imageInfo.name);
+    File file = new File(helper.getPhotoDir(), imageInfo.name);
     file.delete();
 
-    File thumbFile = new File(PhotoHelper.getPhotoThumbDir(this), imageInfo.name);
+    File thumbFile = new File(helper.getPhotoThumbDir(), imageInfo.name);
     thumbFile.delete();
 
     ToastUtil.startShort(this, "删除成功");

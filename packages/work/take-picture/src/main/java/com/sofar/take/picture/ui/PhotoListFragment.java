@@ -18,6 +18,8 @@ import com.sofar.widget.recycler.StaggeredGridMarginItemDecoration;
 
 public class PhotoListFragment extends RecyclerFragment<ImageInfo> {
 
+  long taskId;
+
   @Override
   protected RecyclerAdapter<ImageInfo> onCreateAdapter() {
     return new PhotoAdapter();
@@ -25,7 +27,7 @@ public class PhotoListFragment extends RecyclerFragment<ImageInfo> {
 
   @Override
   protected PageList<?, ImageInfo> onCreatePageList() {
-    return new PhotoPageList(getActivity());
+    return new PhotoPageList(getActivity(), taskId);
   }
 
   @Override
@@ -35,6 +37,7 @@ public class PhotoListFragment extends RecyclerFragment<ImageInfo> {
 
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    taskId = getArguments().getLong(PhotoListActivity.KEY_TASK_ID);
     super.onViewCreated(view, savedInstanceState);
     int itemSpace = DeviceUtil.dp2px(getContext(), 2);
     StaggeredGridMarginItemDecoration itemDecoration = new StaggeredGridMarginItemDecoration(3, itemSpace, 0, 0);

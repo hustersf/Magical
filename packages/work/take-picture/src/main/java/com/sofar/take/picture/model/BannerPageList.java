@@ -18,33 +18,27 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-public class PhotoPageList extends SofarRetrofitPageList<PhotoPageResponse, ImageInfo> {
+public class BannerPageList extends SofarRetrofitPageList<BannerResponse, ImageInfo> {
 
   @NonNull
   Activity activity;
 
-  @NonNull
-  PhotoHelper helper;
-  long taskId;
-
-  public PhotoPageList(@NonNull Activity activity, long taskId) {
+  public BannerPageList(@NonNull Activity activity) {
     this.activity = activity;
-    this.taskId = taskId;
-    helper = new PhotoHelper(activity, taskId);
   }
 
   @Override
-  protected Observable<PhotoPageResponse> onCreateRequest() {
+  protected Observable<BannerResponse> onCreateRequest() {
     return Observable.fromCallable(() -> {
-      PhotoPageResponse response = new PhotoPageResponse();
+      BannerResponse response = new BannerResponse();
       List<ImageInfo> list = new ArrayList<>();
       response.items = list;
 
-      String path = helper.getPhotoThumbDir();
-      File dir = new File(path);
-      for (File file : dir.listFiles()) {
-        list.add(readPictureInfo(file));
-      }
+//      String path = PhotoHelper.getPhotoThumbDir(activity);
+//      File dir = new File(path);
+//      for (File file : dir.listFiles()) {
+//        list.add(readPictureInfo(file));
+//      }
 
       Log.d("PhotoPageList", "thread=" + Thread.currentThread().getName());
       return response;
@@ -58,7 +52,6 @@ public class PhotoPageList extends SofarRetrofitPageList<PhotoPageResponse, Imag
   private ImageInfo readPictureInfo(File file) {
     ImageInfo imageInfo = new ImageInfo();
     imageInfo.name = file.getName();
-    imageInfo.taskId = taskId;
     try {
       ExifInterface exifInterface = new ExifInterface(file.getPath());
       imageInfo.width = Integer.valueOf(exifInterface.getAttribute(ExifInterface.TAG_IMAGE_WIDTH));

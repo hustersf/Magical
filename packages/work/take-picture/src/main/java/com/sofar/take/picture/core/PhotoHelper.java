@@ -1,22 +1,14 @@
 package com.sofar.take.picture.core;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
-import android.provider.MediaStore;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 
-import com.sofar.base.BaseActivity;
-import com.sofar.base.callback.ActivityCallback;
-import com.sofar.utility.BitmapUtil;
-import com.sofar.utility.DateUtil;
 import com.sofar.utility.FileUtil;
 
 import java.io.BufferedOutputStream;
@@ -35,47 +27,17 @@ public class PhotoHelper {
 
   public static final String IMAGE_FORMAT = ".jpeg";
 
-  /**
-   * 缩略图片最大字节数
-   */
-  private static final int THUMB_MAX_SIZE = 100; //kb
+  @NonNull
+  public Activity activity;
+  public long taskId;
 
-  /**
-   * 开启相机拍摄
-   */
-  public static void startCamera(@NonNull BaseActivity activity) {
-    String photoName = DateUtil.getCurrentTimeInString() + IMAGE_FORMAT;
-    File file = new File(getPhotoDir(activity), photoName);
-    Uri imageUri = getUriForFile(activity, file);
-    Intent intent = new Intent();
-    intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-    activity.startActivityForResult(intent, new ActivityCallback() {
-      @Override
-      public void onResult(Intent data) {
-        Log.d(TAG, "拍摄成功");
-        buildThumbFile(activity, file);
-      }
-
-      @Override
-      public void onCancel(Intent data) {
-        Log.d(TAG, "拍摄取消");
-      }
-    });
+  public PhotoHelper(@NonNull Activity activity, long taskId) {
+    this.activity = activity;
+    this.taskId = taskId;
   }
 
-  /**
-   * 原图生成一张对应的缩略图
-   *
-   * @param imageFile 原图文件
-   */
-  public static void buildThumbFile(@NonNull Activity activity, File imageFile) {
-    Bitmap srcBt = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
-    Bitmap thumbBt = BitmapUtil.compressBitmap(srcBt, THUMB_MAX_SIZE);
-    Log.d(TAG, "生成缩图图");
-
-    File thumbFile = new File(getPhotoThumbDir(activity), imageFile.getName());
-    saveBitmapFile(thumbBt, thumbFile);
+  public String getPhotoName(long taskId, int order) {
+    return taskId + "_" + order;
   }
 
   /**
@@ -96,8 +58,8 @@ public class PhotoHelper {
   /**
    * 获取拍摄图片路径
    */
-  public static String getPhotoDir(@NonNull Context context) {
-    File dir = new File(FileUtil.getFileDir(context), PHOTO_DIR);
+  public String getPhotoDir() {
+    File dir = new File(FileUtil.getFileDir(activity), PHOTO_DIR + "/" + taskId);
     if (!dir.exists()) {
       dir.mkdirs();
     }
@@ -107,15 +69,15 @@ public class PhotoHelper {
   /**
    * 获取拍摄图片的缩略图路径
    */
-  public static String getPhotoThumbDir(@NonNull Context context) {
-    File dir = new File(FileUtil.getFileDir(context), PHOTO_THUMB_DIR);
+  public String getPhotoThumbDir() {
+    File dir = new File(FileUtil.getFileDir(activity), PHOTO_THUMB_DIR + "/" + taskId);
     if (!dir.exists()) {
       dir.mkdirs();
     }
     return dir.getAbsolutePath();
   }
 
-  public static Uri getUriForFile(@NonNull Activity activity, File file) {
+  public Uri getUriForFile(File file) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       return FileProvider.getUriForFile(activity, activity.getPackageName() + ".fileprovider", file);
     } else {
