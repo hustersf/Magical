@@ -9,4 +9,6 @@
 
   <color name="theme_color">#2ED4A9</color>
 
+  <color name="img_placeholder">#F5F5F5</color>
+
 </resources>

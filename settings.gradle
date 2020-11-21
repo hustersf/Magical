@@ -16,3 +16,6 @@ include ':core:login'
 include ':core:share'
 
 include ':external:social-sdk'
+
+
+include ':packages:work:take-picture'

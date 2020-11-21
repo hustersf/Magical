@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <com.sofar.image.widget.SofarImageView
+    android:id="@+id/photo"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:viewAspectRatio="1.7778" />
+
+  <View
+    android:layout_width="match_parent"
+    android:layout_height="1px"
+    android:layout_above="@+id/bottom_layout"
+    android:background="@color/divider_line_color" />
+
+  <LinearLayout
+    android:id="@+id/bottom_layout"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:layout_alignParentBottom="true"
+    android:orientation="horizontal">
+
+    <TextView
+      android:id="@+id/upload"
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_weight="1"
+      android:gravity="center"
+      android:text="上传" />
+
+    <TextView
+      android:id="@+id/edit"
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_weight="1"
+      android:gravity="center"
+      android:text="旋转" />
+
+    <TextView
+      android:id="@+id/recapture"
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_weight="1"
+      android:gravity="center"
+      android:text="重拍" />
+
+    <TextView
+      android:id="@+id/delete"
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_weight="1"
+      android:gravity="center"
+      android:text="删除" />
+
+  </LinearLayout>
+
+</RelativeLayout>

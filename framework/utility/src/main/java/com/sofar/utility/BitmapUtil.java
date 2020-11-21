@@ -117,14 +117,14 @@ public class BitmapUtil {
     return resizedBitmap;
   }
 
-  public static Bitmap rotateBitmap(Bitmap origin, float alpha) {
+  public static Bitmap rotateBitmap(Bitmap origin, float degrees) {
     if (origin == null) {
       return null;
     }
     int width = origin.getWidth();
     int height = origin.getHeight();
     Matrix matrix = new Matrix();
-    matrix.setRotate(alpha);
+    matrix.setRotate(degrees);
     // 围绕原地进行旋转
     Bitmap newBM = Bitmap.createBitmap(origin, 0, 0, width, height, matrix, false);
     // origin.recycle();
