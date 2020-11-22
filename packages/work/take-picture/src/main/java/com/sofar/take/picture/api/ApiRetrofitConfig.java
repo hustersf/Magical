@@ -1,5 +1,7 @@
 package com.sofar.take.picture.api;
 
+import androidx.annotation.NonNull;
+
 import com.sofar.network.retrofit.SofarRetrofitConfig;
 
 import io.reactivex.schedulers.Schedulers;
@@ -9,7 +11,15 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class ApiRetrofitConfig extends SofarRetrofitConfig {
 
+  public static final String baseUrl = "http:47.93.240.220:5000/";
+
   public ApiRetrofitConfig() {
-    super("http://musicapi.qianqian.com/", Schedulers.newThread());
+    super(baseUrl, Schedulers.newThread());
+  }
+
+  @NonNull
+  @Override
+  public Params buildParams() {
+    return new TaskPhotoParams();
   }
 }

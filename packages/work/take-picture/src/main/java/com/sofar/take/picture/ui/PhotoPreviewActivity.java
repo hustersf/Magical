@@ -2,6 +2,7 @@ package com.sofar.take.picture.ui;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -81,7 +82,9 @@ public class PhotoPreviewActivity extends BaseActivity {
   }
 
   private void upload() {
-
+    ProgressDialog dialog = new ProgressDialog(this);
+    dialog.setTitle("上传中...");
+    helper.uploadPhoto(imageInfo.name, dialog);
   }
 
   private void edit() {

@@ -4,9 +4,9 @@ import com.sofar.base.page.response.ListResponse;
 
 import java.util.List;
 
-public class BannerResponse implements ListResponse<ImageInfo> {
+public class BannerResponse implements ListResponse<Banner> {
 
-  public List<ImageInfo> items;
+  public List<Banner> items;
 
   @Override
   public boolean hasMore() {
@@ -14,7 +14,7 @@ public class BannerResponse implements ListResponse<ImageInfo> {
   }
 
   @Override
-  public List<ImageInfo> getItems() {
+  public List<Banner> getItems() {
     return items;
   }
 }

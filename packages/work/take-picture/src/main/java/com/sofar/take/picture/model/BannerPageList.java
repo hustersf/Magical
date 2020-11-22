@@ -1,16 +1,13 @@
 package com.sofar.take.picture.model;
 
 import android.app.Activity;
-import android.media.ExifInterface;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.sofar.base.page.retrofit.SofarRetrofitPageList;
-import com.sofar.take.picture.core.PhotoHelper;
+import com.sofar.take.picture.api.ApiRetrofitConfig;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +15,7 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-public class BannerPageList extends SofarRetrofitPageList<BannerResponse, ImageInfo> {
+public class BannerPageList extends SofarRetrofitPageList<BannerResponse, Banner> {
 
   @NonNull
   Activity activity;
@@ -31,34 +28,16 @@ public class BannerPageList extends SofarRetrofitPageList<BannerResponse, ImageI
   protected Observable<BannerResponse> onCreateRequest() {
     return Observable.fromCallable(() -> {
       BannerResponse response = new BannerResponse();
-      List<ImageInfo> list = new ArrayList<>();
+      List<Banner> list = new ArrayList<>();
+
+      Banner banner = new Banner();
+      banner.imgUrl = ApiRetrofitConfig.baseUrl + "photo";
+      list.add(banner);
       response.items = list;
-
-//      String path = PhotoHelper.getPhotoThumbDir(activity);
-//      File dir = new File(path);
-//      for (File file : dir.listFiles()) {
-//        list.add(readPictureInfo(file));
-//      }
-
       Log.d("PhotoPageList", "thread=" + Thread.currentThread().getName());
       return response;
     }).subscribeOn(Schedulers.io())
       .observeOn(AndroidSchedulers.mainThread());
   }
 
-  /**
-   * 读取图片信息
-   */
-  private ImageInfo readPictureInfo(File file) {
-    ImageInfo imageInfo = new ImageInfo();
-    imageInfo.name = file.getName();
-    try {
-      ExifInterface exifInterface = new ExifInterface(file.getPath());
-      imageInfo.width = Integer.valueOf(exifInterface.getAttribute(ExifInterface.TAG_IMAGE_WIDTH));
-      imageInfo.height = Integer.valueOf(exifInterface.getAttribute(ExifInterface.TAG_IMAGE_LENGTH));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    return imageInfo;
-  }
 }

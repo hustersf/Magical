@@ -1,5 +1,6 @@
 package com.sofar.take.picture.ui;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.EditText;
@@ -9,7 +10,10 @@ import androidx.annotation.Nullable;
 
 import com.sofar.base.BaseActivity;
 import com.sofar.take.picture.R;
+import com.sofar.take.picture.SofarApp;
 import com.sofar.take.picture.api.ApiProvider;
+import com.sofar.take.picture.model.LoginRequest;
+import com.sofar.take.picture.model.User;
 import com.sofar.utility.ToastUtil;
 
 /**
@@ -21,6 +25,8 @@ public class LoginActivity extends BaseActivity {
   EditText passwordEt;
   TextView loginTv;
 
+  ProgressDialog dialog;
+
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -29,10 +35,16 @@ public class LoginActivity extends BaseActivity {
     passwordEt = findViewById(R.id.password);
     loginTv = findViewById(R.id.login);
 
+    initProgressDialog();
 
     loginTv.setOnClickListener(v -> {
       login();
     });
+  }
+
+  private void initProgressDialog() {
+    dialog = new ProgressDialog(this);
+    dialog.setTitle("登录中...");
   }
 
   private void login() {
@@ -49,15 +61,22 @@ public class LoginActivity extends BaseActivity {
       return;
     }
 
-    ApiProvider.getApiService()
-      .login(phone, password)
+    dialog.show();
+    LoginRequest request = new LoginRequest();
+    request.username = phone;
+    request.password = password;
+    ApiProvider.getApiService().login(request)
       .subscribe(s -> {
-
+        dialog.dismiss();
+        User user = new User();
+        user.userId = phone;
+        SofarApp.ME = user;
+        jumpToMain();
       }, throwable -> {
-
+        dialog.dismiss();
+        ToastUtil.startShort(this, "登录失败");
       });
 
-    jumpToMain();
   }
 
   private void jumpToMain() {

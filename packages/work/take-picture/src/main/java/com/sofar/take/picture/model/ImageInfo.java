@@ -33,4 +33,9 @@ public class ImageInfo implements Serializable {
    */
   public int height;
 
+  /**
+   * 图片地址
+   */
+  public String url;
+
 }

@@ -1,20 +1,29 @@
 package com.sofar.take.picture.core;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 
+import com.sofar.take.picture.SofarApp;
+import com.sofar.take.picture.api.ApiProvider;
 import com.sofar.utility.FileUtil;
+import com.sofar.utility.ToastUtil;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 /**
  * 图片拍摄上传帮转类
@@ -39,6 +48,42 @@ public class PhotoHelper {
   public String getPhotoName(long taskId, int order) {
     return taskId + "_" + order;
   }
+
+  public void uploadPhoto(String name, ProgressDialog dialog) {
+    dialog.show();
+    File file = new File(getPhotoThumbDir(), name);
+    RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpg"), file);
+    String fileName = SofarApp.ME.userId + "_" + file.getName();
+    MultipartBody.Part photoPart = MultipartBody.Part.createFormData("file", fileName, requestBody);
+    ApiProvider.getApiService().uploadFile(photoPart)
+      .subscribe(s -> {
+        Log.d(TAG, "upload success");
+        dialog.dismiss();
+        ToastUtil.startShort(activity, "上传成功");
+      }, throwable -> {
+        Log.d(TAG, "upload failed:" + throwable.toString());
+        dialog.dismiss();
+        ToastUtil.startShort(activity, "上传失败");
+      });
+  }
+
+  /**
+   * 删除当前任务的所有图片
+   */
+  public void deleteAllFile() {
+    File photoDir = new File(getPhotoDir());
+    for (File file : photoDir.listFiles()) {
+      file.delete();
+    }
+    photoDir.delete();
+
+    File thumbDir = new File(getPhotoThumbDir());
+    for (File file : thumbDir.listFiles()) {
+      file.delete();
+    }
+    thumbDir.delete();
+  }
+
 
   /**
    * 将图片保存至本地

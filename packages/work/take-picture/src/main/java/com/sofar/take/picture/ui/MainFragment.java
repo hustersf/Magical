@@ -15,10 +15,11 @@ import com.sofar.base.page.PageList;
 import com.sofar.base.recycler.RecyclerAdapter;
 import com.sofar.base.recycler.RecyclerFragment;
 import com.sofar.take.picture.R;
+import com.sofar.take.picture.model.Banner;
 import com.sofar.take.picture.model.BannerPageList;
 import com.sofar.take.picture.model.ImageInfo;
 
-public class MainFragment extends RecyclerFragment<ImageInfo> {
+public class MainFragment extends RecyclerFragment<Banner> {
 
   TextView photoNumberTv;
   PagerSnapHelper snapHelper;
@@ -40,12 +41,12 @@ public class MainFragment extends RecyclerFragment<ImageInfo> {
   };
 
   @Override
-  protected RecyclerAdapter<ImageInfo> onCreateAdapter() {
+  protected RecyclerAdapter<Banner> onCreateAdapter() {
     return new BannerAdapter();
   }
 
   @Override
-  protected PageList<?, ImageInfo> onCreatePageList() {
+  protected PageList<?, Banner> onCreatePageList() {
     return new BannerPageList(getActivity());
   }
 

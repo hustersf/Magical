@@ -5,10 +5,10 @@ import androidx.annotation.NonNull;
 import com.sofar.base.recycler.RecyclerAdapter;
 import com.sofar.base.viewbinder.RecyclerViewBinder;
 import com.sofar.take.picture.R;
-import com.sofar.take.picture.model.ImageInfo;
+import com.sofar.take.picture.model.Banner;
 import com.sofar.take.picture.viewbinder.BannerItemViewBinder;
 
-public class BannerAdapter extends RecyclerAdapter<ImageInfo> {
+public class BannerAdapter extends RecyclerAdapter<Banner> {
 
   @Override
   protected int getItemLayoutId(int viewType) {
@@ -17,7 +17,7 @@ public class BannerAdapter extends RecyclerAdapter<ImageInfo> {
 
   @NonNull
   @Override
-  protected RecyclerViewBinder<ImageInfo> onCreateViewBinder(int viewType) {
+  protected RecyclerViewBinder<Banner> onCreateViewBinder(int viewType) {
     return new BannerItemViewBinder();
   }
 }
