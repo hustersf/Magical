@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.sofar.base.viewbinder.RecyclerViewBinder;
 import com.sofar.base.viewbinder.ViewBinder;
 import com.sofar.utility.CollectionUtil;
-import com.sofar.utility.ViewUtil;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -59,7 +58,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVi
 
   @Override
   public RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-    View view = ViewUtil.inflate(parent, getItemLayoutId(viewType), false);
+    View view = onCreateView(parent, viewType);
     RecyclerViewBinder viewBinder = onCreateViewBinder(viewType);
     viewBinders.add(viewBinder);
     return new RecyclerViewHolder(view, viewBinder);
@@ -74,7 +73,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVi
       realPosition = holder.getAdapterPosition();
     }
     holder.setViewAdapterPosition(realPosition);
-    holder.onBindData(items.get(realPosition));
+    holder.onBindData(getItem(realPosition));
   }
 
   @Override
@@ -99,10 +98,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVi
     return CollectionUtil.isEmpty(items);
   }
 
-  /**
-   * 子类提供布局id
-   */
-  protected abstract int getItemLayoutId(int viewType);
+  protected abstract View onCreateView(ViewGroup parent, int viewType);
 
   /**
    * 子类创建具体的ViewBinder

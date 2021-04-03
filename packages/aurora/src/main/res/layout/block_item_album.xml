@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content">
+
+  <TextView
+    android:id="@+id/block_name"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="@dimen/block_padding_left"
+    android:layout_marginTop="@dimen/block_space"
+    android:textColor="@color/text_color_strong"
+    android:textSize="16dp"
+    android:textStyle="bold" />
+
+  <TextView
+    android:id="@+id/block_more"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignBottom="@id/block_name"
+    android:layout_alignParentRight="true"
+    android:layout_alignTop="@+id/block_name"
+    android:layout_marginRight="@dimen/block_padding_right"
+    android:textColor="@color/text_color_plain"
+    android:textSize="14dp" />
+
+  <androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/album_recycler"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/block_name"
+    android:layout_marginBottom="@dimen/block_space"
+    android:layout_marginTop="10dp" />
+
+</RelativeLayout>

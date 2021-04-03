@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.sofar.network.cookie.SimpleCookieJar;
+import com.sofar.network.https.HttpsUtil;
 import com.sofar.network.interceptor.ContentLengthInterceptor;
 import com.sofar.network.interceptor.HeadersInterceptor;
 import com.sofar.network.interceptor.ParamsInterceptor;
@@ -66,6 +67,11 @@ public class SofarRetrofitConfig implements RetrofitConfig {
     builder.addInterceptor(new ContentLengthInterceptor());
 
     builder.cookieJar(new SimpleCookieJar());
+
+    if (ignoreCertVerify()) {
+      builder.sslSocketFactory(HttpsUtil.ignoreAllSocketFactory().first,
+        HttpsUtil.ignoreAllSocketFactory().second);
+    }
     return builder.build();
   }
 
@@ -93,5 +99,9 @@ public class SofarRetrofitConfig implements RetrofitConfig {
     return input.observeOn(AndroidSchedulers.mainThread())
       .doOnComplete(NetworkCounter.ON_COMPLETE)
       .doOnError(NetworkCounter.ON_ERROR);
+  }
+
+  protected boolean ignoreCertVerify() {
+    return false;
   }
 }

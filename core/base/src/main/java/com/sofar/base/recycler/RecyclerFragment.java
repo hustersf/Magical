@@ -55,7 +55,7 @@ public abstract class RecyclerFragment<MODEL> extends BaseFragment implements Pa
   @Nullable
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                           @Nullable Bundle savedInstanceState) {
+    @Nullable Bundle savedInstanceState) {
     mRootView = inflater.inflate(getLayoutResId(), container, false);
     mRefreshLayout = mRootView.findViewById(R.id.refresh_layout);
     mRecyclerView = mRootView.findViewById(R.id.recycler_view);
@@ -139,6 +139,12 @@ public abstract class RecyclerFragment<MODEL> extends BaseFragment implements Pa
     if (mRefreshLayout != null) {
       mRefreshLayout.setRefreshing(false);
     }
+  }
+
+  @Override
+  public void onDestroyView() {
+    super.onDestroyView();
+    mRecyclerView.setAdapter(null);
   }
 }
 

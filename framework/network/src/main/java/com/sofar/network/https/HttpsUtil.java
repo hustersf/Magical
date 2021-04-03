@@ -16,11 +16,12 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import android.util.Pair;
+
 /**
  * Created by sf on 18/04/04.
  * 提供了3种方式的证书校验，自选合适的即可
  */
-@Deprecated
 public class HttpsUtil {
 
   /**
@@ -37,26 +38,25 @@ public class HttpsUtil {
     return null;
   }
 
-
   /**
    * 信任所有证书
    */
-  public static SSLSocketFactory getIgnoreAllSocketFactory() {
+  public static Pair<SSLSocketFactory, X509TrustManager> ignoreAllSocketFactory() {
     try {
-      TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
+      TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
         public X509Certificate[] getAcceptedIssuers() {
-          return null;
+          return new java.security.cert.X509Certificate[]{};
         }
 
         @Override
         public void checkClientTrusted(X509Certificate[] arg0, String arg1)
-            throws CertificateException {
+          throws CertificateException {
           // Not implemented
         }
 
         @Override
         public void checkServerTrusted(X509Certificate[] arg0, String arg1)
-            throws CertificateException {
+          throws CertificateException {
           // Not implemented
         }
       }};
@@ -64,13 +64,12 @@ public class HttpsUtil {
       // Create an SSLContext that uses our TrustManager
       SSLContext context = SSLContext.getInstance("TLS");
       context.init(null, trustAllCerts, null);
-      return context.getSocketFactory();
+      return new Pair<>(context.getSocketFactory(), (X509TrustManager) trustAllCerts[0]);
     } catch (Exception e) {
       e.printStackTrace();
     }
     return null;
   }
-
 
 
   /**
@@ -86,7 +85,7 @@ public class HttpsUtil {
       for (InputStream certificate : certificates) {
         String certificateAlias = "server" + Integer.toString(index++);
         keyStore.setCertificateEntry(certificateAlias,
-            certificateFactory.generateCertificate(certificate));
+          certificateFactory.generateCertificate(certificate));
         try {
           if (certificate != null) {
             certificate.close();
@@ -98,7 +97,7 @@ public class HttpsUtil {
       // 创建一个trustmanager，只信任我们创建的keystore
       SSLContext sslContext = SSLContext.getInstance("TLS");
       TrustManagerFactory trustManagerFactory =
-          TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
       trustManagerFactory.init(keyStore);
       sslContext.init(null, trustManagerFactory.getTrustManagers(), new SecureRandom());
       return sslContext.getSocketFactory();

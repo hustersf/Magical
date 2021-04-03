@@ -13,10 +13,6 @@ import com.sofar.base.callback.ActivityCallback;
 public class BaseActivity extends AppCompatActivity {
 
   // 设置启动和退出Activity的动画
-  public static final String START_EXIT_PAGE_ANIMATION = "start_exit_page_animation";
-  public static final String START_ENTER_PAGE_ANIMATION = "start_enter_page_animation";
-  public static final String FINISH_EXIT_PAGE_ANIMATION = "finish_exit_page_animation";
-  public static final String FINISH_ENTER_PAGE_ANIMATION = "finish_enter_page_animation";
   public static final int NO_ANIM = 0;
 
   // activity请求回调相关
@@ -89,16 +85,21 @@ public class BaseActivity extends AppCompatActivity {
   @Override
   public void startActivity(Intent intent) {
     super.startActivity(intent);
-    overridePendingTransition(
-      getIntent().getIntExtra(START_ENTER_PAGE_ANIMATION, R.anim.right_slide_in),
-      getIntent().getIntExtra(START_EXIT_PAGE_ANIMATION, R.anim.placeholder_anim));
+    overridePendingTransition(startEnterPageAnim(), R.anim.placeholder_anim);
   }
 
   @Override
   public void finish() {
     super.finish();
-    overridePendingTransition(
-      getIntent().getIntExtra(FINISH_ENTER_PAGE_ANIMATION, NO_ANIM),
-      getIntent().getIntExtra(FINISH_EXIT_PAGE_ANIMATION, R.anim.right_slide_out));
+    overridePendingTransition(NO_ANIM, finishExitPageAnim());
   }
+
+  protected int startEnterPageAnim() {
+    return R.anim.right_slide_in;
+  }
+
+  protected int finishExitPageAnim() {
+    return R.anim.right_slide_out;
+  }
+
 }

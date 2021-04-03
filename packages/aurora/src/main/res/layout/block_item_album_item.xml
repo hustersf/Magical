@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:fresco="http://schemas.android.com/apk/res-auto"
+  android:layout_width="120dp"
+  android:layout_height="wrap_content"
+  android:orientation="vertical">
+
+  <com.sofar.image.widget.SofarImageView
+    android:id="@+id/cover"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    fresco:placeholderImage="@color/img_placeholder"
+    fresco:placeholderImageScaleType="centerCrop"
+    fresco:roundWithOverlayColor="@color/cover_color_overlay"
+    fresco:roundedCornerRadius="@dimen/image_corner"
+    fresco:viewAspectRatio="1.0" />
+
+  <TextView
+    android:id="@+id/title"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="5dp"
+    android:ellipsize="end"
+    android:maxLines="1"
+    android:textColor="@color/text_color_strong"
+    android:textSize="12dp" />
+
+  <TextView
+    android:id="@+id/summary"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="2dp"
+    android:ellipsize="end"
+    android:maxLines="1"
+    android:textColor="@color/text_color_light"
+    android:textSize="10dp" />
+
+</LinearLayout>
