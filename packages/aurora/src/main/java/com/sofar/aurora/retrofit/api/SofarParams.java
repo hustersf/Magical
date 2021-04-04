@@ -27,15 +27,6 @@ public class SofarParams implements RetrofitConfig.Params {
     Map<String, String> params = new HashMap<>();
     params.put("appid", "16073360");
     params.put("timestamp", System.currentTimeMillis() + "");
-
-    StringBuffer sb = new StringBuffer();
-    sb.append("appid=");
-    sb.append(params.get("appid"));
-    sb.append("&");
-    sb.append("timestamp=");
-    sb.append(params.get("timestamp"));
-    sb.append("0b50b02fd0d73a9c4c8c3a781c30845f");
-    params.put("sign", MD5Util.md5(sb.toString()));
     return params;
   }
 

@@ -10,6 +10,8 @@ import com.sofar.network.interceptor.HeadersInterceptor;
 import com.sofar.network.interceptor.ParamsInterceptor;
 import com.sofar.network.retrofit.consumer.NetworkCounter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -17,6 +19,7 @@ import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.plugins.RxJavaPlugins;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
 
@@ -65,6 +68,9 @@ public class SofarRetrofitConfig implements RetrofitConfig {
     builder.addInterceptor(new HeadersInterceptor(params));
     builder.addInterceptor(new ParamsInterceptor(params));
     builder.addInterceptor(new ContentLengthInterceptor());
+    for (Interceptor interceptor : interceptors()) {
+      builder.addInterceptor(interceptor);
+    }
 
     builder.cookieJar(new SimpleCookieJar());
 
@@ -103,5 +109,10 @@ public class SofarRetrofitConfig implements RetrofitConfig {
 
   protected boolean ignoreCertVerify() {
     return false;
+  }
+
+  @NonNull
+  protected List<Interceptor> interceptors() {
+    return new ArrayList<>();
   }
 }

@@ -25,6 +25,10 @@
       </intent-filter>
     </activity>
 
+    <activity
+      android:name=".feature.track.TrackActivity"
+      android:configChanges="orientation|keyboardHidden|screenSize"
+      android:screenOrientation="portrait"></activity>
 
   </application>
 

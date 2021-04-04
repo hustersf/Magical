@@ -6,6 +6,8 @@ import com.sofar.base.page.PageListObserver;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -72,6 +74,11 @@ public abstract class RetrofitPageList<PAGE, MODEL> implements PageList<PAGE, MO
     return mItems;
   }
 
+  @Override
+  public void addAll(@NonNull List<MODEL> list) {
+    mItems.addAll(list);
+  }
+
   /**
    * 从Response中读取是否还有下一页.
    *
@@ -81,7 +88,12 @@ public abstract class RetrofitPageList<PAGE, MODEL> implements PageList<PAGE, MO
   protected abstract boolean getHasMoreFromResponse(PAGE response);
 
   @Override
-  public PAGE getPageResponse() {
+  public void setLatestPage(PAGE latestPage) {
+    mLatestPage = latestPage;
+  }
+
+  @Override
+  public PAGE getLatestPage() {
     return mLatestPage;
   }
 

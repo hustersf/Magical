@@ -5,6 +5,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
 import com.sofar.aurora.R;
+import com.sofar.aurora.feature.home.block.binder.TrackClickViewBinder;
 import com.sofar.aurora.feature.home.block.binder.TrackItemViewBinder;
 import com.sofar.aurora.model.Track;
 import com.sofar.base.recycler.RecyclerAdapter;
@@ -23,6 +24,7 @@ public class TrackAdapter extends RecyclerAdapter<Track> {
   protected RecyclerViewBinder<Track> onCreateViewBinder(int viewType) {
     RecyclerViewBinder viewBinder = new RecyclerViewBinder();
     viewBinder.addViewBinder(new TrackItemViewBinder());
+    viewBinder.addViewBinder(new TrackClickViewBinder());
     return viewBinder;
   }
 }

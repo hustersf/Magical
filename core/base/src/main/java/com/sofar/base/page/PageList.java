@@ -2,7 +2,9 @@ package com.sofar.base.page;
 
 import java.util.List;
 
-public interface PageList<PAGE, MODE> {
+import androidx.annotation.NonNull;
+
+public interface PageList<PAGE, MODEL> {
 
   boolean hasMore();
 
@@ -21,15 +23,19 @@ public interface PageList<PAGE, MODE> {
    */
   boolean isEmpty();
 
+  void addAll(@NonNull List<MODEL> list);
+
   /**
    * 列表数据集合
    */
-  List<MODE> getItems();
+  List<MODEL> getItems();
+
+  void setLatestPage(PAGE latestPage);
 
   /**
    * 列表数据
    */
-  PAGE getPageResponse();
+  PAGE getLatestPage();
 
   /**
    * 注册数据监听者
