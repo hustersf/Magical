@@ -30,6 +30,11 @@
       android:configChanges="orientation|keyboardHidden|screenSize"
       android:screenOrientation="portrait"></activity>
 
+    <activity
+      android:name=".feature.play.PlayActivity"
+      android:configChanges="orientation|keyboardHidden|screenSize"
+      android:screenOrientation="portrait"></activity>
+
   </application>
 
 </manifest>

@@ -5,6 +5,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
 import com.sofar.aurora.R;
+import com.sofar.aurora.feature.song.binder.SongClickViewBinder;
 import com.sofar.aurora.feature.song.binder.SongMoreViewBinder;
 import com.sofar.aurora.feature.song.binder.SongOrderViewBinder;
 import com.sofar.aurora.feature.song.binder.SongSummaryViewBinder;
@@ -29,6 +30,7 @@ public class SongAdapter extends RecyclerAdapter<Song> {
     viewBinder.addViewBinder(new SongTitleViewBinder());
     viewBinder.addViewBinder(new SongSummaryViewBinder());
     viewBinder.addViewBinder(new SongMoreViewBinder());
+    viewBinder.addViewBinder(new SongClickViewBinder(this));
     return viewBinder;
   }
 }

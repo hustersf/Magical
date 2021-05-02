@@ -9,6 +9,9 @@ public class Song {
   @SerializedName("id")
   public String songId;
 
+  @SerializedName("path")
+  public String playUrl;
+
   @SerializedName("lyric")
   public String lyricUrl;
 
@@ -38,5 +41,19 @@ public class Song {
 
   @SerializedName("artist")
   public List<Artist> artists;
+
+  @SerializedName("trail_audio_info")
+  public Part songPart;
+
+  public static class Part {
+    @SerializedName("start_time")
+    public int startTime;
+
+    @SerializedName("duration")
+    public int duration;
+
+    @SerializedName("path")
+    public String playUrl;
+  }
 
 }

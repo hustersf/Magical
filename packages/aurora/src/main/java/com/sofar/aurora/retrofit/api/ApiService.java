@@ -2,6 +2,7 @@ package com.sofar.aurora.retrofit.api;
 
 import com.sofar.aurora.feature.home.model.HomeBlockResponse;
 import com.sofar.aurora.feature.track.model.TrackResponse;
+import com.sofar.aurora.model.Song;
 import com.sofar.aurora.retrofit.gson.Response;
 
 import io.reactivex.Observable;
@@ -15,5 +16,8 @@ public interface ApiService {
 
   @GET("v1/tracklist/info")
   Observable<Response<TrackResponse>> trackList(@Query("id") String trackId);
+
+  @GET("v1/song/tracklink")
+  Observable<Response<Song>> songDetail(@Query("TSID") String songId);
 
 }

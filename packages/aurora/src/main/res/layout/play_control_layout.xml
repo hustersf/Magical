@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content">
+
+  <ImageView
+    android:id="@+id/play"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:clickable="true"
+    android:src="@drawable/play_pause_selector" />
+
+  <ImageView
+    android:id="@+id/next"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerVertical="true"
+    android:layout_marginLeft="8dp"
+    android:layout_toRightOf="@+id/play"
+    android:clickable="true"
+    android:src="@drawable/play_next_selector" />
+
+  <ImageView
+    android:id="@+id/pre"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerVertical="true"
+    android:layout_marginRight="8dp"
+    android:layout_toLeftOf="@+id/play"
+    android:clickable="true"
+    android:src="@drawable/play_pre_selector" />
+
+  <ImageView
+    android:id="@+id/cycle"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerVertical="true"
+    android:layout_marginRight="25dp"
+    android:layout_toLeftOf="@+id/pre"
+    android:clickable="true"
+    android:src="@drawable/play_list_cycle_selector" />
+
+  <ImageView
+    android:id="@+id/list"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:layout_centerVertical="true"
+    android:layout_marginLeft="25dp"
+    android:layout_toRightOf="@+id/next"
+    android:clickable="true"
+    android:src="@drawable/play_song_list_selector" />
+
+</RelativeLayout>
