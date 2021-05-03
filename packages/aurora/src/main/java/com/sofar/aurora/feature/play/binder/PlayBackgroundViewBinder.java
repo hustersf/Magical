@@ -36,17 +36,17 @@ public class PlayBackgroundViewBinder extends PlayBaseViewBinder {
   protected void onCreate() {
     super.onCreate();
     playRoot = bindView(R.id.play_root);
+    setDefaultBg();
   }
 
   @Override
   protected void onBind(PlayContext data) {
     super.onBind(data);
-    if (data.playSong == null) {
-      return;
-    }
     mDisposable
       .add(data.mPlayControlSignal.subscribe(mPlayControlSignalConsumer, new SofarErrorConsumer()));
-    update(data.playSong);
+    if (data.playSong != null) {
+      update(data.playSong);
+    }
   }
 
   private void update(@NonNull Song song) {
@@ -60,6 +60,12 @@ public class PlayBackgroundViewBinder extends PlayBaseViewBinder {
       blurBitmap = BlurUtil.getBlurBitmap(context, smallBitmap, 25);
       playRoot.setBackground(new BitmapDrawable(context.getResources(), blurBitmap));
     });
+  }
+
+  private void setDefaultBg() {
+    Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.RGB_565);
+    Bitmap defaultBitmap = BlurUtil.getBlurBitmap(context, bitmap, 25);
+    playRoot.setBackground(new BitmapDrawable(context.getResources(), defaultBitmap));
   }
 
   @Override

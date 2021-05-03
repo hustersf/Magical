@@ -22,7 +22,7 @@ public abstract class BasePlayer {
   @NonNull
   SimpleExoPlayer player;
   @NonNull
-  final Context context;
+  Context context;
 
   boolean prepared;
   boolean completed;
@@ -34,12 +34,19 @@ public abstract class BasePlayer {
     @Override
     public void onPlaybackStateChanged(int state) {
       Log.d(TAG, "onPlaybackStateChanged:state=" + state);
-      if (state == 4) {
-        Log.d(TAG, "completed");
-        completed = true;
-        if (playerListener != null) {
-          playerListener.onPlayerCompleted();
-        }
+      switch (state) {
+        case Player.STATE_ENDED:
+          completed = true;
+          if (playerListener != null) {
+            playerListener.onPlayerCompleted();
+          }
+          break;
+        case Player.STATE_READY:
+          prepared = true;
+          break;
+        case Player.STATE_BUFFERING:
+          prepared = false;
+          break;
       }
     }
 
@@ -55,27 +62,26 @@ public abstract class BasePlayer {
   public BasePlayer(@NonNull Context context) {
     this.context = context;
     player = new SimpleExoPlayer.Builder(context).build();
+    player.addListener(eventListener);
   }
 
   public BasePlayer(@NonNull Context context, @NonNull String uri) {
     this.context = context;
     player = new SimpleExoPlayer.Builder(context).build();
+    player.addListener(eventListener);
     MediaItem mediaItem = MediaItem.fromUri(uri);
-    player.addMediaItem(mediaItem);
+    player.setMediaItem(mediaItem);
   }
 
   /**
    * 重置播放源
    */
   public void setUri(@NonNull String uri) {
-    player.clearMediaItems();
     MediaItem mediaItem = MediaItem.fromUri(uri);
-    player.addMediaItem(mediaItem);
+    player.setMediaItem(mediaItem);
   }
 
   public void prepare() {
-    prepared = true;
-    player.addListener(eventListener);
     player.prepare();
   }
 

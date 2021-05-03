@@ -29,7 +29,6 @@
     android:layout_alignStart="@+id/disc"
     android:layout_alignTop="@+id/disc"
     android:padding="45dp"
-    fresco:placeholderImage="@color/img_placeholder"
     fresco:placeholderImageScaleType="centerCrop"
     fresco:roundAsCircle="true" />
 

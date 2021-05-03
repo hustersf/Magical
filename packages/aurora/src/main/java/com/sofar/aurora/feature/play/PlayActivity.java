@@ -13,10 +13,14 @@ import com.sofar.aurora.feature.play.binder.PlayCycleViewBinder;
 import com.sofar.aurora.feature.play.binder.PlayDiscViewBinder;
 import com.sofar.aurora.feature.play.binder.PlayListViewBinder;
 import com.sofar.aurora.feature.play.binder.PlayLrcViewBinder;
+import com.sofar.aurora.feature.play.binder.PlayTitleViewBinder;
 import com.sofar.aurora.feature.play.signal.PlayControlSignal;
+import com.sofar.aurora.feature.play.signal.PlayStateSignal;
 import com.sofar.aurora.model.Song;
 import com.sofar.base.BaseActivity;
 import com.sofar.base.viewbinder.ViewBinder;
+import com.sofar.widget.swipe.SwipeBack;
+import com.sofar.widget.swipe.SwipeLayout;
 
 import io.reactivex.subjects.PublishSubject;
 
@@ -25,6 +29,7 @@ public class PlayActivity extends BaseActivity {
   ViewBinder playViewBinder = new ViewBinder();
 
   PublishSubject<PlayControlSignal> mPlayControlSignal = PublishSubject.create();
+  PublishSubject<PlayStateSignal> mPlayStateSignal = PublishSubject.create();
 
   PlayListener listener = new PlayListener() {
     @Override
@@ -32,12 +37,23 @@ public class PlayActivity extends BaseActivity {
       mPlayControlSignal.onNext(PlayControlSignal.SONG_SELECT.setTag(song));
       PlayControlSignal.SONG_SELECT.reset();
     }
+
+    @Override
+    public void onPlay() {
+      mPlayStateSignal.onNext(PlayStateSignal.PLAYING);
+    }
+
+    @Override
+    public void onPause() {
+      mPlayStateSignal.onNext(PlayStateSignal.PAUSE);
+    }
   };
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.play_activity);
+    SwipeBack.attach(this).setDirection(SwipeLayout.SwipeDirection.DOWN);
     PlayManager.get().register(listener);
 
     playViewBinder.addViewBinder(new PlayBackgroundViewBinder());
@@ -46,10 +62,12 @@ public class PlayActivity extends BaseActivity {
     playViewBinder.addViewBinder(new PlayControlViewBinder());
     playViewBinder.addViewBinder(new PlayCycleViewBinder());
     playViewBinder.addViewBinder(new PlayListViewBinder());
-    playViewBinder.create(getWindow().getDecorView());
+    playViewBinder.addViewBinder(new PlayTitleViewBinder());
+    playViewBinder.create(getWindow().getDecorView().findViewById(android.R.id.content));
     PlayContext playContext = new PlayContext();
     playContext.playSong = PlayManager.get().playSong;
     playContext.mPlayControlSignal = mPlayControlSignal;
+    playContext.mPlayStateSignal = mPlayStateSignal;
     playViewBinder.bind(playContext);
   }
 
@@ -63,5 +81,10 @@ public class PlayActivity extends BaseActivity {
   public static void launch(@NonNull Context context) {
     Intent intent = new Intent(context, PlayActivity.class);
     context.startActivity(intent);
+  }
+
+  @Override
+  protected int finishExitPageAnim() {
+    return R.anim.bottom_slide_out;
   }
 }

@@ -6,6 +6,10 @@ import com.sofar.aurora.model.Song;
 
 public interface PlayListener {
 
-  void onSelect(@NonNull Song song);
+  default void onSelect(@NonNull Song song) {}
+
+  default void onPlay() {}
+
+  default void onPause() {}
 
 }

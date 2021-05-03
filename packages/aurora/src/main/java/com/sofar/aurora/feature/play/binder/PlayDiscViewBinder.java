@@ -1,6 +1,5 @@
 package com.sofar.aurora.feature.play.binder;
 
-import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.view.animation.LinearInterpolator;
@@ -9,6 +8,7 @@ import android.widget.ImageView;
 import com.sofar.aurora.R;
 import com.sofar.aurora.feature.play.PlayContext;
 import com.sofar.aurora.feature.play.signal.PlayControlSignal;
+import com.sofar.aurora.feature.play.signal.PlayStateSignal;
 import com.sofar.aurora.model.Song;
 import com.sofar.base.exception.SofarErrorConsumer;
 import com.sofar.image.widget.SofarImageView;
@@ -21,6 +21,8 @@ public class PlayDiscViewBinder extends PlayBaseViewBinder {
   ImageView needleIv;
   SofarImageView coverIv;
 
+  ObjectAnimator coverAnimator;
+
   Consumer<PlayControlSignal> mPlayControlSignalConsumer = playControlSignal -> {
     switch (playControlSignal) {
       case SONG_SELECT:
@@ -30,8 +32,22 @@ public class PlayDiscViewBinder extends PlayBaseViewBinder {
         break;
     }
   };
-
-  AnimatorSet mAnimatorSet;
+  Consumer<PlayStateSignal> mPlayStateSignalConsumer = playStateSignal -> {
+    switch (playStateSignal) {
+      case PLAYING:
+        if (coverAnimator != null) {
+          coverAnimator.resume();
+        }
+        needlePlayAnim();
+        break;
+      case PAUSE:
+        if (coverAnimator != null) {
+          coverAnimator.pause();
+        }
+        needlePauseAnim();
+        break;
+    }
+  };
 
   @Override
   protected void onCreate() {
@@ -44,14 +60,15 @@ public class PlayDiscViewBinder extends PlayBaseViewBinder {
   @Override
   protected void onBind(PlayContext data) {
     super.onBind(data);
-    if (data.playSong == null) {
-      return;
-    }
-
     mDisposable
       .add(data.mPlayControlSignal.subscribe(mPlayControlSignalConsumer, new SofarErrorConsumer()));
-    updateUI(data.playSong);
+    mDisposable
+      .add(data.mPlayStateSignal.subscribe(mPlayStateSignalConsumer, new SofarErrorConsumer()));
     startCoverAnim();
+
+    if (data.playSong != null) {
+      updateUI(data.playSong);
+    }
   }
 
   private void updateUI(Song song) {
@@ -59,20 +76,35 @@ public class PlayDiscViewBinder extends PlayBaseViewBinder {
   }
 
   private void startCoverAnim() {
-    mAnimatorSet = new AnimatorSet();
-    ObjectAnimator animator = ObjectAnimator.ofFloat(coverIv, "rotation", 0, 360f);
-    animator.setInterpolator(new LinearInterpolator());
-    animator.setDuration(5000);
-    animator.setRepeatMode(ValueAnimator.RESTART);
-    animator.setRepeatCount(ValueAnimator.INFINITE);
+    coverAnimator = ObjectAnimator.ofFloat(coverIv, "rotation", 0, 360f);
+    coverAnimator.setInterpolator(new LinearInterpolator());
+    coverAnimator.setDuration(10000);
+    coverAnimator.setRepeatMode(ValueAnimator.RESTART);
+    coverAnimator.setRepeatCount(ValueAnimator.INFINITE);
+    coverAnimator.start();
+  }
+
+  private void needlePauseAnim() {
+    ObjectAnimator animator = ObjectAnimator.ofFloat(needleIv, "rotation", 0, -20f);
+    needleIv.setPivotX(0);
+    needleIv.setPivotY(0);
+    animator.setDuration(500);
+    animator.start();
+  }
+
+  private void needlePlayAnim() {
+    ObjectAnimator animator = ObjectAnimator.ofFloat(needleIv, "rotation", -20f, 0);
+    needleIv.setPivotX(0);
+    needleIv.setPivotY(0);
+    animator.setDuration(500);
     animator.start();
   }
 
   @Override
   protected void onDestroy() {
     super.onDestroy();
-    if (mAnimatorSet != null) {
-      mAnimatorSet.cancel();
+    if (coverAnimator != null) {
+      coverAnimator.cancel();
     }
   }
 }

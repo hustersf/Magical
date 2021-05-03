@@ -2,6 +2,7 @@ package com.sofar.aurora.feature.play;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import android.text.TextUtils;
 import android.util.Log;
@@ -33,6 +34,9 @@ public class PlayManager {
   int position = 0;
   Disposable disposable;
 
+  @PlayMode
+  public int playMode;
+
   @Nullable
   public Song playSong;
 
@@ -49,16 +53,19 @@ public class PlayManager {
       @Override
       public void onPlayerStart() {
         Log.d(TAG, "onPlayerStart");
+        onPlay();
       }
 
       @Override
       public void onPlayerResume() {
         Log.d(TAG, "onPlayerResume");
+        onPlay();
       }
 
       @Override
       public void onPlayerPause() {
         Log.d(TAG, "onPlayerPause");
+        onPause();
       }
 
       @Override
@@ -132,7 +139,16 @@ public class PlayManager {
    * 播放上一曲
    */
   public void playPrevious() {
-    position--;
+    switch (playMode) {
+      case PlayMode.LIST:
+        position--;
+        break;
+      case PlayMode.RANDOM:
+        position = new Random().nextInt(songs.size());
+        break;
+      case PlayMode.SINGLE:
+        break;
+    }
     if (position < 0) {
       position = songs.size() - 1;
     }
@@ -144,8 +160,17 @@ public class PlayManager {
    * 播放下一曲
    */
   public void playNext() {
-    position++;
-    if (position >= songs.size() - 1) {
+    switch (playMode) {
+      case PlayMode.LIST:
+        position++;
+        break;
+      case PlayMode.RANDOM:
+        position = new Random().nextInt(songs.size());
+        break;
+      case PlayMode.SINGLE:
+        break;
+    }
+    if (position > songs.size() - 1) {
       position = 0;
     }
     Song song = songs.get(position);
@@ -159,6 +184,10 @@ public class PlayManager {
     player.stop();
     songs.clear();
     RxUtil.dispose(disposable);
+  }
+
+  public void setPlayMode(@PlayMode int mode) {
+    this.playMode = mode;
   }
 
   private void setUri(@NonNull Song item) {
@@ -179,7 +208,11 @@ public class PlayManager {
   }
 
   private void setUriAndPlay(@NonNull Song item) {
-    Log.d(TAG, "setUriAndPlay="+item.title);
+    if (playSong != null && TextUtils.equals(playSong.songId, item.songId)) {
+      return;
+    }
+
+    Log.d(TAG, "setUriAndPlay=" + item.title + " position=" + position);
     player.setUri(item.playUrl);
     play();
     onSelect(item);
@@ -190,6 +223,18 @@ public class PlayManager {
     playSong = song;
     for (PlayListener listener : listeners) {
       listener.onSelect(song);
+    }
+  }
+
+  private void onPlay() {
+    for (PlayListener listener : listeners) {
+      listener.onPlay();
+    }
+  }
+
+  private void onPause() {
+    for (PlayListener listener : listeners) {
+      listener.onPause();
     }
   }
 
