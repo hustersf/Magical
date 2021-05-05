@@ -7,4 +7,9 @@
   <color name="home_tab_icon_selected">@color/theme_color</color>
   <color name="home_tab_icon_normal">#BFBFBF</color>
 
+  <color name="W50">#80FFFFFF</color>
+  <color name="W80">#CCFFFFFF</color>
+  <color name="W90">#E6FFFFFF</color>
+  <color name="W100">#FFFFFF</color>
+
 </resources>

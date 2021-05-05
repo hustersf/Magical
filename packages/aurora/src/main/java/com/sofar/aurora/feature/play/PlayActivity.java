@@ -13,6 +13,7 @@ import com.sofar.aurora.feature.play.binder.PlayCycleViewBinder;
 import com.sofar.aurora.feature.play.binder.PlayDiscViewBinder;
 import com.sofar.aurora.feature.play.binder.PlayListViewBinder;
 import com.sofar.aurora.feature.play.binder.PlayLrcViewBinder;
+import com.sofar.aurora.feature.play.binder.PlayProgressViewBinder;
 import com.sofar.aurora.feature.play.binder.PlayTitleViewBinder;
 import com.sofar.aurora.feature.play.signal.PlayControlSignal;
 import com.sofar.aurora.feature.play.signal.PlayStateSignal;
@@ -63,6 +64,7 @@ public class PlayActivity extends BaseActivity {
     playViewBinder.addViewBinder(new PlayCycleViewBinder());
     playViewBinder.addViewBinder(new PlayListViewBinder());
     playViewBinder.addViewBinder(new PlayTitleViewBinder());
+    playViewBinder.addViewBinder(new PlayProgressViewBinder());
     playViewBinder.create(getWindow().getDecorView().findViewById(android.R.id.content));
     PlayContext playContext = new PlayContext();
     playContext.playSong = PlayManager.get().playSong;

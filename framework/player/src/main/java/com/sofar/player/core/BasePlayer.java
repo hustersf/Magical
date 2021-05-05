@@ -135,4 +135,16 @@ public abstract class BasePlayer {
     this.playerListener = listener;
   }
 
+  public long getDuration() {
+    return player.getDuration();
+  }
+
+  public long getCurrentPosition() {
+    return player.getCurrentPosition();
+  }
+
+  public void seekTo(long positionMs) {
+    player.seekTo(positionMs);
+  }
+
 }

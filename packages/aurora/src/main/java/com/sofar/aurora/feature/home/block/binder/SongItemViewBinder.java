@@ -32,7 +32,7 @@ public class SongItemViewBinder extends RecyclerViewBinder<Song> {
     super.onBind(data);
     coverIv.bindUrl(data.url);
     titleTv.setText(data.title);
-    summaryTv.setText(NumberUtil.formatSeconds(data.duration));
+    summaryTv.setText(NumberUtil.formatPlayDuration(data.duration));
     playIv.setColorFilter(ContextCompat.getColor(context, R.color.theme_color));
   }
 }

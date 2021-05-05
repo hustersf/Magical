@@ -190,6 +190,18 @@ public class PlayManager {
     this.playMode = mode;
   }
 
+  public long getDuration() {
+    return player.getDuration();
+  }
+
+  public long getCurrentPosition() {
+    return player.getCurrentPosition();
+  }
+
+  public void seekTo(long positionMs) {
+    player.seekTo(positionMs);
+  }
+
   private void setUri(@NonNull Song item) {
     if (TextUtils.isEmpty(item.playUrl)) {
       RxUtil.dispose(disposable);

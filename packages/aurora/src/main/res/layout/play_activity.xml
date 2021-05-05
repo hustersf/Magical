@@ -22,6 +22,8 @@
 
   </FrameLayout>
 
+  <include layout="@layout/play_progress_layout" />
+
   <include layout="@layout/play_control_layout" />
 
 </LinearLayout>

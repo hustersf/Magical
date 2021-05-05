@@ -8,6 +8,7 @@ import com.sofar.aurora.retrofit.gson.Response;
 import io.reactivex.Observable;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
+import retrofit2.http.Url;
 
 public interface ApiService {
 
@@ -19,5 +20,11 @@ public interface ApiService {
 
   @GET("v1/song/tracklink")
   Observable<Response<Song>> songDetail(@Query("TSID") String songId);
+
+  /**
+   * 获取歌词内容
+   */
+  @GET()
+  Observable<String> getLrc(@Url String url);
 
 }

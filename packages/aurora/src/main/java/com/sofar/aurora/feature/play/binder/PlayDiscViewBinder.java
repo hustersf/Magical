@@ -2,6 +2,7 @@ package com.sofar.aurora.feature.play.binder;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 
@@ -17,6 +18,7 @@ import io.reactivex.functions.Consumer;
 
 public class PlayDiscViewBinder extends PlayBaseViewBinder {
 
+  View playDiscRoot;
   ImageView discIv;
   ImageView needleIv;
   SofarImageView coverIv;
@@ -29,6 +31,9 @@ public class PlayDiscViewBinder extends PlayBaseViewBinder {
         if (playControlSignal.getTag() instanceof Song) {
           updateUI((Song) playControlSignal.getTag());
         }
+        break;
+      case SHOW_DISC:
+        playDiscRoot.setVisibility(View.VISIBLE);
         break;
     }
   };
@@ -52,6 +57,7 @@ public class PlayDiscViewBinder extends PlayBaseViewBinder {
   @Override
   protected void onCreate() {
     super.onCreate();
+    playDiscRoot = bindView(R.id.play_disc_root);
     discIv = bindView(R.id.disc);
     needleIv = bindView(R.id.needle);
     coverIv = bindView(R.id.cover);
@@ -69,6 +75,11 @@ public class PlayDiscViewBinder extends PlayBaseViewBinder {
     if (data.playSong != null) {
       updateUI(data.playSong);
     }
+
+    playDiscRoot.setOnClickListener(v -> {
+      playDiscRoot.setVisibility(View.GONE);
+      data.mPlayControlSignal.onNext(PlayControlSignal.SHOW_LRC);
+    });
   }
 
   private void updateUI(Song song) {

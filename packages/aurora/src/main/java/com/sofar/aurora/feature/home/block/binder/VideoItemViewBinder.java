@@ -37,6 +37,6 @@ public class VideoItemViewBinder extends RecyclerViewBinder<Video> {
     } else {
       summaryTv.setVisibility(View.GONE);
     }
-    durationTv.setText(NumberUtil.formatSeconds(data.duration / 1000));
+    durationTv.setText(NumberUtil.formatPlayDuration(data.duration / 1000));
   }
 }
