@@ -9,6 +9,6 @@ public class TrackClickViewBinder extends RecyclerViewBinder<Track> {
   @Override
   protected void onBind(Track data) {
     super.onBind(data);
-    view.setOnClickListener(v -> TrackActivity.launch(context, data));
+    view.setOnClickListener(v -> TrackActivity.launch(context, data.id));
   }
 }

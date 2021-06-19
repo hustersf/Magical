@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class Song {
 
-  @SerializedName("id")
+  @SerializedName(value = "id", alternate = "assetId")
   public String songId;
 
   @SerializedName("path")

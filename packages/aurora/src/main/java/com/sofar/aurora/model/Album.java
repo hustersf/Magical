@@ -1,10 +1,11 @@
 package com.sofar.aurora.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Album {
+public class Album implements Serializable {
 
   @SerializedName("albumAssetCode")
   public String albumId;

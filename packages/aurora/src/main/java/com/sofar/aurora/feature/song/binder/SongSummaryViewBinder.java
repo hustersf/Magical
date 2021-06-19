@@ -1,5 +1,6 @@
 package com.sofar.aurora.feature.song.binder;
 
+import android.text.TextUtils;
 import android.widget.TextView;
 
 import com.sofar.aurora.R;
@@ -23,9 +24,11 @@ public class SongSummaryViewBinder extends RecyclerViewBinder<Song> {
     StringBuffer sb = new StringBuffer();
     if (!CollectionUtil.isEmpty(data.artists)) {
       sb.append(data.artists.get(0).name);
-      sb.append(" - ");
     }
-    sb.append(data.albumTitle);
+    if (!TextUtils.isEmpty(data.albumTitle)) {
+      sb.append(" - ");
+      sb.append(data.albumTitle);
+    }
     summaryTv.setText(sb.toString());
   }
 }

@@ -1,5 +1,6 @@
 package com.sofar.aurora.retrofit.api;
 
+import com.sofar.aurora.feature.album.model.AlbumResponse;
 import com.sofar.aurora.feature.home.model.HomeBlockResponse;
 import com.sofar.aurora.feature.track.model.TrackResponse;
 import com.sofar.aurora.model.Song;
@@ -17,6 +18,9 @@ public interface ApiService {
 
   @GET("v1/tracklist/info")
   Observable<Response<TrackResponse>> trackList(@Query("id") String trackId);
+
+  @GET("v1/album/info")
+  Observable<Response<AlbumResponse>> albumList(@Query("albumAssetCode") String albumId);
 
   @GET("v1/song/tracklink")
   Observable<Response<Song>> songDetail(@Query("TSID") String songId);
