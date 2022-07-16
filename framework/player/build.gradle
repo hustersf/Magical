@@ -1,5 +1,7 @@
+import com.sofar.depend.Deps
+
 apply from: rootProject.file('library.gradle')
 
 dependencies {
-    api 'com.google.android.exoplayer:exoplayer-core:2.12.1'
+    api Deps.openSource.exoplayer
 }

@@ -1,7 +1,7 @@
 apply from: rootProject.file('library.gradle')
 
 dependencies {
-    api 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:6.6.5'
+
 }
 
 

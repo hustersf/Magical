@@ -1,17 +1,19 @@
+import com.sofar.depend.Deps
+
 apply from: rootProject.file('library.gradle')
 
 dependencies {
-    api 'com.github.tbruyelle:rxpermissions:0.10.2'
-    implementation 'androidx.core:core:1.0.2'
-    implementation 'androidx.fragment:fragment:1.2.4'
-    api 'androidx.appcompat:appcompat:1.2.0'
-    api 'io.reactivex.rxjava2:rxjava:2.1.0'
+    api Deps.openSource.rx.rxpermissions
+    implementation Deps.google.core
+    implementation Deps.google.fragment
+    api Deps.google.appcompat
+    api Deps.openSource.rx.rxjava
 
-    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation Deps.google.recyclerview
     api project(':framework:utility')
-    implementation 'androidx.lifecycle:lifecycle-process:2.2.0'
-    api 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
-    api 'com.squareup.retrofit2:converter-gson:2.4.0'
+    implementation Deps.google.lifecycleProcess
+    api Deps.google.swiperefreshlayout
+    api Deps.openSource.retrofit.gson
 }
 
 

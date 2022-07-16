@@ -1,8 +1,10 @@
+import com.sofar.depend.Deps
+
 apply from: rootProject.file('library.gradle')
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.mani:ThinDownloadManager:1.2.5'
+    implementation Deps.google.appcompat
+    implementation Deps.openSource.thinDownload
 }
 
 

@@ -1,14 +1,17 @@
+import com.sofar.depend.Deps
+
 plugins {
     id 'com.android.application'
 }
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion Deps.google.compileSdkVersion
+    buildToolsVersion Deps.google.buildToolsVersion
 
     defaultConfig {
         applicationId "com.sofar.work.take.picture"
-        minSdkVersion 21
-        targetSdkVersion 29
+        minSdkVersion Deps.google.minSdk
+        targetSdkVersion Deps.google.targetSdk
         versionCode 1
         versionName "1.0"
 
@@ -54,13 +57,12 @@ android {
 }
 
 dependencies {
-
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation Deps.google.appcompat
+    implementation Deps.google.material
+    implementation Deps.google.constraintlayout
+    testImplementation Deps.test.junit
+    androidTestImplementation Deps.test.androidJunit
+    androidTestImplementation Deps.test.androidEspresso
 
     implementation project(':core:base')
 

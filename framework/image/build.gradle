@@ -1,7 +1,9 @@
+import com.sofar.depend.Deps
+
 apply from: rootProject.file('library.gradle')
 
 dependencies {
-    api 'com.facebook.fresco:fresco:2.3.0'
+    api Deps.openSource.facebook.fresco
 }
 
 
