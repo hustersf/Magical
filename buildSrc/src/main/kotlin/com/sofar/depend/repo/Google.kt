@@ -9,6 +9,7 @@ class Google {
 
   val annotation = "androidx.annotation:annotation:1.1.0"
   val core = "androidx.core:core:1.0.2"
+  val coreKtx = "androidx.core:core-ktx:1.7.0"
   val fragment = "androidx.fragment:fragment:1.2.4"
 
   val appcompat = "androidx.appcompat:appcompat:1.4.2"

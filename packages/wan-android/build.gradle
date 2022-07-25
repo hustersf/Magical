@@ -2,6 +2,7 @@ import com.sofar.depend.Deps
 
 plugins {
     id 'com.android.application'
+    id 'kotlin-android'
 }
 
 android {
@@ -25,8 +26,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
     //签名信息配置
@@ -65,4 +66,8 @@ dependencies {
     implementation Deps.google.swiperefreshlayout
     implementation Deps.google.cardview
     implementation Deps.google.coordinatorlayout
+    implementation Deps.kotlin.coroutines
+    implementation Deps.kotlin.coroutinesAndroid
+
+    implementation project(":core:base")
 }

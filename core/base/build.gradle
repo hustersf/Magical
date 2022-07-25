@@ -10,6 +10,7 @@ dependencies {
     api Deps.openSource.rx.rxjava
 
     implementation Deps.google.recyclerview
+    implementation Deps.google.material
     api project(':framework:utility')
     implementation Deps.google.lifecycleProcess
     api Deps.google.swiperefreshlayout
