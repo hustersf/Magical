@@ -10,6 +10,7 @@ import com.sofar.base.BaseActivity;
 import com.sofar.login.Account;
 import com.sofar.login.R;
 import com.sofar.login.model.User;
+import com.sofar.utility.ToastUtil;
 
 public class LoginActivity extends BaseActivity {
 
@@ -26,7 +27,7 @@ public class LoginActivity extends BaseActivity {
         .subscribe(user -> {
           loginFinish(user);
         }, throwable -> {
-          loginFailed();
+          ToastUtil.startShort(this, throwable.toString());
         });
     });
   }
@@ -35,10 +36,6 @@ public class LoginActivity extends BaseActivity {
     Intent intent = new Intent();
     intent.putExtra(KEY_USER, user);
     setActivityResultOK(intent);
-  }
-
-  private void loginFailed() {
-    setActivityResultCancel(null);
   }
 
 }

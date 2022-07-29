@@ -33,7 +33,8 @@ public class QQSSOActivity extends AppCompatActivity {
       try {
         JSONObject json = ((JSONObject) o);
         Log.d(TAG, "success=" + json.toString());
-        authFinish(json.getString(KEY_TOKEN), json.getString(KEY_OPEN_ID), json.getLong(KEY_EXPIRES_IN));
+        authFinish(json.getString(KEY_TOKEN), json.getString(KEY_OPEN_ID),
+          json.getLong(KEY_EXPIRES_IN));
       } catch (Exception e) {
         authFailed();
       }
@@ -50,11 +51,17 @@ public class QQSSOActivity extends AppCompatActivity {
       Log.d(TAG, "login cancel");
       authFailed();
     }
+
+    @Override
+    public void onWarning(int i) {
+
+    }
   };
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    Tencent.setIsPermissionGranted(true);
     tencent = Tencent.createInstance(QQConfig.APP_ID, getApplicationContext());
 
     if (!tencent.isSessionValid()) {
@@ -68,7 +75,7 @@ public class QQSSOActivity extends AppCompatActivity {
   }
 
   private void requestLogin() {
-    tencent.login(this, QQConfig.SCOPE, listener);
+    tencent.login(this, QQConfig.SCOPE, listener, true);
   }
 
   @Override
