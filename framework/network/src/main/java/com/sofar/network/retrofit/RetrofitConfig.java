@@ -1,6 +1,7 @@
 package com.sofar.network.retrofit;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.gson.Gson;
 
@@ -25,8 +26,8 @@ public interface RetrofitConfig {
   @NonNull
   Gson buildGson();
 
-  @NonNull
-  Scheduler buildExecuteScheduler();
+  @Nullable
+  Scheduler buildScheduler();
 
   @NonNull
   Call<Object> buildCall(Call<Object> call);

@@ -1,6 +1,7 @@
 package com.sofar.network.retrofit;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.gson.Gson;
 import com.sofar.network.cookie.SimpleCookieJar;
@@ -17,8 +18,6 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
-import io.reactivex.plugins.RxJavaPlugins;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -30,16 +29,11 @@ public class SofarRetrofitConfig implements RetrofitConfig {
   String baseUrl;
   Scheduler scheduler;
 
-  static {
-    RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
-      @Override
-      public void accept(Throwable throwable) throws Exception {
-        // eat all rx exception.
-      }
-    });
+  public SofarRetrofitConfig(@NonNull String baseUrl) {
+    this(baseUrl, null);
   }
 
-  public SofarRetrofitConfig(@NonNull String baseUrl, @NonNull Scheduler scheduler) {
+  public SofarRetrofitConfig(@NonNull String baseUrl, @Nullable Scheduler scheduler) {
     this.baseUrl = baseUrl;
     this.scheduler = scheduler;
   }
@@ -60,9 +54,9 @@ public class SofarRetrofitConfig implements RetrofitConfig {
   @Override
   public OkHttpClient buildClient() {
     OkHttpClient.Builder builder = new OkHttpClient.Builder();
-    builder.connectTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS);// 连接超时时间
-    builder.writeTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS);// 写操作 超时时间
-    builder.readTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS);// 读操作超时时间
+    builder.connectTimeout(timeout(), TimeUnit.SECONDS);// 连接超时时间
+    builder.writeTimeout(timeout(), TimeUnit.SECONDS);// 写操作 超时时间
+    builder.readTimeout(timeout(), TimeUnit.SECONDS);// 读操作超时时间
 
     Params params = buildParams();
     builder.addInterceptor(new HeadersInterceptor(params));
@@ -81,15 +75,19 @@ public class SofarRetrofitConfig implements RetrofitConfig {
     return builder.build();
   }
 
+  protected int timeout() {
+    return DEFAULT_TIME_OUT;
+  }
+
   @NonNull
   @Override
   public Gson buildGson() {
     return new Gson();
   }
 
-  @NonNull
+  @Nullable
   @Override
-  public Scheduler buildExecuteScheduler() {
+  public Scheduler buildScheduler() {
     return scheduler;
   }
 

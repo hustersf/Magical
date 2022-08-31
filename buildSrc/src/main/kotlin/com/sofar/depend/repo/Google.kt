@@ -21,5 +21,12 @@ class Google {
   val swiperefreshlayout = "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
   val coordinatorlayout = "androidx.coordinatorlayout:coordinatorlayout:1.2.0"
 
-  val lifecycleProcess = "androidx.lifecycle:lifecycle-process:2.2.0"
+  val lifecycle = Lifecycle()
+
+  class Lifecycle {
+    private val lifecycleVersion = "2.2.0"
+    val process = "androidx.lifecycle:lifecycle-process:$lifecycleVersion"
+    val viewmodelKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
+    val runtimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion"
+  }
 }

@@ -1,6 +1,7 @@
 import com.sofar.depend.Deps
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion Deps.google.compileSdkVersion

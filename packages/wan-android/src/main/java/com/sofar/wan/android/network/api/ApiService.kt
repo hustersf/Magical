@@ -1,5 +1,7 @@
-package com.sofar.wan.android.api
+package com.sofar.wan.android.network.api
 
+import com.sofar.wan.android.model.Banner
+import com.sofar.wan.android.network.model.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -10,7 +12,7 @@ interface ApiService {
    * 首页banner
    */
   @GET("banner/json")
-  suspend fun getBanner()
+  suspend fun getBanner(): Response<List<Banner>>
 
   /**
    * 首页文章

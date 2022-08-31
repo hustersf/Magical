@@ -66,8 +66,13 @@ dependencies {
     implementation Deps.google.swiperefreshlayout
     implementation Deps.google.cardview
     implementation Deps.google.coordinatorlayout
+
+    implementation Deps.google.lifecycle.runtimeKtx
+    implementation Deps.google.lifecycle.viewmodelKtx
+
     implementation Deps.kotlin.coroutines
     implementation Deps.kotlin.coroutinesAndroid
 
     implementation project(":core:base")
+    implementation project(":framework:network")
 }

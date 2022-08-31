@@ -30,7 +30,9 @@ public class RetrofitFactory {
           return config.buildObservable(o, call);
         }
       })
-      .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(config.buildExecuteScheduler()));
+      .addCallAdapterFactory(config.buildScheduler() != null
+        ? RxJava2CallAdapterFactory.createWithScheduler(config.buildScheduler())
+        : RxJava2CallAdapterFactory.createAsync());
   }
 
   public static abstract class CustomAdapterFactory extends CallAdapter.Factory {

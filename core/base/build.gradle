@@ -12,7 +12,7 @@ dependencies {
     implementation Deps.google.recyclerview
     implementation Deps.google.material
     api project(':framework:utility')
-    implementation Deps.google.lifecycleProcess
+    implementation Deps.google.lifecycle.process
     api Deps.google.swiperefreshlayout
     api Deps.openSource.retrofit.gson
 }
