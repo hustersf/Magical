@@ -18,7 +18,7 @@ class HomeFragment : BaseFragment() {
     container: ViewGroup?,
     savedInstanceState: Bundle?,
   ): View? {
-    return inflater.inflate(R.layout.project_fragment, container, false)
+    return inflater.inflate(R.layout.home_fragment, container, false)
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
