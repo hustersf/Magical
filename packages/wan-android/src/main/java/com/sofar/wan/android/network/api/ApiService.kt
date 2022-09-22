@@ -1,6 +1,8 @@
 package com.sofar.wan.android.network.api
 
+import com.sofar.wan.android.model.Article
 import com.sofar.wan.android.model.Banner
+import com.sofar.wan.android.network.model.ArticleResponse
 import com.sofar.wan.android.network.model.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -21,13 +23,13 @@ interface ApiService {
   suspend fun getArticlePageList(
     @Path("pageNo") pageNo: Int,
     @Query("page_size") pageSize: Int,
-  )
+  ): Response<ArticleResponse>
 
   /**
    * 首页置顶文章
    */
   @GET("article/top/json")
-  suspend fun getArticleTopList()
+  suspend fun getArticleTopList(): Response<List<Article>>
 
   /**
    * 广场文章

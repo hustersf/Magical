@@ -29,4 +29,11 @@ class Google {
     val viewmodelKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
     val runtimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion"
   }
+
+  val paging = Paging()
+
+  class Paging {
+    private val pagingVersion = "3.1.1"
+    val runtime = "androidx.paging:paging-runtime:$pagingVersion"
+  }
 }

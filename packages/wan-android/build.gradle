@@ -70,6 +70,8 @@ dependencies {
     implementation Deps.google.lifecycle.runtimeKtx
     implementation Deps.google.lifecycle.viewmodelKtx
 
+    implementation Deps.google.paging.runtime
+
     implementation Deps.kotlin.coroutines
     implementation Deps.kotlin.coroutinesAndroid
 

@@ -1,17 +1,25 @@
 package com.sofar.wan.android.feature.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.sofar.base.BaseFragment
 import com.sofar.wan.android.R
-import com.sofar.wan.android.network.api.ApiProvider
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class HomeFragment : BaseFragment() {
+
+  private lateinit var recyclerView: RecyclerView
+
+  private val viewModel: HomeViewModel by lazy {
+    ViewModelProvider(this).get(HomeViewModel::class.java)
+  }
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -23,18 +31,19 @@ class HomeFragment : BaseFragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    test()
+    recyclerView = view.findViewById(R.id.recycler_view)
+    recyclerView.layoutManager = LinearLayoutManager(context)
+    initAdapter()
   }
 
-  private fun test() {
-    GlobalScope.launch {
-      try {
-        var res = ApiProvider.get().getBanner()
-        Log.d("sufan333", "res code=${res.errorCode}")
-      } catch (e: Exception) {
-        Log.d("sufan333", e.toString())
-      }
+  private fun initAdapter() {
+    var adapter = HomeAdapter()
+    recyclerView.adapter = adapter
 
+    lifecycleScope.launch {
+      viewModel.pageFlow.collectLatest {
+        adapter.submitData(it)
+      }
     }
   }
 
