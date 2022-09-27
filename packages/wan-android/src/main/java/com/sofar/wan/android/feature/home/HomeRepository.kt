@@ -4,7 +4,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.sofar.wan.android.model.Article
-import com.sofar.wan.android.paging.ArticlePageSource
+import com.sofar.wan.android.feature.article.ArticlePageSource
 import kotlinx.coroutines.flow.Flow
 
 class HomeRepository {

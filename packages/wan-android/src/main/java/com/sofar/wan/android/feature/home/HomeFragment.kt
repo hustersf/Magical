@@ -1,50 +1,26 @@
 package com.sofar.wan.android.feature.home
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.sofar.base.BaseFragment
-import com.sofar.wan.android.R
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import androidx.recyclerview.widget.DiffUtil
+import com.sofar.wan.android.feature.article.ArticleAdapter
+import com.sofar.wan.android.feature.article.ArticlePageList
+import com.sofar.wan.android.feature.article.ArticleUtil
+import com.sofar.wan.android.model.Article
+import com.sofar.wan.android.paging.PageList
+import com.sofar.wan.android.paging.PageFragment
+import com.sofar.widget.recycler.adapter.CellAdapter
 
-class HomeFragment : BaseFragment() {
+class HomeFragment : PageFragment<Article>() {
 
-  private lateinit var recyclerView: RecyclerView
-
-  private val viewModel: HomeViewModel by lazy {
-    ViewModelProvider(this).get(HomeViewModel::class.java)
+  override fun onCreateAdapter(): CellAdapter<Article> {
+    return ArticleAdapter()
   }
 
-  override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?,
-  ): View? {
-    return inflater.inflate(R.layout.home_fragment, container, false)
+  override fun onCreatePageList(): PageList<*, Article> {
+    return ArticlePageList()
   }
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
-    recyclerView = view.findViewById(R.id.recycler_view)
-    recyclerView.layoutManager = LinearLayoutManager(context)
-    initAdapter()
-  }
-
-  private fun initAdapter() {
-    var adapter = HomeAdapter()
-    recyclerView.adapter = adapter
-
-    lifecycleScope.launch {
-      viewModel.pageFlow.collectLatest {
-        adapter.submitData(it)
-      }
-    }
+  override fun onCreateDiffCallback(): DiffUtil.ItemCallback<Article> {
+    return ArticleUtil.DIFF_CALLBACK
   }
 
 }

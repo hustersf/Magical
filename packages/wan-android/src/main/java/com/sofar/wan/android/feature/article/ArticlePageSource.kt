@@ -1,4 +1,4 @@
-package com.sofar.wan.android.paging
+package com.sofar.wan.android.feature.article
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState

@@ -20,13 +20,13 @@ public abstract class CellAdapter<T> extends RecyclerView.Adapter<CellViewHolder
   }
 
   @NonNull
-  protected abstract Cell onCreateCell(int viewType);
+  protected abstract Cell<T> onCreateCell(int viewType);
 
   @NonNull
   @Override
   public CellViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
     Cell cell = onCreateCell(viewType);
-    View itemView = cell.createView();
+    View itemView = cell.createView(parent);
     mCells.add(cell);
     return new CellViewHolder(itemView, cell);
   }
