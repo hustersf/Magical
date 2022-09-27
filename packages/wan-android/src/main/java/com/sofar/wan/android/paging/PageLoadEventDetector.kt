@@ -7,8 +7,16 @@ import kotlinx.coroutines.launch
 class PageLoadEventDetector(
   private val fragment: PageFragment<*>,
   private val pageList: PageList<*, *>,
-) :
-  RecyclerView.OnScrollListener() {
+) : RecyclerView.OnScrollListener() {
+
+  override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+    super.onScrollStateChanged(recyclerView, newState)
+    if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+      fragment.lifecycleScope.launch {
+        tryToLoad(recyclerView)
+      }
+    }
+  }
 
   override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
     super.onScrolled(recyclerView, dx, dy)
@@ -33,7 +41,7 @@ class PageLoadEventDetector(
       }
 
       //向前加载
-      val firstView = manager.getChildAt(manager.childCount - 1) ?: return
+      val firstView = manager.getChildAt(0) ?: return
       val first = recyclerView.getChildAdapterPosition(firstView)
       if (first == 0 && pageList.hasPrev()) {
         pageList.load(LoadType.PREPEND)
