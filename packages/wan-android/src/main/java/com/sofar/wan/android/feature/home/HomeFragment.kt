@@ -15,8 +15,8 @@ class HomeFragment : PageFragment<Any>() {
 
   override fun onCreateAdapter(): CellAdapter<Any> {
     var adapter = MultiTypeAdapter()
-    adapter.register(Article::class.java, ArticleCell())
-    adapter.register(Banners::class.java, BannerCell())
+    adapter.register(Article::class.java) { ArticleCell() }
+    adapter.register(Banners::class.java) { BannerCell() }
     return adapter
   }
 

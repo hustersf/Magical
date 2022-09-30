@@ -17,30 +17,30 @@ public class MultiTypeAdapter extends CellAdapter {
   /**
    * 一对一关系
    *
-   * @param clazz 数据类型
-   * @param cell  一种数据类型对应一种cell
+   * @param clazz   数据类型
+   * @param factory 一种数据类型对应一种 factory
    */
-  public <T> void register(Class<T> clazz, Cell<T> cell) {
-    mTypes.register(new Type(clazz, cell, new DefaultLinker()));
+  public <T> void register(Class<T> clazz, CellFactory<T> factory) {
+    mTypes.register(new Type(clazz, factory, new DefaultLinker()));
   }
 
   /**
    * 一对多关系
    *
-   * @param clazz  数据类型
-   * @param cells  一种数据类型对应多种cell
-   * @param linker 根据数据从 cells 中找出相应的cell
+   * @param clazz     数据类型
+   * @param factories 一种数据类型对应多个
+   * @param linker    根据数据从 factories 中找出相应的 factory
    */
-  public <T> void register(Class<T> clazz, List<Cell<T>> cells, Linker<T> linker) {
-    for (Cell cell : cells) {
-      mTypes.register(new Type(clazz, cell, linker));
+  public <T> void register(Class<T> clazz, List<CellFactory<T>> factories, Linker<T> linker) {
+    for (CellFactory factory : factories) {
+      mTypes.register(new Type(clazz, factory, linker));
     }
   }
 
   @NonNull
   @Override
   protected Cell onCreateCell(int viewType) {
-    return mTypes.getType(viewType).mCell;
+    return mTypes.getType(viewType).mFactory.onCreateCell();
   }
 
   @Override
