@@ -19,3 +19,7 @@ class Banner {
   @SerializedName("url")
   var url: String = ""
 }
+
+class Banners(
+  val banners: List<Banner>
+)

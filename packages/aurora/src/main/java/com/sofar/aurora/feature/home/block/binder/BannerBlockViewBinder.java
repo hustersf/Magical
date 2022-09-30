@@ -9,7 +9,7 @@ import com.sofar.aurora.feature.home.block.BannerAdapter;
 import com.sofar.aurora.feature.home.model.HomeBlock;
 import com.sofar.aurora.model.Banner;
 import com.sofar.base.viewbinder.RecyclerViewBinder;
-import com.sofar.base.widget.BannerIndicator;
+import com.sofar.base.widget.banner.BannerIndicator;
 import com.sofar.utility.CollectionUtil;
 import com.sofar.utility.DeviceUtil;
 import com.sofar.widget.recycler.CenterPagerSnapHelper;

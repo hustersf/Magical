@@ -1,4 +1,4 @@
-package com.sofar.base.widget;
+package com.sofar.base.widget.banner;
 
 import android.content.Context;
 import android.util.AttributeSet;

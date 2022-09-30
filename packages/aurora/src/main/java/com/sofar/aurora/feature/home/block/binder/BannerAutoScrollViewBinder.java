@@ -9,7 +9,7 @@ import com.sofar.aurora.R;
 import com.sofar.aurora.feature.home.model.HomeBlock;
 import com.sofar.aurora.model.Banner;
 import com.sofar.base.viewbinder.RecyclerViewBinder;
-import com.sofar.base.widget.BannerIndicator;
+import com.sofar.base.widget.banner.BannerIndicator;
 import com.sofar.utility.CollectionUtil;
 
 public class BannerAutoScrollViewBinder extends RecyclerViewBinder<HomeBlock<Banner>> {

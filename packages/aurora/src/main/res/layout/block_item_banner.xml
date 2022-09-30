@@ -10,7 +10,7 @@
     android:layout_marginBottom="@dimen/block_space"
     android:layout_marginTop="@dimen/block_space" />
 
-  <com.sofar.base.widget.BannerIndicator
+  <com.sofar.base.widget.banner.BannerIndicator
     android:id="@+id/banner_indicator"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"

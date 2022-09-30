@@ -13,7 +13,7 @@ public abstract class Cell<T> {
 
   protected void onCreate(@NonNull View rootView) {}
 
-  protected void onBind(T data) {}
+  protected void onBind(@NonNull T data) {}
 
   protected void onUnbind() {}
 
