@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <dimen name="padding_left">15dp</dimen>
+  <dimen name="padding_right">15dp</dimen>
+
+  <dimen name="image_corner">2dp</dimen>
+  <dimen name="image_border_width">0.5px</dimen>
+  <dimen name="banner_image_corner">8dp</dimen>
+  <dimen name="banner_border_width">1px</dimen>
+
+  <dimen name="text_space_h">8dp</dimen>
+  <dimen name="text_space_v">10dp</dimen>
+
+  <dimen name="article_card_space">10dp</dimen>
+  <dimen name="article_card_space_left">10dp</dimen>
+  <dimen name="article_card_space_right">10dp</dimen>
+  <dimen name="article_card_space_top">10dp</dimen>
+  <dimen name="article_card_space_bottom">10dp</dimen>
+
+  <dimen name="text_size_title_1">16dp</dimen>
+  <dimen name="text_size_title_2">18dp</dimen>
+  <dimen name="text_size_middle">14dp</dimen>
+  <dimen name="text_size_small">12dp</dimen>
+
+</resources>

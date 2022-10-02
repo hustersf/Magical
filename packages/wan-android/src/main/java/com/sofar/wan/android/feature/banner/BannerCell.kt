@@ -37,6 +37,7 @@ class BannerCell : Cell<Banners>() {
     adapter.notifyDataSetChanged()
     var size = CommonUtil.dip2px(5f)
     var margin = CommonUtil.dip2px(2f)
+    indicator.setTintColor(CommonUtil.color(R.color.purple_700))
     indicator.initIndicatorItems(data.banners.size, size, size, margin, margin)
     bannerAutoHelper.setCount(data.banners.size)
     bannerAutoHelper.start()

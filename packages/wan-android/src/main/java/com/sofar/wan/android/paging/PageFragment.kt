@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 abstract class PageFragment<MODEL : Any> : BaseFragment() {
 
   private var refreshLayout: SwipeRefreshLayout? = null
-  private lateinit var recyclerView: RecyclerView
+  protected lateinit var recyclerView: RecyclerView
 
   private lateinit var adapter: CellAdapter<MODEL>
   private lateinit var pageList: PageList<*, MODEL>

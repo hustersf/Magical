@@ -1,12 +1,13 @@
 package com.sofar.base.widget.banner;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import androidx.annotation.DrawableRes;
-
-import com.sofar.base.R;
+import androidx.core.content.ContextCompat;
 
 /**
  * Banner的指示器
@@ -14,6 +15,12 @@ import com.sofar.base.R;
 public class BannerIndicator extends LinearLayout {
 
   private int count;
+  private int selectColor = 0xFFFFFFFF;
+  private int unselectColor = 0x99FFFFFF;
+  private int tintColor = 0xFFFFFFFF;
+
+  private Drawable selectedDrawable;
+  private Drawable unSelectedDrawable;
 
   public BannerIndicator(Context context) {
     this(context, null);
@@ -21,10 +28,20 @@ public class BannerIndicator extends LinearLayout {
 
   public BannerIndicator(Context context, AttributeSet attrs) {
     super(context, attrs);
+    init();
   }
 
-  private int selectedDrawable = R.drawable.banner_indicator_selected;
-  private int unSelectedDrawable = R.drawable.banner_indicator_unselected;
+  private void init() {
+    selectedDrawable = createDrawable(selectColor);
+    unSelectedDrawable = createDrawable(unselectColor);
+  }
+
+  private GradientDrawable createDrawable(int color) {
+    GradientDrawable drawable = new GradientDrawable();
+    drawable.setShape(GradientDrawable.OVAL);
+    drawable.setColor(color);
+    return drawable;
+  }
 
   public void initIndicatorItems(int itemsNumber, int width, int height, int leftMargin,
     int rightMargin) {
@@ -36,7 +53,8 @@ public class BannerIndicator extends LinearLayout {
       lp.leftMargin = leftMargin;
       lp.rightMargin = rightMargin;
       imageView.setLayoutParams(lp);
-      imageView.setImageResource(unSelectedDrawable);
+      imageView.setImageDrawable(unSelectedDrawable);
+      imageView.setColorFilter(tintColor);
       addView(imageView);
     }
   }
@@ -46,18 +64,22 @@ public class BannerIndicator extends LinearLayout {
     for (int i = 0; i < count; i++) {
       imageView = (ImageView) getChildAt(i);
       if (i == position) {
-        imageView.setImageResource(selectedDrawable);
+        imageView.setImageDrawable(selectedDrawable);
       } else {
-        imageView.setImageResource(unSelectedDrawable);
+        imageView.setImageDrawable(unSelectedDrawable);
       }
     }
   }
 
-  public void setSelectedDrawable(@DrawableRes int selectedDrawable) {
-    this.selectedDrawable = selectedDrawable;
+  public void setTintColor(int color) {
+    tintColor = color;
   }
 
-  public void setUnSelectedDrawable(@DrawableRes int unSelectedDrawable) {
-    this.unSelectedDrawable = unSelectedDrawable;
+  public void setSelectedDrawable(@DrawableRes int resId) {
+    this.selectedDrawable = ContextCompat.getDrawable(getContext(), resId);
+  }
+
+  public void setUnSelectedDrawable(@DrawableRes int resId) {
+    this.unSelectedDrawable = ContextCompat.getDrawable(getContext(), resId);
   }
 }

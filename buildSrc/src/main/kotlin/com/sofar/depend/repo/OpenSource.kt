@@ -40,4 +40,12 @@ class OpenSource {
     val uiCommon = "com.facebook.fresco:ui-common:$frescoVersion"
     val rebound = "com.facebook.rebound:rebound:0.3.8"
   }
+
+  val glide = Glide()
+
+  class Glide {
+    private val glideVersion = "4.11.0"
+    val runtime = "com.github.bumptech.glide:glide:$glideVersion"
+    val compiler = "com.github.bumptech.glide:compiler:$glideVersion"
+  }
 }

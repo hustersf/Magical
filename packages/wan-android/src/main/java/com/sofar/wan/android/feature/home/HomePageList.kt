@@ -6,8 +6,9 @@ import com.sofar.wan.android.paging.LoadParams
 import com.sofar.wan.android.paging.LoadResult
 import com.sofar.wan.android.paging.LoadType
 import com.sofar.wan.android.paging.PageList
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class HomePageList : PageList<Int, Any>() {
 
@@ -23,7 +24,7 @@ class HomePageList : PageList<Int, Any>() {
 
       var item = mutableListOf<Any>()
       var nextKey: Int? = null
-      runBlocking {
+      withContext(Dispatchers.Default) {
         if (pageNo == 0) {
           val topsDeferred = async {
             return@async ApiProvider.get().getArticleTopList().data

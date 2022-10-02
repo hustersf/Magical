@@ -1,12 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
-  android:layout_height="200dp">
+  android:layout_height="wrap_content">
 
-  <TextView
-    android:id="@+id/name"
-    android:layout_width="wrap_content"
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textSize="18dp" />
+    android:padding="@dimen/article_card_space">
 
-</LinearLayout>
+    <TextView
+      android:id="@+id/author_name"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textColor="@color/main_text_color"
+      android:textSize="@dimen/text_size_small"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      tools:text="xiaoyang" />
+
+    <TextView
+      android:id="@+id/top_tag"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/text_space_h"
+      android:text="置顶"
+      android:textColor="@color/red"
+      android:textSize="@dimen/text_size_small"
+      android:visibility="gone"
+      app:layout_constraintStart_toEndOf="@+id/author_name"
+      app:layout_constraintTop_toTopOf="@+id/author_name"
+      tools:visibility="visible" />
+
+    <TextView
+      android:id="@+id/new_tag"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/text_space_h"
+      android:text="新"
+      android:textColor="@color/red"
+      android:textSize="@dimen/text_size_small"
+      android:visibility="gone"
+      app:layout_constraintStart_toEndOf="@id/top_tag"
+      app:layout_constraintTop_toTopOf="@+id/top_tag"
+      tools:visibility="visible" />
+
+    <TextView
+      android:id="@+id/article_tag"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/text_space_h"
+      android:textColor="@color/theme_color"
+      android:textSize="@dimen/text_size_small"
+      app:layout_constraintStart_toEndOf="@id/new_tag"
+      app:layout_constraintTop_toTopOf="@+id/top_tag"
+      tools:text="公众号" />
+
+
+    <TextView
+      android:id="@+id/time"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/text_space_h"
+      android:textColor="@color/text_color_plain"
+      android:textSize="@dimen/text_size_small"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      tools:text="2022-09-28 14:17" />
+
+    <TextView
+      android:id="@+id/article_title"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/text_space_v"
+      android:textColor="@color/main_text_color"
+      android:textSize="@dimen/text_size_title_1"
+      android:textStyle="bold"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/author_name"
+      tools:text="在安卓中压缩GIF的几种方法(附实例代码)" />
+
+    <TextView
+      android:id="@+id/chapter_name"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/text_space_v"
+      android:textColor="@color/text_color_plain"
+      android:textSize="@dimen/text_size_middle"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/article_title"
+      tools:text="问答/官方" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

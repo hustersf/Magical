@@ -75,6 +75,8 @@ dependencies {
     implementation Deps.kotlin.coroutines
     implementation Deps.kotlin.coroutinesAndroid
 
+    implementation Deps.openSource.glide.runtime
+
     implementation project(":core:base")
     implementation project(":framework:network")
     implementation project(":framework:widget")
