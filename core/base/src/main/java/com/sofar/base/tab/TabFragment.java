@@ -68,6 +68,12 @@ public abstract class TabFragment extends BaseFragment {
   @NonNull
   protected abstract List<Fragment> createFragments();
 
+  public void updateTabs() {
+    List<Fragment> fragments = createFragments();
+    mAdapter.setFragments(fragments);
+    mAdapter.notifyDataSetChanged();
+  }
+
   @Override
   public void onDestroy() {
     super.onDestroy();

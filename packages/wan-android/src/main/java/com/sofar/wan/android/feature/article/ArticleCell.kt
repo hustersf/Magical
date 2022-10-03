@@ -1,5 +1,6 @@
 package com.sofar.wan.android.feature.article
 
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,7 +42,7 @@ class ArticleCell : Cell<Article>() {
     author.text = data.getArticleAuthor()
     chapter.text = data.superChapterName + "/" + data.chapterName
     time.text = data.niceDate
-    title.text = data.title
+    title.text = Html.fromHtml(data.title)
 
     if (data.type == 1) {
       topTag.visibility = View.VISIBLE

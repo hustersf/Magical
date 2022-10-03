@@ -1,23 +1,40 @@
 package com.sofar.wan.android.feature.wxarticle
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import com.sofar.base.BaseFragment
-import com.sofar.wan.android.R
+import androidx.recyclerview.widget.DiffUtil
+import com.sofar.wan.android.feature.article.ArticleAdapter
+import com.sofar.wan.android.feature.article.ArticleDiffCalculator
+import com.sofar.wan.android.feature.article.ArticleUtil
+import com.sofar.wan.android.model.Article
+import com.sofar.wan.android.paging.PageFragment
+import com.sofar.wan.android.paging.PageList
+import com.sofar.widget.recycler.adapter.CellAdapter
 
-class WxArticleFragment : BaseFragment() {
+class WxArticleFragment : PageFragment<Article>() {
 
-  override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?,
-  ): View? {
-    return inflater.inflate(R.layout.project_fragment, container, false)
+  private var index = 0
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    index = arguments?.getInt(WxArticleConst.KEY_INDEX, 0) ?: 0
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
+    recyclerView.addItemDecoration(ArticleUtil.createItemDecoration())
+  }
+
+  override fun onCreateAdapter(): CellAdapter<Article> {
+    return ArticleAdapter()
+  }
+
+  override fun onCreatePageList(): PageList<*, Article> {
+    var wxArticle = WxArticleDataManager.getWxArticleByIndex(index)
+    return WxArticlePageList(wxArticle)
+  }
+
+  override fun onCreateDiffCallback(): DiffUtil.ItemCallback<Article> {
+    return ArticleDiffCalculator.getArticleDiffItemCallback()
   }
 }

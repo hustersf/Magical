@@ -2,6 +2,7 @@ package com.sofar.wan.android.network.api
 
 import com.sofar.wan.android.model.Article
 import com.sofar.wan.android.model.Banner
+import com.sofar.wan.android.model.WxArticle
 import com.sofar.wan.android.network.model.ArticleResponse
 import com.sofar.wan.android.network.model.Response
 import retrofit2.http.GET
@@ -45,4 +46,20 @@ interface ApiService {
    */
   @GET("wenda/list/{pageNo}/json")
   suspend fun getAnswerPageList(@Path("pageNo") pageNo: Int): Response<ArticleResponse>
+
+  /**
+   * 微信公众号列表
+   */
+  @GET("wxarticle/chapters/json")
+  suspend fun getWxAuthors(): Response<List<WxArticle>>
+
+  /**
+   * 某个公众号下的文章列表
+   */
+  @GET("wxarticle/list/{id}/{page}/json")
+  suspend fun getWxArticles(
+    @Path("id") id: Int,
+    @Path("page") page: Int,
+    @Query("page_size") pageSize: Int,
+  ): Response<ArticleResponse>
 }
