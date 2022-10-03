@@ -1,23 +1,40 @@
 package com.sofar.wan.android.feature.project
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import com.sofar.base.BaseFragment
-import com.sofar.wan.android.R
+import androidx.recyclerview.widget.DiffUtil
+import com.sofar.wan.android.feature.article.ArticleConst
+import com.sofar.wan.android.feature.article.ArticleDiffCalculator
+import com.sofar.wan.android.feature.article.ArticleUtil
+import com.sofar.wan.android.model.Article
+import com.sofar.wan.android.paging.PageFragment
+import com.sofar.wan.android.paging.PageList
+import com.sofar.widget.recycler.adapter.CellAdapter
 
-class ProjectFragment : BaseFragment() {
+class ProjectFragment : PageFragment<Article>() {
 
-  override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?,
-  ): View? {
-    return inflater.inflate(R.layout.project_fragment, container, false)
+  private var index = 0
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    index = arguments?.getInt(ArticleConst.KEY_INDEX, 0) ?: 0
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
+    recyclerView.addItemDecoration(ArticleUtil.createItemDecoration())
+  }
+
+  override fun onCreateAdapter(): CellAdapter<Article> {
+    return ProjectAdapter()
+  }
+
+  override fun onCreatePageList(): PageList<*, Article> {
+    var project = ProjectDataManager.getProjectIndex(index)
+    return ProjectPageList(project)
+  }
+
+  override fun onCreateDiffCallback(): DiffUtil.ItemCallback<Article> {
+    return ArticleDiffCalculator.getArticleDiffItemCallback()
   }
 }

@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.sofar.wan.android.feature.article.ArticleAdapter
 import com.sofar.wan.android.feature.article.ArticleDiffCalculator
 import com.sofar.wan.android.feature.article.ArticleUtil
+import com.sofar.wan.android.feature.article.ArticleConst
 import com.sofar.wan.android.model.Article
 import com.sofar.wan.android.paging.PageFragment
 import com.sofar.wan.android.paging.PageList
@@ -17,7 +18,7 @@ class WxArticleFragment : PageFragment<Article>() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    index = arguments?.getInt(WxArticleConst.KEY_INDEX, 0) ?: 0
+    index = arguments?.getInt(ArticleConst.KEY_INDEX, 0) ?: 0
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

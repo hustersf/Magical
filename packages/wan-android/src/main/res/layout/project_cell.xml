@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  app:cardCornerRadius="@dimen/card_corner">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/article_card_space">
+
+    <com.google.android.material.card.MaterialCardView
+      android:id="@+id/cover_wrapper"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:cardCornerRadius="@dimen/card_corner"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent">
+
+      <ImageView
+        android:id="@+id/project_cover"
+        android:layout_width="100dp"
+        android:layout_height="160dp"
+        android:scaleType="centerCrop" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+      android:id="@+id/project_title"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/text_space_h"
+      android:ellipsize="end"
+      android:lineSpacingExtra="@dimen/text_line_space"
+      android:maxLines="2"
+      android:textColor="@color/main_text_color"
+      android:textSize="@dimen/text_size_middle"
+      android:textStyle="bold"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toEndOf="@+id/cover_wrapper"
+      app:layout_constraintTop_toTopOf="@+id/cover_wrapper"
+      tools:text="在安卓中压缩GIF的几种方法dgsjdh(附实例代码)" />
+
+    <TextView
+      android:id="@+id/project_sub_title"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/text_space_v"
+      android:ellipsize="end"
+      android:lineSpacingExtra="@dimen/text_line_space"
+      android:maxLines="4"
+      android:textColor="@color/main_text_color"
+      android:textSize="@dimen/text_size_small"
+      app:layout_constraintEnd_toEndOf="@+id/project_title"
+      app:layout_constraintStart_toStartOf="@+id/project_title"
+      app:layout_constraintTop_toBottomOf="@+id/project_title"
+      tools:text="我们经常会写一些包含大量模\n版代码的 Demo 应用，\n例如包含不同演示\n用例的列表、跳\n转逻辑、申请权限和假数据等等" />
+
+    <TextView
+      android:id="@+id/author_name"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textColor="@color/main_text_color"
+      android:textSize="@dimen/text_size_small"
+      app:layout_constraintBottom_toBottomOf="@+id/cover_wrapper"
+      app:layout_constraintStart_toStartOf="@+id/project_title"
+      tools:text="xiaoyang" />
+
+    <TextView
+      android:id="@+id/time"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/text_space_h"
+      android:textColor="@color/text_color_plain"
+      android:textSize="@dimen/text_size_small"
+      app:layout_constraintStart_toEndOf="@+id/author_name"
+      app:layout_constraintTop_toTopOf="@+id/author_name"
+      tools:text="2022-09-28 14:17" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

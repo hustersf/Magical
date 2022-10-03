@@ -8,7 +8,7 @@ import com.sofar.base.tab.TabFragment
 import com.sofar.wan.android.feature.tab.HomeTabFragment
 import com.sofar.wan.android.feature.profile.ProfileFragment
 import com.sofar.wan.android.feature.tab.NaviTabFragment
-import com.sofar.wan.android.feature.tab.ProjectTabFragment
+import com.sofar.wan.android.feature.project.ProjectTabFragment
 import com.sofar.wan.android.feature.wxarticle.WxArticleTabFragment
 
 class MainFragment : TabFragment() {

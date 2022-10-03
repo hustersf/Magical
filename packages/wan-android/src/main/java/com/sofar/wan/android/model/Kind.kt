@@ -1,6 +1,6 @@
 package com.sofar.wan.android.model
 
-data class WxArticle(
+data class Kind(
   val author: String = "",
   val courseId: Int = 0,
   val cover: String = "",

@@ -1,4 +1,4 @@
-package com.sofar.wan.android.feature.wxarticle
+package com.sofar.wan.android.feature.project
 
 import android.os.Bundle
 import android.view.View
@@ -11,28 +11,31 @@ import com.sofar.wan.android.model.Kind
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class WxArticleTabFragment : TabFragment() {
+class ProjectTabFragment : TabFragment() {
 
-  private val viewModel = WxArticleTabViewModel()
-  private val wxArticles = mutableListOf<Kind>()
+  private val viewModel = ProjectTabViewModel()
+  private val projectTabs = mutableListOf<Kind>()
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    mTabLayout.tabMode = TabLayout.MODE_AUTO
+    mTabLayout.tabGravity = TabLayout.GRAVITY_CENTER
+    mTabLayout.tabMode = TabLayout.MODE_SCROLLABLE
+    mTabLayout.isTabIndicatorFullWidth = false
+    mTabLayout.tabIndicatorAnimationMode = TabLayout.INDICATOR_ANIMATION_MODE_ELASTIC
     refresh()
   }
 
   override fun onConfigureTab(tab: TabLayout.Tab, position: Int) {
-    tab.text = wxArticles[position].name
+    tab.text = projectTabs[position].name
   }
 
   override fun createFragments(): MutableList<Fragment> {
     val list = mutableListOf<Fragment>()
-    wxArticles.forEachIndexed { index, wxArticle ->
-      val fragment = WxArticleFragment()
+    projectTabs.forEachIndexed { index, kind ->
+      val fragment = ProjectFragment()
       fragment.arguments = Bundle().apply {
         this.putInt(ArticleConst.KEY_INDEX, index)
-        this.putInt(ArticleConst.KEY_ID, wxArticle.id)
+        this.putInt(ArticleConst.KEY_ID, kind.id)
       }
       list.add(fragment)
     }
@@ -41,10 +44,10 @@ class WxArticleTabFragment : TabFragment() {
 
   private fun refresh() {
     lifecycleScope.launch {
-      viewModel.wxAuthorDataFlow.collect {
-        wxArticles.clear()
-        wxArticles.addAll(it)
-        WxArticleDataManager.updateWxArticleTab(it)
+      viewModel.projectDataFlow.collect {
+        projectTabs.clear()
+        projectTabs.addAll(it)
+        ProjectDataManager.updateProjectTab(it)
         updateTabs()
       }
     }

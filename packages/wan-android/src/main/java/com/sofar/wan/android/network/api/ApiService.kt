@@ -2,7 +2,7 @@ package com.sofar.wan.android.network.api
 
 import com.sofar.wan.android.model.Article
 import com.sofar.wan.android.model.Banner
-import com.sofar.wan.android.model.WxArticle
+import com.sofar.wan.android.model.Kind
 import com.sofar.wan.android.network.model.ArticleResponse
 import com.sofar.wan.android.network.model.Response
 import retrofit2.http.GET
@@ -51,7 +51,7 @@ interface ApiService {
    * 微信公众号列表
    */
   @GET("wxarticle/chapters/json")
-  suspend fun getWxAuthors(): Response<List<WxArticle>>
+  suspend fun getWxAuthors(): Response<List<Kind>>
 
   /**
    * 某个公众号下的文章列表
@@ -62,4 +62,30 @@ interface ApiService {
     @Path("page") page: Int,
     @Query("page_size") pageSize: Int,
   ): Response<ArticleResponse>
+
+  /**
+   * 项目分类
+   */
+  @GET("project/tree/json")
+  suspend fun getProjectKind(): Response<List<Kind>>
+
+  /**
+   * 某个项目分类下的项目列表
+   */
+  @GET("wxarticle/list/{id}/{page}/json")
+  suspend fun getProjectKindArticles(
+    @Path("id") id: Int,
+    @Path("page") page: Int,
+    @Query("page_size") pageSize: Int,
+  ): Response<ArticleResponse>
+
+  /**
+   * 最新项目列表
+   */
+  @GET("article/listproject/{page}/json")
+  suspend fun getNewProjectArticles(
+    @Path("page") page: Int,
+    @Query("page_size") pageSize: Int,
+  ): Response<ArticleResponse>
+
 }

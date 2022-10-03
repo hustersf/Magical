@@ -10,6 +10,9 @@ class Article {
   @SerializedName("title")
   var title: String = ""
 
+  @SerializedName("desc")
+  var desc: String = ""
+
   @SerializedName("niceDate")
   var niceDate: String = ""
 
@@ -42,6 +45,12 @@ class Article {
 
   @SerializedName("tags")
   var tags: List<Tag> = emptyList()
+
+  @SerializedName("projectLink")
+  var projectLink: String = ""
+
+  @SerializedName("envelopePic")
+  var coverUrl: String = ""
 
   /**
    * 获取文章作者
