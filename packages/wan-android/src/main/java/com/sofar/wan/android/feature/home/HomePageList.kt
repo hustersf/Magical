@@ -14,10 +14,7 @@ class HomePageList : PageList<Int, Any>() {
 
   override suspend fun doLoad(params: LoadParams<Int>): LoadResult<Int, Any> {
     return try {
-      var pageNo = 0
-      if (params.nextKey != null) {
-        pageNo = params.nextKey
-      }
+      var pageNo = params.nextKey ?: 1
       if (params.loadType == LoadType.REFRESH) {
         pageNo = 0
       }

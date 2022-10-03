@@ -38,11 +38,11 @@ interface ApiService {
   suspend fun getSquarePageList(
     @Path("pageNo") pageNo: Int,
     @Query("page_size") pageSize: Int,
-  )
+  ): Response<ArticleResponse>
 
   /**
    * 问答列表
    */
   @GET("wenda/list/{pageNo}/json")
-  suspend fun getAnswerPageList(@Path("pageNo") pageNo: Int)
+  suspend fun getAnswerPageList(@Path("pageNo") pageNo: Int): Response<ArticleResponse>
 }
