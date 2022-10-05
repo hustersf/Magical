@@ -3,6 +3,7 @@ package com.sofar.wan.android.network.api
 import com.sofar.wan.android.model.Article
 import com.sofar.wan.android.model.Banner
 import com.sofar.wan.android.model.Kind
+import com.sofar.wan.android.model.Navigation
 import com.sofar.wan.android.network.model.ArticleResponse
 import com.sofar.wan.android.network.model.Response
 import retrofit2.http.GET
@@ -87,5 +88,11 @@ interface ApiService {
     @Path("page") page: Int,
     @Query("page_size") pageSize: Int,
   ): Response<ArticleResponse>
+
+  /**
+   * 获取导航列表
+   */
+  @GET("navi/json")
+  suspend fun getNavigationList(): Response<List<Navigation>>
 
 }

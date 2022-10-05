@@ -9,4 +9,6 @@ class Tag {
 
   @SerializedName("url")
   var url: String = ""
+
+  var selected = false
 }
