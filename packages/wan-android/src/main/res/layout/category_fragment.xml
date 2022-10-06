@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/category_recycler"
+    android:layout_width="wrap_content"
+    android:layout_height="0dp"
+    android:background="@color/background_gray"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:layout_width="100dp" />
+
+  <TextView
+    android:id="@+id/category_title"
+    android:layout_width="0dp"
+    android:layout_height="@dimen/category_tab_height"
+    android:layout_marginStart="@dimen/padding_left"
+    android:ellipsize="end"
+    android:gravity="center_vertical"
+    android:maxLines="1"
+    android:textColor="@color/text_color_plain"
+    android:textSize="@dimen/text_size_middle"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toEndOf="@+id/category_recycler"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:text="一级分类" />
+
+  <com.google.android.flexbox.FlexboxLayout
+    android:id="@+id/category_sub_flexbox"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    app:flexWrap="wrap"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="@+id/category_title"
+    app:layout_constraintTop_toBottomOf="@+id/category_title"
+    tools:layout_height="50dp" />
+
+  <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    style="@style/Widget.RefreshLayout"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toEndOf="@+id/category_recycler"
+    app:layout_constraintTop_toBottomOf="@+id/category_sub_flexbox"
+    app:layout_constraintVertical_bias="0.0">
+
+    <androidx.recyclerview.widget.RecyclerView style="@style/Widget.RecyclerView" />
+
+  </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

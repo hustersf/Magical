@@ -20,6 +20,7 @@ class Google {
   val cardview = "androidx.cardview:cardview:1.0.0"
   val swiperefreshlayout = "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
   val coordinatorlayout = "androidx.coordinatorlayout:coordinatorlayout:1.2.0"
+  val flexbox = "com.google.android.flexbox:flexbox:3.0.0"
 
   val lifecycle = Lifecycle()
 

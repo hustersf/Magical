@@ -95,4 +95,19 @@ interface ApiService {
   @GET("navi/json")
   suspend fun getNavigationList(): Response<List<Navigation>>
 
+  /**
+   * 获取体系类别
+   */
+  @GET("tree/json")
+  suspend fun getCategoryList(): Response<List<Kind>>
+
+  /**
+   * 获取体系类别下的文章列表
+   */
+  @GET("article/list/{page}/json")
+  suspend fun getCategoryArticles(
+    @Path("page") page: Int,
+    @Query("cid") id: Int,
+  ): Response<ArticleResponse>
+
 }

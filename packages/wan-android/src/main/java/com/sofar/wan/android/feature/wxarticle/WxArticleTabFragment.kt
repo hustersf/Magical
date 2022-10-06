@@ -3,6 +3,7 @@ package com.sofar.wan.android.feature.wxarticle
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayout
 import com.sofar.base.tab.TabFragment
@@ -13,7 +14,9 @@ import kotlinx.coroutines.launch
 
 class WxArticleTabFragment : TabFragment() {
 
-  private val viewModel = WxArticleTabViewModel()
+  private val viewModel: WxArticleTabViewModel by lazy {
+    ViewModelProvider(this).get(WxArticleTabViewModel::class.java)
+  }
   private val wxArticles = mutableListOf<Kind>()
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

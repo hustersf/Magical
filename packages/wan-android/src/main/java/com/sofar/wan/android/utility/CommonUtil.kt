@@ -1,6 +1,7 @@
 package com.sofar.wan.android.utility
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
@@ -25,6 +26,10 @@ object CommonUtil {
 
   fun color(@ColorRes res: Int): Int {
     return ContextCompat.getColor(context(), res)
+  }
+
+  fun colors(@ColorRes res: Int): ColorStateList? {
+    return ContextCompat.getColorStateList(context(), res)
   }
 
   fun drawable(@DrawableRes res: Int): Drawable? {

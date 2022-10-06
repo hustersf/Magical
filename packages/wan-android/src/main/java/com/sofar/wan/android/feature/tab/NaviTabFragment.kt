@@ -7,8 +7,6 @@ import com.google.android.material.tabs.TabLayout
 import com.sofar.base.tab.TabFragment
 import com.sofar.wan.android.feature.category.CategoryFragment
 import com.sofar.wan.android.feature.navi.NaviFragment
-import com.sofar.wan.android.feature.profile.ProfileFragment
-import com.sofar.wan.android.feature.project.ProjectFragment
 import com.sofar.wan.android.feature.tutorial.TutorialFragment
 
 class NaviTabFragment : TabFragment() {

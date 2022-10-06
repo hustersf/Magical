@@ -25,7 +25,7 @@ abstract class PageFragment<MODEL : Any> : BaseFragment() {
   private lateinit var autoLoadEventDetector: RecyclerView.OnScrollListener
   private lateinit var differ: AsyncPageDataDiffer<MODEL>
 
-  protected fun getLayoutResId(): Int {
+  open fun getLayoutResId(): Int {
     return R.layout.base_recycler_fragment
   }
 
@@ -95,7 +95,7 @@ abstract class PageFragment<MODEL : Any> : BaseFragment() {
 
   protected abstract fun onCreateDiffCallback(): DiffUtil.ItemCallback<MODEL>
 
-  protected fun autoLoad(): Boolean {
+  open fun autoLoad(): Boolean {
     return true
   }
 

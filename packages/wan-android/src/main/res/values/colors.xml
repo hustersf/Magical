@@ -8,9 +8,12 @@
   <color name="black">#FF000000</color>
   <color name="white">#FFFFFFFF</color>
 
-  <color name="divider_line_color">#EBEBED</color>
-  <color name="cover_border_color">#E0E0E0</color>
-
   <color name="red">#FF0000</color>
   <color name="theme_color">#FF03DAC5</color>
+
+  <color name="divider_line_color">#EBEBED</color>
+  <color name="cover_border_color">#E0E0E0</color>
+  <color name="navi_tag_button_color">#F5F5F5</color>
+  <color name="background_gray">#F5F5F5</color>
+
 </resources>

@@ -3,6 +3,7 @@ package com.sofar.wan.android.feature.project
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayout
 import com.sofar.base.tab.TabFragment
@@ -13,7 +14,9 @@ import kotlinx.coroutines.launch
 
 class ProjectTabFragment : TabFragment() {
 
-  private val viewModel = ProjectTabViewModel()
+  private val viewModel: ProjectTabViewModel by lazy {
+    ViewModelProvider(this).get(ProjectTabViewModel::class.java)
+  }
   private val projectTabs = mutableListOf<Kind>()
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,7 +28,9 @@ import kotlinx.coroutines.launch
 
 class NaviFragment : BaseFragment() {
 
-  private val viewModel = NaviViewModel()
+  private val viewModel: NaviViewModel by lazy {
+    ViewModelProvider(this).get(NaviViewModel::class.java)
+  }
 
   private lateinit var tabRecyclerView: RecyclerView
   private lateinit var tagRecyclerView: RecyclerView

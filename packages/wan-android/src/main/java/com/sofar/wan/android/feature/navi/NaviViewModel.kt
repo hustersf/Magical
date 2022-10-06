@@ -15,4 +15,8 @@ class NaviViewModel : ViewModel() {
     emit(data)
   }.flowOn(Dispatchers.Default)
 
+  override fun onCleared() {
+    super.onCleared()
+  }
+
 }

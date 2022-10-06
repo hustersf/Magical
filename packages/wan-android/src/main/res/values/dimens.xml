@@ -27,5 +27,6 @@
   <dimen name="text_size_small">12dp</dimen>
 
   <dimen name="navi_tag_padding">10dp</dimen>
+  <dimen name="category_tab_height">44dp</dimen>
 
 </resources>

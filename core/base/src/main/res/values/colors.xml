@@ -16,6 +16,4 @@
   <color name="cover_color_overlay">@color/background</color>
   <color name="cover_color_border">#0A000000</color>
 
-  <color name="navi_tag_button_color">#F5F5F5</color>
-
 </resources>

@@ -66,6 +66,7 @@ dependencies {
     implementation Deps.google.swiperefreshlayout
     implementation Deps.google.cardview
     implementation Deps.google.coordinatorlayout
+    implementation Deps.google.flexbox
 
     implementation Deps.google.lifecycle.runtimeKtx
     implementation Deps.google.lifecycle.viewmodelKtx
