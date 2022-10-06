@@ -110,4 +110,19 @@ interface ApiService {
     @Query("cid") id: Int,
   ): Response<ArticleResponse>
 
+  /**
+   * 获取教程列表
+   */
+  @GET("chapter/547/sublist/json")
+  suspend fun getCourseList(): Response<List<Kind>>
+
+  /**
+   * 获取某个教程下的文章
+   */
+  @GET("article/list/{page}/json")
+  suspend fun getCourseArticles(
+    @Path("page") page: Int,
+    @Query("cid") id: Int,
+    @Query("order_type") orderType: Int = 1,
+  ): Response<ArticleResponse>
 }

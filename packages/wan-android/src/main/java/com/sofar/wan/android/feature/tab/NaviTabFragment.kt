@@ -7,7 +7,7 @@ import com.google.android.material.tabs.TabLayout
 import com.sofar.base.tab.TabFragment
 import com.sofar.wan.android.feature.category.CategoryFragment
 import com.sofar.wan.android.feature.navi.NaviFragment
-import com.sofar.wan.android.feature.tutorial.TutorialFragment
+import com.sofar.wan.android.feature.course.CourseFragment
 
 class NaviTabFragment : TabFragment() {
 
@@ -29,7 +29,7 @@ class NaviTabFragment : TabFragment() {
     val list = mutableListOf<Fragment>()
     list.add(NaviFragment())
     list.add(CategoryFragment())
-    list.add(TutorialFragment())
+    list.add(CourseFragment())
     return list
   }
 

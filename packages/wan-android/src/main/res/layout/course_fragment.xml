@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/course_recycler"
+    android:layout_width="wrap_content"
+    android:layout_height="0dp"
+    android:background="@color/background_gray"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:layout_width="100dp" />
+
+  <TextView
+    android:id="@+id/course_title"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="@dimen/text_space_h"
+    android:layout_marginStart="@dimen/text_space_h"
+    android:layout_marginTop="@dimen/text_space_v"
+    android:ellipsize="end"
+    android:lineSpacingExtra="@dimen/text_line_space"
+    android:maxLines="2"
+    android:textColor="@color/main_text_color"
+    android:textSize="@dimen/text_size_middle"
+    android:textStyle="bold"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toEndOf="@+id/course_recycler"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:height="50dp"
+    tools:text="在安卓中压缩GIF的几种方法(附实例代码)" />
+
+  <TextView
+    android:id="@+id/course_author"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/text_space_v"
+    android:textColor="@color/main_text_color"
+    android:textSize="@dimen/text_size_small"
+    app:layout_constraintEnd_toEndOf="@+id/course_title"
+    app:layout_constraintStart_toStartOf="@+id/course_title"
+    app:layout_constraintTop_toBottomOf="@+id/course_title"
+    tools:text="xiaoyang" />
+
+  <TextView
+    android:id="@+id/course_sub_title"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/text_space_v"
+    android:ellipsize="end"
+    android:lineSpacingExtra="@dimen/text_line_space"
+    android:maxLines="2"
+    android:textColor="@color/main_text_color"
+    android:textSize="@dimen/text_size_small"
+    app:layout_constraintEnd_toEndOf="@+id/course_title"
+    app:layout_constraintStart_toStartOf="@+id/course_title"
+    app:layout_constraintTop_toBottomOf="@+id/course_author"
+    tools:text="我们经常会写一些包含大量模\n版代码的 Demo 应用，\n例如包含不同演示\n用例的列表、跳\n转逻辑、申请权限和假数据等等" />
+
+
+  <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    style="@style/Widget.RefreshLayout"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toEndOf="@+id/course_recycler"
+    app:layout_constraintTop_toBottomOf="@+id/course_sub_title">
+
+    <androidx.recyclerview.widget.RecyclerView style="@style/Widget.RecyclerView" />
+
+  </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
