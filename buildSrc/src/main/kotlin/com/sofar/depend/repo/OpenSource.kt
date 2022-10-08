@@ -7,6 +7,8 @@ class OpenSource {
 
   val thinDownload = "com.mani:ThinDownloadManager:1.2.5"
 
+  val debugLeakCanary = "com.squareup.leakcanary:leakcanary-android:2.9.1"
+
   val rx = Rx()
 
   class Rx {

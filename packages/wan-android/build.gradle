@@ -81,4 +81,6 @@ dependencies {
     implementation project(":core:base")
     implementation project(":framework:network")
     implementation project(":framework:widget")
+
+    debugImplementation Deps.openSource.debugLeakCanary
 }
