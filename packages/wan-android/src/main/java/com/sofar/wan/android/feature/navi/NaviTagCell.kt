@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.sofar.wan.android.R
 import com.sofar.wan.android.model.Article
+import com.sofar.wan.android.webview.WebViewActivity
 import com.sofar.widget.recycler.adapter.Cell
 
 class NaviTagCell : Cell<Article>() {
@@ -23,5 +24,9 @@ class NaviTagCell : Cell<Article>() {
   override fun onBind(data: Article) {
     super.onBind(data)
     name.text = data.title
+
+    name.setOnClickListener {
+      WebViewActivity.open(name.context, data.link)
+    }
   }
 }

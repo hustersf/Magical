@@ -8,9 +8,11 @@ import android.widget.TextView
 import com.sofar.utility.CollectionUtil
 import com.sofar.wan.android.R
 import com.sofar.wan.android.model.Article
+import com.sofar.wan.android.webview.WebViewActivity
 import com.sofar.widget.recycler.adapter.Cell
 
 class ArticleCell : Cell<Article>() {
+  private lateinit var rootView: View
 
   private lateinit var author: TextView
   private lateinit var chapter: TextView
@@ -27,6 +29,7 @@ class ArticleCell : Cell<Article>() {
 
   override fun onCreate(rootView: View) {
     super.onCreate(rootView)
+    this.rootView = rootView
     author = rootView.findViewById(R.id.author_name)
     chapter = rootView.findViewById(R.id.chapter_name)
     time = rootView.findViewById(R.id.time)
@@ -65,6 +68,10 @@ class ArticleCell : Cell<Article>() {
       articleTag.visibility = View.VISIBLE
     } else {
       articleTag.visibility = View.GONE
+    }
+
+    rootView.setOnClickListener {
+      WebViewActivity.open(rootView.context, data.link)
     }
   }
 }

@@ -7,6 +7,7 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.sofar.wan.android.R
 import com.sofar.wan.android.model.Banner
+import com.sofar.wan.android.webview.WebViewActivity
 import com.sofar.widget.recycler.adapter.Cell
 
 class BannerItemCell : Cell<Banner>() {
@@ -25,5 +26,8 @@ class BannerItemCell : Cell<Banner>() {
   override fun onBind(data: Banner) {
     super.onBind(data)
     Glide.with(image).load(data.imageUrl).into(image)
+    image.setOnClickListener {
+      WebViewActivity.open(image.context, data.url)
+    }
   }
 }

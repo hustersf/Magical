@@ -14,6 +14,7 @@ include ':framework:download'
 include ':framework:player'
 include ':framework:image'
 include ':framework:skin'
+include ':framework:webview'
 
 include ':core:base'
 include ':core:login'

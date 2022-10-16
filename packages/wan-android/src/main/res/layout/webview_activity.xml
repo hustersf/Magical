@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@color/white">
+
+  <ImageView
+    android:id="@+id/left_icon"
+    android:layout_width="44dp"
+    android:layout_height="@dimen/title_bar_height"
+    android:padding="10dp"
+    android:src="@drawable/icon_close"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+  <TextView
+    android:id="@+id/title"
+    android:layout_width="0dp"
+    android:layout_height="@dimen/title_bar_height"
+    android:layout_marginEnd="44dp"
+    android:ellipsize="end"
+    android:gravity="center"
+    android:maxLines="1"
+    android:textColor="@color/main_text_color"
+    android:textSize="@dimen/text_size_title_2"
+    android:textStyle="bold"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toEndOf="@+id/left_icon"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:text="标题" />
+
+  <View
+    android:layout_width="0dp"
+    android:layout_height="1px"
+    android:background="@color/divider_line_color"
+    app:layout_constraintBottom_toBottomOf="@+id/title_bar_space"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent" />
+
+  <Space
+    android:id="@+id/title_bar_space"
+    android:layout_width="0dp"
+    android:layout_height="@dimen/title_bar_height"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+  <com.sofar.webview.SofaWebView
+    android:id="@+id/web_view"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/title_bar_space" />
+
+  <ProgressBar
+    android:id="@+id/web_progress"
+    style="?android:attr/progressBarStyleHorizontal"
+    android:layout_width="0dp"
+    android:layout_height="1dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="@+id/web_view" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

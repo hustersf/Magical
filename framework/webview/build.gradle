@@ -1,0 +1,11 @@
+import com.sofar.depend.Deps
+
+apply from: rootProject.file('library.gradle')
+
+dependencies {
+
+}
+
+
+
+

@@ -9,9 +9,11 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.sofar.wan.android.R
 import com.sofar.wan.android.model.Article
+import com.sofar.wan.android.webview.WebViewActivity
 import com.sofar.widget.recycler.adapter.Cell
 
 class ProjectCell : Cell<Article>() {
+  private lateinit var rootView: View
 
   private lateinit var cover: ImageView
   private lateinit var title: TextView
@@ -25,6 +27,7 @@ class ProjectCell : Cell<Article>() {
 
   override fun onCreate(rootView: View) {
     super.onCreate(rootView)
+    this.rootView = rootView
     cover = rootView.findViewById(R.id.project_cover)
     title = rootView.findViewById(R.id.project_title)
     subTitle = rootView.findViewById(R.id.project_sub_title)
@@ -39,5 +42,9 @@ class ProjectCell : Cell<Article>() {
     subTitle.text = Html.fromHtml(data.desc)
     author.text = data.getArticleAuthor()
     time.text = data.niceDate
+
+    rootView.setOnClickListener {
+      WebViewActivity.open(rootView.context, data.link)
+    }
   }
 }
