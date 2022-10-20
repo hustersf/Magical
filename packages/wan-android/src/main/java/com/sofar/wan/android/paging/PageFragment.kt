@@ -10,9 +10,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.sofar.base.BaseFragment
-import com.sofar.base.R
+import com.sofar.wan.android.R
 import com.sofar.widget.recycler.adapter.CellAdapter
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 abstract class PageFragment<MODEL : Any> : BaseFragment() {
@@ -26,7 +28,7 @@ abstract class PageFragment<MODEL : Any> : BaseFragment() {
   private lateinit var differ: AsyncPageDataDiffer<MODEL>
 
   open fun getLayoutResId(): Int {
-    return R.layout.base_recycler_fragment
+    return R.layout.base_page_fragment
   }
 
   override fun onCreateView(
@@ -74,18 +76,28 @@ abstract class PageFragment<MODEL : Any> : BaseFragment() {
         differ.submitData(it)
       }
     }
+
     lifecycleScope.launch {
-      pageList.loadStateFlow.collect {
-        refreshLayout?.isRefreshing = (it.refresh == LoadState.Loading())
-      }
+      pageList.loadStateFlow
+        .map { it.refresh }
+        .distinctUntilChanged()
+        .collect {
+          if (it !is LoadState.Loading) {
+            refreshLayout?.isRefreshing = false
+          }
+        }
     }
   }
 
-  protected open fun onCreateAutoLoadEventDetector(): RecyclerView.OnScrollListener {
+  fun pageList(): PageList<*, MODEL> {
+    return pageList
+  }
+
+  open fun onCreateAutoLoadEventDetector(): RecyclerView.OnScrollListener {
     return PageLoadEventDetector(this, pageList)
   }
 
-  protected fun onCreateLayoutManager(): RecyclerView.LayoutManager {
+  open fun onCreateLayoutManager(): RecyclerView.LayoutManager {
     return LinearLayoutManager(context)
   }
 

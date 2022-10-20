@@ -13,9 +13,9 @@ import com.sofar.wan.android.R
 import com.sofar.wan.android.feature.article.ArticleAdapter
 import com.sofar.wan.android.feature.article.ArticleDiffCalculator
 import com.sofar.wan.android.feature.article.ArticleUtil
+import com.sofar.wan.android.feature.base.BasePageFragment
 import com.sofar.wan.android.model.Article
 import com.sofar.wan.android.model.Kind
-import com.sofar.wan.android.paging.PageFragment
 import com.sofar.wan.android.paging.PageList
 import com.sofar.wan.android.utility.CommonUtil
 import com.sofar.widget.recycler.LinearMarginItemDecoration
@@ -26,7 +26,7 @@ import io.reactivex.functions.Consumer
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class CourseFragment : PageFragment<Article>() {
+class CourseFragment : BasePageFragment<Article>() {
 
   private lateinit var courseRecyclerView: RecyclerView
   private lateinit var courseAdapter: CourseAdapter

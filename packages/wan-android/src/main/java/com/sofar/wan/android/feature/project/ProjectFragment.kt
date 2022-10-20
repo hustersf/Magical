@@ -6,12 +6,12 @@ import androidx.recyclerview.widget.DiffUtil
 import com.sofar.wan.android.feature.article.ArticleConst
 import com.sofar.wan.android.feature.article.ArticleDiffCalculator
 import com.sofar.wan.android.feature.article.ArticleUtil
+import com.sofar.wan.android.feature.base.BasePageFragment
 import com.sofar.wan.android.model.Article
-import com.sofar.wan.android.paging.PageFragment
 import com.sofar.wan.android.paging.PageList
 import com.sofar.widget.recycler.adapter.CellAdapter
 
-class ProjectFragment : PageFragment<Article>() {
+class ProjectFragment : BasePageFragment<Article>() {
 
   private var index = 0
 

@@ -50,4 +50,6 @@ class OpenSource {
     val runtime = "com.github.bumptech.glide:glide:$glideVersion"
     val compiler = "com.github.bumptech.glide:compiler:$glideVersion"
   }
+
+  val lottie = "com.airbnb.android:lottie:5.2.0"
 }

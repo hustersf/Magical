@@ -7,14 +7,14 @@ import com.sofar.wan.android.feature.article.ArticleCell
 import com.sofar.wan.android.feature.article.ArticleDiffCalculator
 import com.sofar.wan.android.feature.article.ArticleUtil
 import com.sofar.wan.android.feature.banner.BannerCell
+import com.sofar.wan.android.feature.base.BasePageFragment
 import com.sofar.wan.android.model.Article
 import com.sofar.wan.android.model.Banners
-import com.sofar.wan.android.paging.PageFragment
 import com.sofar.wan.android.paging.PageList
 import com.sofar.widget.recycler.adapter.CellAdapter
 import com.sofar.widget.recycler.adapter.multitype.MultiTypeAdapter
 
-class HomeFragment : PageFragment<Any>() {
+class HomeFragment : BasePageFragment<Any>() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)

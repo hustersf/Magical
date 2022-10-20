@@ -41,16 +41,14 @@ abstract class PageList<Key : Any, Value : Any> {
 
   private fun onLoadStart(loadType: LoadType) {
     Log.d("PageList", "onLoadStart loadType=$loadType")
-    loadStates = loadStates.modifyState(loadType, LoadState.Loading())
-    _stateFlow.value = loadStates
+    notifyLoadState(loadType, LoadState.Loading())
   }
 
   private fun onLoadSuccess(loadType: LoadType, page: LoadResult.Page<Key, Value>) {
     Log.d("PageList", "onLoadSuccess loadType=$loadType")
-    loadStates = loadStates.modifyState(loadType, LoadState.NotLoading())
-    _stateFlow.value = loadStates
 
     if (page.data == null || page.data.isEmpty()) {
+      notifyLoadState(loadType, LoadState.NotLoading())
       return
     }
 
@@ -69,11 +67,17 @@ abstract class PageList<Key : Any, Value : Any> {
       }
     }
     dataFlow.value = getData()
+
+    notifyLoadState(loadType, LoadState.NotLoading())
   }
 
   private fun onLoadError(loadType: LoadType, throwable: Throwable) {
     Log.d("PageList", "onLoadError loadType=$loadType error=$throwable")
-    loadStates = loadStates.modifyState(loadType, LoadState.Error(throwable))
+    notifyLoadState(loadType, LoadState.Error(throwable))
+  }
+
+  private fun notifyLoadState(loadType: LoadType, loadState: LoadState) {
+    loadStates = loadStates.modifyState(loadType, loadState)
     _stateFlow.value = loadStates
   }
 

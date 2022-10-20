@@ -16,9 +16,9 @@ import com.sofar.wan.android.R
 import com.sofar.wan.android.feature.article.ArticleAdapter
 import com.sofar.wan.android.feature.article.ArticleDiffCalculator
 import com.sofar.wan.android.feature.article.ArticleUtil
+import com.sofar.wan.android.feature.base.BasePageFragment
 import com.sofar.wan.android.model.Article
 import com.sofar.wan.android.model.Kind
-import com.sofar.wan.android.paging.PageFragment
 import com.sofar.wan.android.paging.PageList
 import com.sofar.wan.android.utility.CommonUtil
 import com.sofar.widget.recycler.adapter.CellAdapter
@@ -28,7 +28,7 @@ import io.reactivex.functions.Consumer
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class CategoryFragment : PageFragment<Article>() {
+class CategoryFragment : BasePageFragment<Article>() {
 
   private lateinit var tabRecyclerView: RecyclerView
   private lateinit var tabAdapter: CategoryTabAdapter
