@@ -1,8 +1,8 @@
 package com.sofar.depend.repo
 
 class Google {
-  val gradleVersion = "com.android.tools.build:gradle:7.0.1"
-  val compileSdkVersion = 31
+  val gradleVersion = "com.android.tools.build:gradle:7.4.0"
+  val compileSdkVersion = 33
   val buildToolsVersion = "30.0.2"
   val minSdk = 21
   val targetSdk = 30
@@ -36,5 +36,21 @@ class Google {
   class Paging {
     private val pagingVersion = "3.1.1"
     val runtime = "androidx.paging:paging-runtime:$pagingVersion"
+  }
+
+
+  val compose = Compose()
+
+  class Compose {
+    private val composeVersion = "1.2.0"
+    val activity = "androidx.activity:activity-compose:1.3.1"
+    val ui = "androidx.compose.ui:ui:$composeVersion"
+    val preview = "androidx.compose.ui:ui-tooling-preview:$composeVersion"
+
+    val test = "androidx.compose.ui:ui-test-junit4:$composeVersion"
+    val tooling = "androidx.compose.ui:ui-tooling:$composeVersion"
+    val manifest = "androidx.compose.ui:ui-test-manifest:$composeVersion"
+
+    val material3 = "androidx.compose.material3:material3:1.0.1"
   }
 }

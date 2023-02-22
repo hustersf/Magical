@@ -7,6 +7,8 @@ include ':packages:aurora'
 include ':packages:wan-android'
 include ':packages:work:take-picture'
 
+include ':packages:samples:compose'
+
 include ':framework:widget'
 include ':framework:utility'
 include ':framework:network'

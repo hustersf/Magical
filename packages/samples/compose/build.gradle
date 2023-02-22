@@ -2,6 +2,7 @@ import com.sofar.depend.Deps
 
 plugins {
     id 'com.android.application'
+    id 'kotlin-android'
 }
 
 android {
@@ -9,7 +10,7 @@ android {
     buildToolsVersion Deps.google.buildToolsVersion
 
     defaultConfig {
-        applicationId "com.sofar.diana"
+        applicationId "com.sofar.compose"
         minSdkVersion Deps.google.minSdk
         targetSdkVersion Deps.google.targetSdk
         versionCode 1
@@ -25,8 +26,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
     //签名信息配置
@@ -54,13 +55,34 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.2.0'
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
 }
 
 dependencies {
-
     implementation Deps.google.appcompat
-    implementation Deps.google.material
-    implementation Deps.google.constraintlayout
+    implementation Deps.kotlin.coroutines
+    implementation Deps.kotlin.coroutinesAndroid
+
+    implementation Deps.google.compose.activity
+    implementation Deps.google.compose.ui
+    implementation Deps.google.compose.preview
+    implementation Deps.google.compose.material3
+    androidTestImplementation Deps.google.compose.test
+    debugImplementation Deps.google.compose.tooling
+    debugImplementation Deps.google.compose.manifest
+
+    debugImplementation Deps.openSource.debugLeakCanary
     testImplementation Deps.test.junit
     androidTestImplementation Deps.test.androidJunit
     androidTestImplementation Deps.test.androidEspresso

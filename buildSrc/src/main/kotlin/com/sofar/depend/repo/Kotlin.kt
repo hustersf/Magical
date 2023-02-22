@@ -1,7 +1,7 @@
 package com.sofar.depend.repo
 
 class Kotlin {
-  private val kotlinVersion = "1.5.0"
+  private val kotlinVersion = "1.7.0"
   private val coroutinesVersion = "1.4.3"
 
   val gradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
