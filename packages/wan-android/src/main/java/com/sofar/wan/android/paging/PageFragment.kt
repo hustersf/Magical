@@ -12,7 +12,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.sofar.base.BaseFragment
 import com.sofar.wan.android.R
 import com.sofar.widget.recycler.adapter.CellAdapter
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -37,7 +36,7 @@ abstract class PageFragment<MODEL : Any> : BaseFragment() {
     savedInstanceState: Bundle?,
   ): View? {
     var rootView: View = inflater.inflate(getLayoutResId(), container, false)
-    refreshLayout = rootView.findViewById(R.id.refresh_layout)
+    refreshLayout = rootView.findViewById(com.sofar.base.R.id.refresh_layout)
     recyclerView = rootView.findViewById(R.id.recycler_view)
     return rootView
   }

@@ -1,32 +1,28 @@
-import com.sofar.depend.Deps
-
 plugins {
-    id 'com.android.application'
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
-    compileSdkVersion Deps.google.compileSdkVersion
-    buildToolsVersion Deps.google.buildToolsVersion
+    namespace 'com.sofar.aurora'
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.sofar.music"
-        minSdkVersion Deps.google.minSdk
-        targetSdkVersion Deps.google.targetSdk
+        minSdk 24
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
     }
 
     //签名信息配置
@@ -57,16 +53,6 @@ android {
 }
 
 dependencies {
-
-    implementation Deps.google.appcompat
-    implementation Deps.google.material
-    implementation Deps.google.constraintlayout
-    implementation Deps.google.viewpager2
-
-    testImplementation Deps.test.junit
-    androidTestImplementation Deps.test.androidJunit
-    androidTestImplementation Deps.test.androidEspresso
-
     implementation project(':core:base')
 
     implementation project(':framework:utility')
@@ -74,4 +60,20 @@ dependencies {
     implementation project(':framework:network')
     implementation project(':framework:image')
     implementation project(':framework:player')
+
+    implementation libs.rxjava
+    implementation libs.rxandroid
+    implementation libs.okhttp
+    implementation libs.gson
+    implementation libs.retrofit
+    implementation libs.fresco
+
+    implementation libs.androidx.appcompat
+    implementation libs.material
+    implementation libs.androidx.constraintlayout
+    implementation libs.androidx.viewpager2
+
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
 }

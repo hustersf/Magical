@@ -32,7 +32,7 @@ public class MainActivity extends BaseActivity {
       finish();
     } else {
       lastBackPressed = current;
-      ToastUtil.startShort(this, getString(R.string.back_press_again));
+      ToastUtil.startShort(this, getString(com.sofar.base.R.string.back_press_again));
     }
   }
 }

@@ -39,7 +39,7 @@ class NaviFragment : BaseFragment() {
   private lateinit var tagAdapter: MultiTypeAdapter
 
   private val disposables = CompositeDisposable()
-  private val touchSlop: Int by lazy { ViewConfiguration.get(context).scaledTouchSlop }
+  private val touchSlop: Int by lazy { ViewConfiguration.get(requireContext()).scaledTouchSlop }
   private val scrollListener = object : RecyclerView.OnScrollListener() {
 
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {

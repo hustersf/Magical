@@ -87,6 +87,6 @@ public class PlayActivity extends BaseActivity {
 
   @Override
   protected int finishExitPageAnim() {
-    return R.anim.bottom_slide_out;
+    return com.sofar.base.R.anim.bottom_slide_out;
   }
 }

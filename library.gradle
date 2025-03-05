@@ -1,25 +1,28 @@
-import com.sofar.depend.Deps
-
+// 使用传统方式应用插件（避免 plugins {} 块）
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion Deps.google.compileSdkVersion
-    buildToolsVersion Deps.google.buildToolsVersion
+    compileSdk 34
 
     defaultConfig {
-        minSdkVersion Deps.google.minSdk
-        targetSdkVersion Deps.google.targetSdk
-    }
+        minSdk 24
 
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    buildFeatures {
+        buildConfig = true
     }
 }
 
 dependencies {
     api fileTree(include: ['*.jar'], dir: 'libs')
-    //最基础的依赖
-    api Deps.google.annotation
+    implementation libs.androidx.annotation
 }

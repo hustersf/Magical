@@ -1,16 +1,17 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.sofar.login">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
   <application>
 
     <activity
       android:name=".activity.QQSSOActivity"
       android:configChanges="orientation|keyboardHidden|screenSize"
+      android:exported="false"
       android:screenOrientation="portrait" />
 
     <activity
       android:name=".ui.LoginActivity"
       android:configChanges="orientation|keyboardHidden|screenSize"
+      android:exported="false"
       android:screenOrientation="portrait" />
 
   </application>

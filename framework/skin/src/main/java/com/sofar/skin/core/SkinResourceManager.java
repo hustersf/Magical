@@ -14,15 +14,22 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.sofar.skin.callback.ILoaderListener;
 import com.sofar.skin.config.SkinConfig;
 import com.sofar.skin.util.SkinFileUtil;
 import com.sofar.skin.util.SkinL;
-import com.thin.downloadmanager.DefaultRetryPolicy;
-import com.thin.downloadmanager.DownloadRequest;
-import com.thin.downloadmanager.DownloadStatusListenerV1;
-import com.thin.downloadmanager.ThinDownloadManager;
+import com.tonyodev.fetch2.AbstractFetchListener;
+import com.tonyodev.fetch2.Download;
+import com.tonyodev.fetch2.Error;
+import com.tonyodev.fetch2.Fetch;
+import com.tonyodev.fetch2.FetchConfiguration;
+import com.tonyodev.fetch2.FetchListener;
+import com.tonyodev.fetch2.NetworkType;
+import com.tonyodev.fetch2.Priority;
+import com.tonyodev.fetch2.Request;
+import com.tonyodev.fetch2okhttp.OkHttpDownloader;
 
 /**
  * 管理皮肤包资源
@@ -34,6 +41,8 @@ public class SkinResourceManager {
   private boolean defaultSkin; //当前的皮肤是否是默认的
   private String skinPackageName; //皮肤apk的包名
   private boolean colorSkin;  //当前皮肤是否是纯颜色换肤
+
+  private Fetch fetch;
 
   private SkinResourceManager() {
   }
@@ -48,6 +57,11 @@ public class SkinResourceManager {
 
   public void init(@NonNull Context context) {
     this.context = context.getApplicationContext();
+    FetchConfiguration fetchConfiguration = new FetchConfiguration.Builder(context)
+      .setDownloadConcurrentLimit(3)
+      .setHttpDownloader(new OkHttpDownloader())
+      .build();
+    fetch = Fetch.Impl.getInstance(fetchConfiguration);
     setUpSkinFile();
     loadSkin();
   }
@@ -204,40 +218,46 @@ public class SkinResourceManager {
       return;
     }
 
-    Uri downloadUri = Uri.parse(skinUrl);
     Uri destinationUri = Uri.parse(skinPkgPath);
-    DownloadRequest downloadRequest = new DownloadRequest(downloadUri)
-      .setRetryPolicy(new DefaultRetryPolicy())
-      .setDestinationURI(destinationUri)
-      .setPriority(DownloadRequest.Priority.HIGH);
+    Request request = new Request(skinUrl, destinationUri);
+    request.setPriority(Priority.HIGH);
+    request.setNetworkType(NetworkType.ALL);
     if (listener != null) {
       listener.onStart();
     }
-    downloadRequest.setStatusListener(new DownloadStatusListenerV1() {
+    FetchListener fetchListener = new AbstractFetchListener() {
       @Override
-      public void onDownloadComplete(DownloadRequest downloadRequest) {
+      public void onCompleted(@NonNull Download download) {
+        super.onCompleted(download);
         loadSkin(skinName, listener);
+        fetch.removeListener(this);
       }
 
       @Override
-      public void onDownloadFailed(DownloadRequest downloadRequest, int errorCode,
-        String errorMessage) {
+      public void onError(@NonNull Download download, @NonNull Error error,
+        @Nullable Throwable throwable) {
+        super.onError(download, error, throwable);
         if (listener != null) {
-          listener.onFailed("download skin failed=" + errorCode + ":" + errorMessage);
+          listener.onFailed("download skin failed=" + error);
         }
       }
 
       @Override
-      public void onProgress(DownloadRequest downloadRequest, long totalBytes, long downloadedBytes,
-        int progress) {
+      public void onProgress(@NonNull Download download, long etaInMilliSeconds,
+        long downloadedBytesPerSecond) {
+        super.onProgress(download, etaInMilliSeconds, downloadedBytesPerSecond);
+        int progress = download.getProgress();
         if (listener != null) {
           listener.onProgress(progress);
         }
       }
+    };
+    fetch.addListener(fetchListener);
+    fetch.enqueue(request, updatedRequest -> {
+      SkinL.d("Fetch", "任务ID：" + updatedRequest.getId());
+    }, error -> {
+      SkinL.e("Fetch", "任务创建失败：" + error.toString());
     });
-
-    ThinDownloadManager manager = new ThinDownloadManager();
-    manager.add(downloadRequest);
   }
 
   public void restoreDefaultSkin() {

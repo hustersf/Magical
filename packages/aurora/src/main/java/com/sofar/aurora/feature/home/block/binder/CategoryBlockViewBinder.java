@@ -20,7 +20,7 @@ public class CategoryBlockViewBinder extends RecyclerViewBinder<HomeBlock<Catego
   protected void onCreate() {
     super.onCreate();
     mTagList = bindView(R.id.category_list);
-    mTagList.setColor(ContextCompat.getColor(context, R.color.theme_color));
+    mTagList.setColor(ContextCompat.getColor(context, com.sofar.base.R.color.theme_color));
   }
 
   @Override

@@ -7,7 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.sofar.apollo.R;
+import com.sofar.base.R;
 import com.sofar.base.BaseActivity;
 
 public class LearnActivity extends BaseActivity {

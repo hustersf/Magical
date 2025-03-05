@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.sofar.apollo">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
   <application
     android:name=".SofarApp"
@@ -14,6 +13,7 @@
     <activity
       android:name=".splash.SplashActivity"
       android:configChanges="orientation|keyboardHidden|screenSize"
+      android:exported="true"
       android:screenOrientation="portrait">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
@@ -25,17 +25,20 @@
     <activity
       android:name=".MainActivity"
       android:configChanges="orientation|keyboardHidden|screenSize"
+      android:exported="false"
       android:launchMode="singleTask"
       android:screenOrientation="portrait" />
 
     <activity
       android:name=".learn.LearnActivity"
       android:configChanges="orientation|keyboardHidden|screenSize"
+      android:exported="false"
       android:screenOrientation="portrait" />
 
     <activity
       android:name=".mine.MineActivity"
       android:configChanges="orientation|keyboardHidden|screenSize"
+      android:exported="false"
       android:screenOrientation="portrait" />
 
   </application>

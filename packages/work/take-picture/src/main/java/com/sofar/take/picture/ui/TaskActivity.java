@@ -1,6 +1,5 @@
 package com.sofar.take.picture.ui;
 
-import android.Manifest;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -8,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.sofar.base.BaseActivity;
-import com.sofar.base.permission.PermissionUtil;
 import com.sofar.take.picture.R;
 import com.sofar.take.picture.core.PhotoHelper;
 import com.sofar.take.picture.core.PhotoObserveProvider;
@@ -55,12 +53,6 @@ public class TaskActivity extends BaseActivity {
 
   private void startCamera() {
     String des = "拍照权限被禁止，我们需要打开拍照权限";
-    PermissionUtil.requestPermission(this, Manifest.permission.CAMERA, des, "")
-      .subscribe(permission -> {
-        if (permission.granted) {
-          provider.startTask(helper, taskId);
-        }
-      });
   }
 
 

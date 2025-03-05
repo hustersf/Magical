@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 
@@ -30,7 +31,7 @@ public abstract class BasePlayer {
   @Nullable
   OnPlayerListener playerListener;
 
-  Player.EventListener eventListener = new Player.EventListener() {
+  Player.Listener eventListener = new Player.Listener() {
     @Override
     public void onPlaybackStateChanged(int state) {
       Log.d(TAG, "onPlaybackStateChanged:state=" + state);
@@ -51,7 +52,7 @@ public abstract class BasePlayer {
     }
 
     @Override
-    public void onPlayerError(ExoPlaybackException error) {
+    public void onPlayerError(PlaybackException error) {
       Log.d(TAG, "onPlayerError=" + error.getMessage());
       if (playerListener != null) {
         playerListener.onPlayerError();

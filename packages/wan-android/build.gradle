@@ -1,33 +1,28 @@
-import com.sofar.depend.Deps
-
 plugins {
-    id 'com.android.application'
-    id 'kotlin-android'
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
-    compileSdkVersion Deps.google.compileSdkVersion
-    buildToolsVersion Deps.google.buildToolsVersion
+    namespace 'com.sofar.wan.android'
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.sofar.wan.android"
-        minSdkVersion Deps.google.minSdk
-        targetSdkVersion Deps.google.targetSdk
+        minSdk 24
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
     }
 
     //签名信息配置
@@ -58,31 +53,39 @@ android {
 }
 
 dependencies {
-    implementation Deps.google.appcompat
-    implementation Deps.google.material
-    implementation Deps.google.constraintlayout
-    implementation Deps.google.viewpager2
-    implementation Deps.google.recyclerview
-    implementation Deps.google.swiperefreshlayout
-    implementation Deps.google.cardview
-    implementation Deps.google.coordinatorlayout
-    implementation Deps.google.flexbox
-
-    implementation Deps.google.lifecycle.runtimeKtx
-    implementation Deps.google.lifecycle.viewmodelKtx
-
-    implementation Deps.google.paging.runtime
-
-    implementation Deps.kotlin.coroutines
-    implementation Deps.kotlin.coroutinesAndroid
-
-    implementation Deps.openSource.glide.runtime
-    implementation Deps.openSource.lottie
-
     implementation project(":core:base")
+    implementation project(':framework:utility')
     implementation project(":framework:network")
     implementation project(":framework:widget")
     implementation project(":framework:webview")
 
-    debugImplementation Deps.openSource.debugLeakCanary
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.constraintlayout
+    implementation libs.androidx.viewpager2
+    implementation libs.androidx.recyclerview
+    implementation libs.androidx.swiperefreshlayout
+    implementation libs.androidx.cardview
+    implementation libs.androidx.coordinatorlayout
+    implementation libs.flexbox
+    implementation libs.material
+
+    implementation libs.androidx.lifecycle.runtime.ktx
+    implementation libs.androidx.lifecycle.viewmodel.ktx
+
+    implementation libs.androidx.paging
+
+    implementation libs.coroutines
+    implementation libs.coroutines.android
+
+    implementation libs.rxjava
+    implementation libs.rxandroid
+    implementation libs.okhttp
+    implementation libs.gson
+    implementation libs.retrofit
+    implementation libs.fresco
+
+    implementation libs.glide
+    implementation libs.lottie
+
+    debugImplementation libs.leakcanary
 }

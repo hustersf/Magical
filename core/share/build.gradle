@@ -1,5 +1,9 @@
 apply from: rootProject.file('library.gradle')
 
+android {
+    namespace 'com.sofar.share'
+}
+
 dependencies {
     implementation project(':external:social-sdk')
     implementation project(':core:base')

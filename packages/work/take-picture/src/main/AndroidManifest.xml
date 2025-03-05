@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.sofar.take.picture">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
   <uses-permission android:name="android.permission.CAMERA" />
 
@@ -16,6 +15,7 @@
     <activity
       android:name=".ui.LoginActivity"
       android:configChanges="orientation|keyboardHidden|screenSize"
+      android:exported="true"
       android:screenOrientation="portrait">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
@@ -27,22 +27,26 @@
     <activity
       android:name=".ui.MainActivity"
       android:configChanges="orientation|keyboardHidden|screenSize"
+      android:exported="false"
       android:screenOrientation="portrait" />
 
     <activity
       android:name=".ui.TaskActivity"
       android:configChanges="orientation|keyboardHidden|screenSize"
+      android:exported="false"
       android:screenOrientation="portrait" />
 
     <activity
       android:name=".ui.PhotoPreviewActivity"
       android:configChanges="orientation|keyboardHidden|screenSize"
+      android:exported="false"
       android:launchMode="singleTask"
       android:screenOrientation="portrait" />
 
     <activity
       android:name=".ui.PhotoListActivity"
       android:configChanges="orientation|keyboardHidden|screenSize"
+      android:exported="false"
       android:screenOrientation="portrait" />
 
     <provider

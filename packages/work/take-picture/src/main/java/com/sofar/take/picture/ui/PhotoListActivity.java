@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.sofar.base.BaseActivity;
-import com.sofar.take.picture.R;
+import com.sofar.base.R;
 
 /**
  * 图片列表页面

@@ -1,9 +1,11 @@
-import com.sofar.depend.Deps
-
 apply from: rootProject.file('library.gradle')
 
+android {
+    namespace 'com.sofar.download'
+}
+
 dependencies {
-    implementation Deps.google.appcompat
+    implementation libs.androidx.appcompat
 }
 
 

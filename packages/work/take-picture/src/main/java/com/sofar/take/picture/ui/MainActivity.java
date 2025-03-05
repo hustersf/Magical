@@ -5,7 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 
 import com.sofar.base.BaseActivity;
-import com.sofar.take.picture.R;
+import com.sofar.base.R;
 
 public class MainActivity extends BaseActivity {
 

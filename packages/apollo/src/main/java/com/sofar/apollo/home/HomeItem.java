@@ -57,7 +57,8 @@ public class HomeItem extends LinearLayout {
 
   private void initText() {
     textView = new TextView(getContext());
-    textView.setTextColor(getContext().getResources().getColor(R.color.main_text_color));
+    textView.setTextColor(
+      getContext().getResources().getColor(com.sofar.base.R.color.main_text_color));
     textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
     int width = ViewGroup.LayoutParams.WRAP_CONTENT;
     int height = ViewGroup.LayoutParams.WRAP_CONTENT;
