@@ -1,3 +1,17 @@
 <resources>
-  <string name="app_name">狄安娜</string>
+  <string name="app_name" translatable="false">Snapu</string>
+
+  <string name="bottom_nav_page_home">home</string>
+  <string name="bottom_nav_page_record">record</string>
+  <string name="bottom_nav_page_work">work</string>
+  <string name="bottom_nav_page_mine">mine</string>
+
+  <string name="login_account_hint">phone</string>
+  <string name="login_account_helper_text">Enter 11-digit phone number</string>
+  <string name="login_account_prefix_text" translatable="false">+86</string>
+  <string name="login_password_hint">password</string>
+  <string name="login_password_helper_text">6–20 letters/numbers</string>
+  <string name="login_password_forgot">Forgot Password?</string>
+  <string name="login_button_text">Login</string>
+  <string name="login_sign_button_text">Sign Up</string>
 </resources>

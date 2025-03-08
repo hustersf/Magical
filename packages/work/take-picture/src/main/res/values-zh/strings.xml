@@ -1,0 +1,15 @@
+<resources>
+
+  <string name="bottom_nav_page_home">首页</string>
+  <string name="bottom_nav_page_record">记录</string>
+  <string name="bottom_nav_page_work">工作台</string>
+  <string name="bottom_nav_page_mine">我的</string>
+
+  <string name="login_account_hint">手机号</string>
+  <string name="login_account_helper_text">请输入11位手机号</string>
+  <string name="login_password_hint">密码</string>
+  <string name="login_password_helper_text">6~20位字母/数字</string>
+  <string name="login_password_forgot">忘记密码?</string>
+  <string name="login_button_text">登录</string>
+  <string name="login_sign_button_text">注册</string>
+</resources>
