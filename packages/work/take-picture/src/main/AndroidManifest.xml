@@ -25,13 +25,43 @@
     </activity>
 
     <activity
+      android:name=".MainActivity"
+      android:configChanges="orientation|keyboardHidden|screenSize"
+      android:exported="false"
+      android:screenOrientation="portrait" />
+
+    <activity
       android:name=".feature.login.LoginActivity"
       android:configChanges="orientation|keyboardHidden|screenSize"
       android:exported="false"
       android:screenOrientation="portrait" />
 
     <activity
-      android:name=".MainActivity"
+      android:name=".feature.login.SignupActivity"
+      android:configChanges="orientation|keyboardHidden|screenSize"
+      android:exported="false"
+      android:screenOrientation="portrait" />
+
+    <activity
+      android:name=".feature.login.ForgetPasswordActivity"
+      android:configChanges="orientation|keyboardHidden|screenSize"
+      android:exported="false"
+      android:screenOrientation="portrait" />
+
+    <activity
+      android:name=".feature.daq.PhotoActivity"
+      android:configChanges="orientation|keyboardHidden|screenSize"
+      android:exported="false"
+      android:screenOrientation="portrait" />
+
+    <activity
+      android:name=".feature.daq.CapturePictureActivity"
+      android:configChanges="orientation|keyboardHidden|screenSize"
+      android:exported="false"
+      android:screenOrientation="portrait" />
+
+    <activity
+      android:name=".feature.daq.CaptureVideoActivity"
       android:configChanges="orientation|keyboardHidden|screenSize"
       android:exported="false"
       android:screenOrientation="portrait" />

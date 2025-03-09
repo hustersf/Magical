@@ -1,11 +1,13 @@
 package com.sofar.take.picture.feature.splash
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.sofar.base.app.BaseUIActivity
-import com.sofar.take.picture.MainActivity
+import com.sofar.mlkit.barcode.BarcodeScanActivity
+import com.sofar.mlkit.core.MLKit
 import com.sofar.take.picture.R
 import com.sofar.take.picture.feature.login.LoginActivity
 

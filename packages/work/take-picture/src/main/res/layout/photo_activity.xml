@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical">
+
+
+  <Button
+    android:id="@+id/login_btn"
+    style="?attr/materialIconButtonFilledStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/login_widget_margin_top"
+    android:text="@string/login_button_text" />
+
+  <Button
+    android:id="@+id/sign_up_btn"
+    style="?attr/materialButtonOutlinedStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/login_widget_margin_top"
+    android:text="@string/login_sign_button_text" />
+
+
+</LinearLayout>

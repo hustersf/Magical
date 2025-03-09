@@ -43,5 +43,6 @@ include ':framework:webview'
 include ':core:base'
 include ':core:login'
 include ':core:share'
+include ':core:mlkit'
 
 include ':external:social-sdk'

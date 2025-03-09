@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <declare-styleable name="BarcodeScanView">
+    <attr name="scanLineColor" format="reference|color" />
+    <attr name="scanSpeed" format="integer" />
+    <attr name="scanLineDrawable" format="reference" />
+  </declare-styleable>
+</resources>

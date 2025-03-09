@@ -5,6 +5,7 @@ coreKtx = "1.12.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
+activity = "1.8.0"
 appcompat = "1.6.1"
 material = "1.13.0-alpha11"
 constraintlayout = "2.1.4"
@@ -33,6 +34,8 @@ rxandroid = "2.1.1"
 exoplayer = "2.19.1"
 leakcanary = "2.10"
 fetch2 = "3.3.0"
+camera = "1.3.0"
+mlkitBarcode = "17.2.0"
 
 [libraries]
 #tool
@@ -43,6 +46,7 @@ leakcanary = { group = "com.squareup.leakcanary", name = "leakcanary-android", v
 
 #basic
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
 androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycle" }
@@ -105,6 +109,13 @@ lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie"
 
 #player
 exoplayer = { group = "com.google.android.exoplayer", name = "exoplayer-core", version.ref = "exoplayer" }
+
+#mlkit+camerax
+camera-core = { group = "androidx.camera", name = "camera-core", version.ref = "camera" }
+camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "camera" }
+camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camera" }
+camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "camera" }
+mlkit-barcode = { group = "com.google.mlkit", name = "barcode-scanning", version.ref = "mlkitBarcode" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
