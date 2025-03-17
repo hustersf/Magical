@@ -1,8 +1,10 @@
 <resources>
 
   <string name="bottom_nav_page_home">首页</string>
-  <string name="bottom_nav_page_record">记录</string>
   <string name="bottom_nav_page_work">工作台</string>
+  <string name="bottom_nav_page_product">商品</string>
+  <string name="bottom_nav_page_shelf">货架</string>
+  <string name="bottom_nav_page_record">记录</string>
   <string name="bottom_nav_page_mine">我的</string>
 
   <string name="login_name_hint">姓名</string>
@@ -16,4 +18,28 @@
   <string name="login_button_text">登录</string>
   <string name="login_sign_button_text">注册</string>
   <string name="login_confirm_button_text">确认</string>
+
+  <string name="product_title">商品数据采集</string>
+  <string name="shelf_title">货架数据采集</string>
+  <string name="product_data">商品数据</string>
+  <string name="shelf_data">货架数据</string>
+
+  <string name="product_ean">商品EAN</string>
+  <string name="product_name">商品名字</string>
+
+  <string name="photo">照片</string>
+  <string name="video">视频</string>
+
+  <string name="action_save">保存</string>
+  <string name="action_submit">提交</string>
+  <string name="action_cancel">取消</string>
+  <string name="action_confirm">确认</string>
+  <string name="action_next">下一步</string>
+
+  <string name="dialog_title_confirm_upload">确认上传？</string>
+  <string name="dialog_title_confirm_delete">确定要删除此内容吗？</string>
+
+  <string name="list_all">全部</string>
+  <string name="list_upload_pending">待上传</string>
+  <string name="list_uploaded">已上传</string>
 </resources>

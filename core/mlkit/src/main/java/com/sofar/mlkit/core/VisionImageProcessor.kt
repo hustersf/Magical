@@ -7,17 +7,17 @@ import java.nio.ByteBuffer
 
 interface VisionImageProcessor {
 
-  fun processBitmap(bitmap: Bitmap, graphicOverlay: GraphicOverlay)
+  fun processBitmap(bitmap: Bitmap, graphicOverlay: GraphicOverlay? = null)
 
   @Throws(MlKitException::class)
   fun processByteBuffer(
     data: ByteBuffer,
     frameMetadata: FrameMetadata,
-    graphicOverlay: GraphicOverlay
+    graphicOverlay: GraphicOverlay? = null
   )
 
   @Throws(MlKitException::class)
-  fun processImageProxy(imageProxy: ImageProxy, graphicOverlay: GraphicOverlay?)
+  fun processImageProxy(imageProxy: ImageProxy, graphicOverlay: GraphicOverlay? = null)
 
   fun stop()
 }

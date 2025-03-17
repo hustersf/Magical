@@ -28,6 +28,7 @@
       android:name=".MainActivity"
       android:configChanges="orientation|keyboardHidden|screenSize"
       android:exported="false"
+      android:launchMode="singleTask"
       android:screenOrientation="portrait" />
 
     <activity
@@ -55,13 +56,25 @@
       android:screenOrientation="portrait" />
 
     <activity
-      android:name=".feature.daq.CapturePictureActivity"
+      android:name=".feature.daq.product.CaptureVideoActivity"
       android:configChanges="orientation|keyboardHidden|screenSize"
       android:exported="false"
       android:screenOrientation="portrait" />
 
     <activity
-      android:name=".feature.daq.CaptureVideoActivity"
+      android:name=".feature.daq.product.CaptureVideoFrameActivity"
+      android:configChanges="orientation|keyboardHidden|screenSize"
+      android:exported="false"
+      android:screenOrientation="portrait" />
+
+    <activity
+      android:name=".feature.daq.product.CaptureProductActivity"
+      android:configChanges="orientation|keyboardHidden|screenSize"
+      android:exported="false"
+      android:screenOrientation="portrait" />
+
+    <activity
+      android:name=".feature.daq.shelf.CaptureShelfActivity"
       android:configChanges="orientation|keyboardHidden|screenSize"
       android:exported="false"
       android:screenOrientation="portrait" />

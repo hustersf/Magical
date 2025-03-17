@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
   <item
-    android:id="@+id/nav_home"
+    android:id="@+id/nav_product"
     android:enabled="true"
-    android:icon="@drawable/nav_home_selector"
-    android:title="@string/bottom_nav_page_home" />
+    android:icon="@drawable/nav_product"
+    android:title="@string/bottom_nav_page_product" />
+  <item
+    android:id="@+id/nav_shelf"
+    android:enabled="true"
+    android:icon="@drawable/nav_shelf"
+    android:title="@string/bottom_nav_page_shelf" />
   <item
     android:id="@+id/nav_record"
     android:enabled="true"
-    android:icon="@drawable/nav_record_selector"
+    android:icon="@drawable/nav_record"
     android:title="@string/bottom_nav_page_record" />
-  <item
-    android:id="@+id/nav_work"
-    android:enabled="true"
-    android:icon="@drawable/nav_work_selector"
-    android:title="@string/bottom_nav_page_work" />
   <item
     android:id="@+id/nav_mine"
     android:enabled="true"

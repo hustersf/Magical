@@ -24,6 +24,6 @@ public abstract class Cell<T> {
   protected void onViewDetached() {}
 
   public int getPosition() {
-    return mViewHolder.getAdapterPosition();
+    return mViewHolder.getLayoutPosition();
   }
 }

@@ -6,7 +6,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 public class BaseFragment extends Fragment {
-
   private static final String TAG = "BaseFragment";
 
   @Override
@@ -18,12 +17,15 @@ public class BaseFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    Log.d(TAG, "onResume=" + this.getClass().getSimpleName());
   }
 
   @Override
   public void onPause() {
     super.onPause();
-    Log.d(TAG, "onPause=" + this.getClass().getSimpleName());
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
   }
 }

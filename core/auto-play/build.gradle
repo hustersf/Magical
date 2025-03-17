@@ -1,0 +1,13 @@
+apply from: rootProject.file('library.gradle')
+
+android {
+    namespace 'com.sofar.auto.play'
+}
+
+dependencies {
+    implementation libs.androidx.recyclerview
+}
+
+
+
+

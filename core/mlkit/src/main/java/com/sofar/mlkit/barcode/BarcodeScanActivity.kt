@@ -18,9 +18,9 @@ class BarcodeScanActivity : CameraActivityBase() {
 
   private var handler: Handler = Handler(Looper.getMainLooper())
   private var barcodeResult = object : BarcodeResult {
-    override fun success(results: List<Barcode>) {
+    override fun success(result: String) {
       handler.post {
-        showResult(results)
+        showResult(result)
       }
     }
 
@@ -53,17 +53,12 @@ class BarcodeScanActivity : CameraActivityBase() {
     return scannerProcessor
   }
 
-  private fun showResult(results: List<Barcode>) {
-    for (item in results) {
-      item.rawValue?.let {
-        Util.vibrate(this, 200L)
-        setResult(RESULT_OK, Intent().apply {
-          putExtra(BarcodeContract.KEY_SCAN_RESULT, it)
-        })
-        finish()
-        return
-      }
-    }
+  private fun showResult(result: String) {
+    Util.vibrate(this, 200L)
+    setResult(RESULT_OK, Intent().apply {
+      putExtra(BarcodeContract.KEY_SCAN_RESULT, result)
+    })
+    finish()
   }
 
 

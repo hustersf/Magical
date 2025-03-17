@@ -52,7 +52,8 @@ public class ViewUtil {
   /**
    * 扩大View的触摸和点击响应范围,最大不超过其父View范围
    */
-  public static void expandViewTouchDelegate(@NonNull final View view, final int top, final int bottom, final int left, final int right) {
+  public static void expandViewTouchDelegate(@NonNull final View view, final int top,
+    final int bottom, final int left, final int right) {
     if (view.getParent() instanceof View) {
       final View parentView = (View) view.getParent();
       parentView.post(new Runnable() {
@@ -100,5 +101,23 @@ public class ViewUtil {
     Paint paint = new Paint();
     paint.setTextSize(textSize);
     return paint.measureText(text);
+  }
+
+  /**
+   * 获取view展示比例
+   */
+  public static float getViewShowRatio(@NonNull View view) {
+    if (!view.isShown()) {
+      return 0;
+    }
+
+    Rect rect = new Rect();
+    if (view.getGlobalVisibleRect(rect)) {
+      long visibleArea = (long) rect.height() * (long) rect.width();
+      long viewArea = (long) view.getHeight() * (long) view.getWidth();
+      float ratio = 1.0f * visibleArea / viewArea;
+      return ratio;
+    }
+    return 0;
   }
 }

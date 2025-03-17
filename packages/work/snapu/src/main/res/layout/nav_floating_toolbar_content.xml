@@ -7,14 +7,14 @@
     style="?attr/materialIconButtonStyle"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    app:icon="@drawable/nav_camera" />
+    app:icon="@drawable/nav_product" />
 
   <Button
     android:id="@+id/video_btn"
     style="?attr/materialIconButtonStyle"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    app:icon="@drawable/nav_video" />
+    app:icon="@drawable/nav_shelf" />
 
   <Button
     android:id="@+id/photo_btn"

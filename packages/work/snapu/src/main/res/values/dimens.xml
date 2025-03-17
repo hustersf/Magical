@@ -11,4 +11,9 @@
   <dimen name="login_text_input_margin_top">6dp</dimen>
   <dimen name="login_widget_margin_top">15dp</dimen>
   <dimen name="login_app_icon_size">100dp</dimen>
+  <dimen name="text_margin_top">10dp</dimen>
+
+  <dimen name="empty_icon_size">120dp</dimen>
+
+  <dimen name="text_small_size">12sp</dimen>
 </resources>

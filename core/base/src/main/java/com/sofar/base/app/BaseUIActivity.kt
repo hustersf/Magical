@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.appbar.MaterialToolbar
@@ -27,6 +28,8 @@ abstract class BaseUIActivity : AppCompatActivity() {
   private lateinit var toolbar: MaterialToolbar
   private lateinit var loadingView: LinearProgressIndicator
 
+  private var menuProvider: MenuProvider? = null
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     enableEdgeToEdge()
@@ -36,7 +39,7 @@ abstract class BaseUIActivity : AppCompatActivity() {
     toolbar = findViewById(R.id.base_toolbar)
     loadingView = findViewById(R.id.base_loading)
     ViewCompat.setOnApplyWindowInsetsListener(rootView) { v, insets ->
-      val systemBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+      val systemBars = insets.getInsets(windowInsetsType())
       v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
       insets
     }
@@ -54,8 +57,27 @@ abstract class BaseUIActivity : AppCompatActivity() {
     toolbar.title = text
   }
 
+  fun setNavigationIcon(resId: Int, listener: View.OnClickListener? = null) {
+    toolbar.setNavigationIcon(resId)
+    toolbar.setNavigationOnClickListener { v -> listener?.onClick(v) }
+  }
+
   fun hideToolbar() {
     toolbar.visibility = View.GONE
+  }
+
+  fun setMenu(provider: MenuProvider?) {
+    hideMenu()
+    menuProvider = provider
+    provider?.let {
+      toolbar.addMenuProvider(it)
+    }
+  }
+
+  fun hideMenu() {
+    menuProvider?.let {
+      toolbar.removeMenuProvider(it)
+    }
   }
 
   fun showLoading() {
@@ -66,6 +88,9 @@ abstract class BaseUIActivity : AppCompatActivity() {
     loadingView.visibility = View.GONE
   }
 
+  open fun windowInsetsType(): Int {
+    return WindowInsetsCompat.Type.systemBars()
+  }
 
   override fun onDestroy() {
     super.onDestroy()

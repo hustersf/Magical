@@ -62,7 +62,7 @@ abstract class CameraActivityBase : AppCompatActivity() {
       .build()
       .also {
         it.setAnalyzer(cameraExecutor) { imageProxy ->
-          imageProcessor?.processImageProxy(imageProxy, null)
+          imageProcessor?.processImageProxy(imageProxy)
         }
       }
 

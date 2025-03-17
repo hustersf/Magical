@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <color name="colorPrimary">@color/md_theme_primary</color>
+  <color name="colorOnPrimary">@color/md_theme_onPrimary</color>
   <color name="colorTextLink">@color/md_theme_secondary</color>
+  <color name="colorSecondary">@color/md_theme_secondary</color>
+  <color name="colorSecondaryContainer">@color/md_theme_secondaryContainer</color>
+  <color name="colorOnSurface">@color/md_theme_onSurface</color>
 </resources>

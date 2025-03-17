@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:padding="@dimen/page_padding_left">
+
+  <ImageView
+    android:id="@+id/photo_iv"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    app:layout_constraintBottom_toTopOf="@+id/save_btn"
+    app:layout_constraintTop_toTopOf="parent" />
+
+  <Button
+    android:id="@+id/save_btn"
+    style="?attr/materialButtonOutlinedStyle"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/login_widget_margin_top"
+    android:text="@string/action_save"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toStartOf="@+id/confirm_btn"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/photo_iv" />
+
+  <Button
+    android:id="@+id/confirm_btn"
+    style="?attr/materialIconButtonFilledStyle"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:text="@string/action_submit"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toEndOf="@+id/save_btn"
+    app:layout_constraintTop_toTopOf="@+id/save_btn" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical">
+
+  <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+    android:id="@+id/drag_handle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+
+  <com.google.android.material.button.MaterialButton
+    android:id="@+id/list_all_btn"
+    style="?attr/borderlessButtonStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="50dp"
+    android:drawableLeft="@drawable/nav_camera"
+    app:iconPadding="100dp"
+    android:gravity="start|center_vertical"
+    app:shapeAppearanceOverlay="@style/ForceRectangleShape"
+    android:text="All" />
+
+  <Button
+    android:id="@+id/list_upload_btn"
+    style="?attr/borderlessButtonStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:drawableLeft="@drawable/nav_camera"
+    android:drawablePadding="100dp"
+    android:gravity="start|center_vertical"
+    android:text="Action1"
+    app:cornerRadius="0dp" />
+
+  <com.google.android.material.button.MaterialButton
+    android:id="@+id/list_submit_btn"
+    style="?attr/borderlessButtonStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:drawableLeft="@drawable/nav_video"
+    android:gravity="start|center_vertical"
+    android:text="Action2" />
+
+
+</LinearLayout>

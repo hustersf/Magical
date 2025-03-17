@@ -11,7 +11,7 @@ import com.sofar.apollo.cache.AudioFileCache;
 import com.sofar.apollo.word.WordDataManager;
 import com.sofar.apollo.word.model.EnglishWord;
 import com.sofar.base.viewbinder.ViewBinder;
-import com.sofar.player.core.AudioPlayer;
+import com.sofar.player.AudioPlayer;
 
 import java.io.File;
 import java.util.List;
@@ -91,7 +91,7 @@ public class LearnCoreViewBinder extends ViewBinder<LearnContext> {
       if (!TextUtils.isEmpty(url) && url.lastIndexOf("/") >= 0) {
         String fileName = url.substring(url.lastIndexOf("/"));
         File file = new File(AudioFileCache.getWordDir(context), fileName);
-        audioPlayer.setUri(file.getAbsolutePath());
+        audioPlayer.setDataSource(file.getAbsolutePath());
         audioPlayer.start();
       }
     }

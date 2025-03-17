@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView style="@style/Widget.Material3.CardView.Filled"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.media3.ui.PlayerView
+      android:id="@+id/player_view"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      app:layout_constraintDimensionRatio="W,4:3"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintWidth_percent="0.495"
+      app:resize_mode="zoom"
+      app:show_timeout="1000" />
+
+    <View
+      android:id="@+id/place_view"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      app:layout_constraintDimensionRatio="W,4:3"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="@+id/player_view"
+      app:layout_constraintWidth_percent="0.495" />
+
+    <TextView
+      android:id="@+id/title"
+      style="?attr/textAppearanceHeadline6"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/text_margin_top"
+      android:layout_marginTop="@dimen/text_margin_top"
+      android:text="@string/product_data"
+      app:layout_constraintStart_toStartOf="@+id/place_view"
+      app:layout_constraintTop_toTopOf="@+id/place_view" />
+
+    <TextView
+      android:id="@+id/ean_tv"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/text_margin_top"
+      android:text="@string/product_ean"
+      android:textColor="@color/colorPrimary"
+      app:layout_constraintStart_toStartOf="@+id/title"
+      app:layout_constraintTop_toBottomOf="@+id/title" />
+
+    <TextView
+      android:id="@+id/name_tv"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/text_margin_top"
+      android:text="@string/product_name"
+      android:textColor="@color/colorPrimary"
+      app:layout_constraintStart_toStartOf="@+id/ean_tv"
+      app:layout_constraintTop_toBottomOf="@+id/ean_tv" />
+
+    <Button
+      android:id="@+id/upload_btn"
+      style="?attr/materialIconButtonStyle"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="@dimen/text_margin_top"
+      android:layout_marginEnd="@dimen/text_margin_top"
+      app:icon="@drawable/nav_upload_selector"
+      app:layout_constraintBottom_toTopOf="@+id/time_tv"
+      app:layout_constraintEnd_toEndOf="@+id/time_tv" />
+
+    <Button
+      android:id="@+id/delete_btn"
+      style="?attr/materialIconButtonStyle"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:icon="@drawable/nav_delete"
+      app:layout_constraintEnd_toStartOf="@+id/upload_btn"
+      app:layout_constraintTop_toTopOf="@+id/upload_btn" />
+
+    <Button
+      android:id="@+id/edit_btn"
+      style="?attr/materialIconButtonStyle"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:icon="@drawable/nav_eidt"
+      app:layout_constraintEnd_toStartOf="@+id/delete_btn"
+      app:layout_constraintTop_toTopOf="@+id/upload_btn" />
+
+    <TextView
+      android:id="@+id/time_tv"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="@dimen/text_margin_top"
+      android:layout_marginEnd="@dimen/text_margin_top"
+      android:textSize="@dimen/text_small_size"
+      app:layout_constraintBottom_toBottomOf="@+id/place_view"
+      app:layout_constraintEnd_toEndOf="@+id/place_view" />
+
+
+    <ImageView
+      android:id="@+id/frame_iv"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:layout_marginTop="4dp"
+      android:scaleType="centerCrop"
+      app:layout_constraintDimensionRatio="W,4:3"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/player_view"
+      app:layout_constraintWidth_percent="0.495" />
+
+    <ImageView
+      android:id="@+id/ean_iv"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:scaleType="centerCrop"
+      app:layout_constraintDimensionRatio="W,4:3"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="@+id/frame_iv"
+      app:layout_constraintWidth_percent="0.495" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

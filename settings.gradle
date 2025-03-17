@@ -44,5 +44,6 @@ include ':core:base'
 include ':core:login'
 include ':core:share'
 include ':core:mlkit'
+include ':core:auto-play'
 
 include ':external:social-sdk'

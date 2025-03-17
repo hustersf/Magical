@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
+  <item
+    android:id="@+id/list_all"
+    android:icon="@drawable/nav_all"
+    android:title="@string/list_all"
+    app:iconTint="@color/colorOnSurface" />
+  <item
+    android:id="@+id/list_upload_pending"
+    android:icon="@drawable/nav_upload_pending"
+    android:title="@string/list_upload_pending"
+    app:iconTint="@color/colorOnSurface" />
+  <item
+    android:id="@+id/list_uploaded"
+    android:icon="@drawable/nav_uploaded"
+    android:title="@string/list_uploaded"
+    app:iconTint="@color/colorOnSurface" />
+</menu>

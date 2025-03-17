@@ -37,7 +37,13 @@ class BarcodeScannerProcessor(context: Context, private var result: BarcodeResul
   }
 
   override fun onSuccess(results: List<Barcode>, graphicOverlay: GraphicOverlay?) {
-    result?.success(results)
+    for (item in results) {
+      item.rawValue?.let {
+        result?.success(it)
+        graphicOverlay?.add(BarcodeGraphic(graphicOverlay, item))
+        return
+      }
+    }
   }
 
   override fun onFailure(e: Exception) {

@@ -6,36 +6,18 @@ import android.os.Build
 import androidx.core.content.FileProvider
 import com.sofar.utility.FileUtil
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
 
 object CaptureFileUtil {
 
-  private const val PHOTO_DIR: String = "photo"
-  private const val VIDEO_DIR: String = "video"
-
-  fun getPhotoDir(context: Context): String {
-    val dir = File(FileUtil.getFileDir(context), PHOTO_DIR)
+  fun mkdirs(context: Context, path: String): String {
+    val dir = File(FileUtil.getFileDir(context), path)
     if (!dir.exists()) {
       dir.mkdirs()
     }
     return dir.absolutePath
-  }
-
-  fun getVideoDir(context: Context): String {
-    val dir = File(FileUtil.getFileDir(context), VIDEO_DIR)
-    if (!dir.exists()) {
-      dir.mkdirs()
-    }
-    return dir.absolutePath
-  }
-
-  fun getPhotoUri(context: Context, name: String): Uri {
-    val file = File(getPhotoDir(context), name)
-    return getUriForFile(context, file)
-  }
-
-  fun getVideoUri(context: Context, name: String): Uri {
-    val file = File(getVideoDir(context), name)
-    return getUriForFile(context, file)
   }
 
   fun getUriForFile(context: Context, file: File): Uri {
@@ -43,6 +25,30 @@ object CaptureFileUtil {
       FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", file)
     } else {
       Uri.fromFile(file)
+    }
+  }
+
+  fun writeText(file: File, content: String) {
+    try {
+      FileOutputStream(file).use { stream ->
+        stream.write(content.toByteArray())
+      }
+    } catch (e: IOException) {
+      e.printStackTrace()
+    }
+  }
+
+  fun readText(file: File): String {
+    return if (file.exists()) {
+      try {
+        FileInputStream(file).bufferedReader().use { reader ->
+          reader.readText()
+        }
+      } catch (e: IOException) {
+        ""
+      }
+    } else {
+      ""
     }
   }
 }

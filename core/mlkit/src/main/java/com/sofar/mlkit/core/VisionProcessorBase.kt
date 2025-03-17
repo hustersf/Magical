@@ -32,14 +32,17 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
     )
   }
 
-  override fun processBitmap(bitmap: Bitmap, graphicOverlay: GraphicOverlay) {
-
+  override fun processBitmap(bitmap: Bitmap, graphicOverlay: GraphicOverlay?) {
+    requestDetectInImage(
+      InputImage.fromBitmap(bitmap, 0),
+      graphicOverlay,
+    )
   }
 
   override fun processByteBuffer(
     data: ByteBuffer,
     frameMetadata: FrameMetadata,
-    graphicOverlay: GraphicOverlay
+    graphicOverlay: GraphicOverlay?
   ) {
 
   }
@@ -48,13 +51,10 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
   override fun processImageProxy(imageProxy: ImageProxy, graphicOverlay: GraphicOverlay?) {
     if (imageProxy.image != null) {
       imageProxy.image?.let {
-        detectInImage(InputImage.fromMediaImage(it, imageProxy.imageInfo.rotationDegrees))
-          .addOnSuccessListener { results: T ->
-            onSuccess(results, graphicOverlay)
-          }
-          .addOnFailureListener { e: Exception ->
-            onFailure(e)
-          }
+        requestDetectInImage(
+          InputImage.fromMediaImage(it, imageProxy.imageInfo.rotationDegrees),
+          graphicOverlay
+        )
           .addOnCompleteListener {
             imageProxy.close()
           }
@@ -62,6 +62,28 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
     } else {
       imageProxy.close()
     }
+  }
+
+  private fun requestDetectInImage(
+    image: InputImage,
+    graphicOverlay: GraphicOverlay?
+  ): Task<T> {
+    return setUpListener(detectInImage(image), graphicOverlay)
+  }
+
+  private fun setUpListener(
+    task: Task<T>,
+    graphicOverlay: GraphicOverlay?,
+
+    ): Task<T> {
+    return task
+      .addOnSuccessListener { results: T ->
+        onSuccess(results, graphicOverlay)
+        graphicOverlay?.postInvalidate()
+      }
+      .addOnFailureListener { e: Exception ->
+        onFailure(e)
+      }
   }
 
   override fun stop() {

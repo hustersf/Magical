@@ -14,8 +14,7 @@ import com.sofar.aurora.model.Song;
 import com.sofar.aurora.retrofit.api.ApiProvider;
 import com.sofar.aurora.retrofit.gson.ResponseFunction;
 import com.sofar.aurora.utility.RxUtil;
-import com.sofar.player.core.AudioPlayer;
-import com.sofar.player.core.OnPlayerListener;
+import com.sofar.player.AudioPlayer;
 
 import io.reactivex.disposables.Disposable;
 
@@ -49,7 +48,7 @@ public class PlayManager {
   private PlayManager() {
     songs = new ArrayList<>();
     player = new AudioPlayer(SofarApp.getAppContext());
-    player.setOnPlayerListener(new OnPlayerListener() {
+    player.setPlayerCallback(new AudioPlayer.PlayerCallback() {
       @Override
       public void onPlayerStart() {
         Log.d(TAG, "onPlayerStart");
@@ -80,7 +79,7 @@ public class PlayManager {
       }
 
       @Override
-      public void onPlayerError() {
+      public void onPlayerError(@NonNull Exception error) {
         Log.d(TAG, "onPlayerError");
       }
     });
@@ -225,7 +224,7 @@ public class PlayManager {
     }
 
     Log.d(TAG, "setUriAndPlay=" + item.title + " position=" + position);
-    player.setUri(item.playUrl);
+    player.setDataSource(item.playUrl);
     play();
     onSelect(item);
   }
