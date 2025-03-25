@@ -1,5 +1,6 @@
 package com.sofar.snapu.feature.daq.model
 
+import android.text.TextUtils
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,12 +10,16 @@ import com.sofar.snapu.feature.daq.TaskUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ProductListViewModel : ViewModel() {
   private var context = SofarApp.getAppContext()
   private val _dataState = MutableLiveData<DataState<List<Product>>>()
   val dataState: LiveData<DataState<List<Product>>> = _dataState
   private val products = mutableListOf<Product>()
+  private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
   fun fetchData() {
     viewModelScope.launch {
@@ -54,6 +59,18 @@ class ProductListViewModel : ViewModel() {
           newList.add(item)
         }
       } else {
+        newList.add(item)
+      }
+    }
+    _dataState.value = DataState.Success(newList)
+  }
+
+  fun filterListByDay(time: Long) {
+    val d1 = dateFormat.format(Date(time))
+    val newList = mutableListOf<Product>()
+    for (item in products) {
+      val d = dateFormat.format(Date(item.taskId))
+      if (TextUtils.equals(d1, d)) {
         newList.add(item)
       }
     }

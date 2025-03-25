@@ -42,4 +42,9 @@
   <string name="list_all">全部</string>
   <string name="list_upload_pending">待上传</string>
   <string name="list_uploaded">已上传</string>
+  <string name="list_date">日期</string>
+
+  <string name="permission_camera_title">需要相机权限</string>
+  <string name="permission_camera_content">用于拍摄照片和视频，仅在使用时访问</string>
+  <string name="permission_camera_setting_content">您已永久拒绝访问相机，请前往系统设置手动开启权限</string>
 </resources>

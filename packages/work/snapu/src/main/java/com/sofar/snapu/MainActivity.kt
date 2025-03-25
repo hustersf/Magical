@@ -12,8 +12,10 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.sofar.base.app.BaseUIActivity
+import com.sofar.base.rx.RxBus
 import com.sofar.base.tab.FragmentAdapter
 import com.sofar.mlkit.core.MLKit
+import com.sofar.snapu.feature.daq.product.ProductEvent
 import com.sofar.snapu.feature.daq.product.ProductListFragment
 import com.sofar.snapu.feature.daq.shelf.ShelfListFragment
 import com.sofar.snapu.feature.mine.MineFragment
@@ -30,6 +32,18 @@ class MainActivity : BaseUIActivity() {
     initView()
     initData()
     initObserve()
+  }
+
+  override fun onNewIntent(intent: Intent?) {
+    super.onNewIntent(intent)
+    intent?.let {
+      val refreshPage = it.getIntExtra(KEY_REFRESH_PAGE, RefreshPage.UNKNOWN)
+      when (refreshPage) {
+        RefreshPage.PRODUCT_LIST -> {
+          RxBus.get().post(ProductEvent.ListRefreshEvent())
+        }
+      }
+    }
   }
 
   override fun onCreateView(
@@ -88,8 +102,11 @@ class MainActivity : BaseUIActivity() {
   }
 
   companion object {
-    fun launch(context: Context) {
+    private const val KEY_REFRESH_PAGE = "refresh_page"
+
+    fun launch(context: Context, page: Int = RefreshPage.UNKNOWN) {
       val intent = Intent(context, MainActivity::class.java)
+      intent.putExtra(KEY_REFRESH_PAGE, page)
       context.startActivity(intent)
     }
   }

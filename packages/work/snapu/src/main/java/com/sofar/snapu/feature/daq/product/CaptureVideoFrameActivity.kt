@@ -15,6 +15,7 @@ import com.sofar.base.util.setOnSingleClickListener
 import com.sofar.player.VideoFrameExtractor
 import com.sofar.snapu.MainActivity
 import com.sofar.snapu.R
+import com.sofar.snapu.RefreshPage
 import com.sofar.snapu.feature.daq.BitmapUtil
 import com.sofar.snapu.feature.daq.TaskManager
 import com.sofar.snapu.feature.daq.TaskUtil
@@ -91,7 +92,7 @@ class CaptureVideoFrameActivity : BaseUIActivity() {
   }
 
   private fun launchMain() {
-    MainActivity.launch(this)
+    MainActivity.launch(this, RefreshPage.PRODUCT_LIST)
   }
 
 

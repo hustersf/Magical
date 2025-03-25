@@ -16,4 +16,9 @@
     android:icon="@drawable/nav_uploaded"
     android:title="@string/list_uploaded"
     app:iconTint="@color/colorOnSurface" />
+  <item
+    android:id="@+id/list_date"
+    android:icon="@drawable/nav_date"
+    android:title="@string/list_date"
+    app:iconTint="@color/colorOnSurface" />
 </menu>

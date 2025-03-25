@@ -34,6 +34,9 @@ class TaskManager private constructor() {
   fun productStart(taskId: Long, edit: Boolean = false) {
     product.taskId = taskId
     product.uploaded = false
+    if (edit) {
+      product.version++
+    }
     this.edit = edit
   }
 

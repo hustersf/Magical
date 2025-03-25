@@ -44,4 +44,9 @@
   <string name="list_all">All</string>
   <string name="list_upload_pending">Pending Upload</string>
   <string name="list_uploaded">Uploaded</string>
+  <string name="list_date">Date</string>
+
+  <string name="permission_camera_title">Camera Access Needed</string>
+  <string name="permission_camera_content">For taking photos and videos, only accessed when in use</string>
+  <string name="permission_camera_setting_content">You have permanently denied camera access. Please enable it in system settings.</string>
 </resources>

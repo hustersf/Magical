@@ -1,5 +1,6 @@
 package com.sofar.snapu.feature.daq.product
 
+import android.Manifest
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,7 +8,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.MenuRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.ViewModelProvider
@@ -15,12 +16,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
 import com.sofar.base.BaseFragment
 import com.sofar.base.rx.RxBus
 import com.sofar.base.util.setOnSingleClickListener
 import com.sofar.mlkit.barcode.BarcodeContract
 import com.sofar.snapu.R
+import com.sofar.snapu.feature.base.DialogUtil
 import com.sofar.snapu.feature.daq.TaskUtil
 import com.sofar.snapu.feature.daq.model.DataState
 import com.sofar.snapu.feature.daq.model.ListMode
@@ -38,9 +41,38 @@ class ProductListFragment : BaseFragment() {
   private lateinit var player: ProductListPlayer
 
   private lateinit var scanBtn: Button
-  private lateinit var scanLauncher: ActivityResultLauncher<Unit>
   private lateinit var addBtn: Button
   private lateinit var filterBtn: Button
+
+  private var scanLauncher = registerForActivityResult(BarcodeContract()) { result ->
+    result?.let {
+      Snackbar.make(scanBtn, result, Snackbar.LENGTH_SHORT).show()
+    } ?: run {
+
+    }
+  }
+
+  private var runnable: Runnable? = null
+  private val cameraPermissionLauncher = registerForActivityResult(
+    ActivityResultContracts.RequestPermission()
+  ) { isGranted ->
+    when {
+      isGranted -> {
+        // 权限已授予
+        runnable?.run()
+      }
+
+      // 用户拒绝但未勾选"不再询问"
+      shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> {
+        showRationaleDialog()
+      }
+
+      else -> {
+        // 用户拒绝且勾选"不再询问"
+        showGoToSettingsDialog()
+      }
+    }
+  }
 
   private var listMode = ListMode.LIST_ALL
 
@@ -91,11 +123,15 @@ class ProductListFragment : BaseFragment() {
 
     scanBtn = view.findViewById(R.id.scan_btn)
     scanBtn.setOnSingleClickListener {
-      scanLauncher.launch(Unit)
+      requestCameraPermission {
+        scanLauncher.launch(Unit)
+      }
     }
     addBtn = view.findViewById(R.id.add_btn)
     addBtn.setOnSingleClickListener {
-      CaptureProductActivity.launch(requireContext())
+      requestCameraPermission {
+        CaptureProductActivity.launch(requireContext())
+      }
     }
     filterBtn = view.findViewById(R.id.filter_btn)
     filterBtn.setOnSingleClickListener {
@@ -113,13 +149,6 @@ class ProductListFragment : BaseFragment() {
       }
     }
     viewModel.fetchData()
-    scanLauncher = registerForActivityResult(BarcodeContract()) { result ->
-      result?.let {
-        Snackbar.make(scanBtn, result, Snackbar.LENGTH_SHORT).show()
-      } ?: run {
-
-      }
-    }
     disposes.add(RxBus.get().toObservable(ProductEvent.ListDeleteEvent::class.java).subscribe {
       TaskUtil.deleteProductAsync(requireContext(), it.product) {
         recyclerView.post {
@@ -129,6 +158,9 @@ class ProductListFragment : BaseFragment() {
           adapter.notifyItemRemoved(pos)
         }
       }
+    })
+    disposes.add(RxBus.get().toObservable(ProductEvent.ListRefreshEvent::class.java).subscribe {
+      viewModel.fetchData()
     })
   }
 
@@ -177,6 +209,10 @@ class ProductListFragment : BaseFragment() {
         R.id.list_uploaded -> {
           updateListMode(ListMode.LIST_UPLOADED)
         }
+
+        R.id.list_date -> {
+          showDatePicker()
+        }
       }
       true
     }
@@ -204,10 +240,52 @@ class ProductListFragment : BaseFragment() {
     }
   }
 
+  private fun showDatePicker() {
+    val datePicker =
+      MaterialDatePicker.Builder.datePicker()
+        .setTitleText(R.string.list_date)
+        .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+        .build()
+    datePicker.show(childFragmentManager, "date-picker")
+    datePicker.addOnPositiveButtonClickListener {
+      datePicker.selection?.let {
+        viewModel.filterListByDay(it)
+      }
+    }
+  }
+
+  private fun requestCameraPermission(runnable: Runnable) {
+    this.runnable = runnable
+    cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+  }
+
+  private fun showRationaleDialog() {
+    context?.let {
+      DialogUtil.showRationaleDialog(
+        it,
+        R.string.permission_camera_title,
+        R.string.permission_camera_content
+      ) {
+        cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+      }
+    }
+  }
+
+  private fun showGoToSettingsDialog() {
+    context?.let {
+      DialogUtil.showGoToSettingsDialog(
+        it, R.string.permission_camera_title, R.string
+          .permission_camera_setting_content
+      )
+    }
+  }
+
   override fun onDestroyView() {
     super.onDestroyView()
     player.detach()
     disposes.clear()
+    scanLauncher.unregister()
+    cameraPermissionLauncher.unregister()
   }
 
 }

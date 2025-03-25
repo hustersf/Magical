@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.media3.ui.PlayerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.signature.ObjectKey
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.sofar.auto.play.Playable
 import com.sofar.base.rx.RxBus
@@ -85,9 +86,11 @@ class ProductAdapter : CellAdapter<Product>() {
 
       Glide.with(eanIv.context)
         .load(data.imageFile)
+        .signature(ObjectKey(data.version))
         .into(eanIv)
       Glide.with(frameIv.context)
         .load(data.videoFrameFile)
+        .signature(ObjectKey(data.version))
         .into(frameIv)
       player.setDataSource(data.videoFile)
 

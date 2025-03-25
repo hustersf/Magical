@@ -25,4 +25,7 @@ class Product {
   @SerializedName("uploaded")
   var uploaded: Boolean = false
 
+  @SerializedName("version")
+  var version: Int = 0
+
 }
