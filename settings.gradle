@@ -47,3 +47,4 @@ include ':core:mlkit'
 include ':core:auto-play'
 
 include ':external:social-sdk'
+include ':packages:ai-edge'

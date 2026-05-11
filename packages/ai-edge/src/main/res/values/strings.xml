@@ -1,0 +1,9 @@
+<resources>
+  <string name="app_name" translatable="false">AI Edge</string>
+
+  <string name="bottom_nav_page_chat">Chats</string>
+  <string name="bottom_nav_page_agent">Agents</string>
+  <string name="bottom_nav_page_vision">Vision</string>
+  <string name="bottom_nav_page_meeting">Meeting</string>
+  <string name="bottom_nav_page_model">Models</string>
+</resources>

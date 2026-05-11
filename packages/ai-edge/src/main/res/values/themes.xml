@@ -1,0 +1,20 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!-- Base application theme. -->
+  <style name="Base.Theme.Magical" parent="Theme.Material3.DayNight.NoActionBar">
+    <!-- Customize your light theme here. -->
+    <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+  </style>
+
+  <style name="Theme.Magical" parent="Base.Theme.Magical" />
+
+  <style name="Theme.App.Splash" parent="Theme.SplashScreen">
+    <!-- 1. 设置启动页背景颜色（必须是纯色） -->
+    <item name="windowSplashScreenBackground">@color/white</item>
+    <!-- 2. 设置启动页中心的图标（支持静态图片或 AnimatedVectorDrawable 动画） -->
+    <item name="windowSplashScreenAnimatedIcon">@drawable/splash_screen_animated_icon</item>
+    <!-- 3. 设置图标动画的时长（单位：毫秒，建议不超过1000ms） -->
+    <item name="windowSplashScreenAnimationDuration">1000</item>
+    <!-- 4. 设置启动动画结束后，应用要切换到的正式主题 -->
+    <item name="postSplashScreenTheme">@style/Theme.Magical</item>
+  </style>
+</resources>

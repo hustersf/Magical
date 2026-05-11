@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+  <item
+    android:id="@+id/nav_chat"
+    android:enabled="true"
+    android:title="@string/bottom_nav_page_chat" />
+  <item
+    android:id="@+id/nav_agent"
+    android:enabled="true"
+    android:title="@string/bottom_nav_page_agent" />
+  <item
+    android:id="@+id/nav_vision"
+    android:enabled="true"
+    android:title="@string/bottom_nav_page_vision" />
+  <item
+    android:id="@+id/nav_meeting"
+    android:enabled="true"
+    android:title="@string/bottom_nav_page_meeting" />
+  <item
+    android:id="@+id/nav_model"
+    android:enabled="true"
+    android:title="@string/bottom_nav_page_model" />
+</menu>
