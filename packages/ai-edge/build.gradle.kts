@@ -8,12 +8,12 @@ plugins {
 
 android {
   namespace = "com.sofar.ai.edge"
-  compileSdk = 35
+  compileSdk = libs.versions.compileSdk.get().toInt()
 
   defaultConfig {
     applicationId = "com.sofar.ai.edge"
-    minSdk = 26
-    targetSdk = 35
+    minSdk = libs.versions.minSdk.get().toInt()
+    targetSdk = libs.versions.targetSdk.get().toInt()
     versionCode = 1
     versionName = "1.0"
 
@@ -38,18 +38,10 @@ android {
 dependencies {
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.appcompat)
-  implementation(libs.material)
-  implementation(libs.androidx.activity)
-  implementation(libs.androidx.constraintlayout)
-  implementation(libs.androidx.work.runtime.ktx)
   implementation(libs.androidx.splashscreen)
-  implementation(libs.androidx.recyclerview)
+  implementation(libs.androidx.viewpager2)
+  implementation(libs.material)
 
-  implementation(libs.retrofit)
-  implementation(libs.retrofit.serialization)
-  implementation(libs.retrofit.result)
-  implementation(libs.okhttp)
-  implementation(libs.okhttp.logging)
   implementation(libs.coroutines.android)
 
   implementation(libs.hilt.android)
@@ -58,4 +50,17 @@ dependencies {
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.espresso.core)
+
+  implementation(project(":core:ui"))
+
+  implementation(project(":feature:ai-edge:agent:api"))
+  implementation(project(":feature:ai-edge:agent:impl"))
+  implementation(project(":feature:ai-edge:chat:api"))
+  implementation(project(":feature:ai-edge:chat:impl"))
+  implementation(project(":feature:ai-edge:meeting:api"))
+  implementation(project(":feature:ai-edge:meeting:impl"))
+  implementation(project(":feature:ai-edge:vision:api"))
+  implementation(project(":feature:ai-edge:vision:impl"))
+  implementation(project(":feature:ai-edge:models:api"))
+  implementation(project(":feature:ai-edge:models:impl"))
 }

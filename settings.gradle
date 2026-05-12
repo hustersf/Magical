@@ -25,11 +25,12 @@ rootProject.name = "Magical"
 include ':packages:apollo'
 include ':packages:diana'
 include ':packages:aurora'
-
 include ':packages:wan-android'
 include ':packages:work:snapu'
-
 include ':packages:samples:compose'
+include ':packages:ai-edge'
+
+include ':external:social-sdk'
 
 include ':framework:widget'
 include ':framework:utility'
@@ -45,6 +46,20 @@ include ':core:login'
 include ':core:share'
 include ':core:mlkit'
 include ':core:auto-play'
+include ':core:download'
+include ':core:network'
+include ':core:ui'
 
-include ':external:social-sdk'
-include ':packages:ai-edge'
+include ':core:ai-edge:data'
+include ':core:ai-edge:design'
+
+include ':feature:ai-edge:agent:api'
+include ':feature:ai-edge:agent:impl'
+include ':feature:ai-edge:chat:api'
+include ':feature:ai-edge:chat:impl'
+include ':feature:ai-edge:meeting:api'
+include ':feature:ai-edge:meeting:impl'
+include ':feature:ai-edge:models:api'
+include ':feature:ai-edge:models:impl'
+include ':feature:ai-edge:vision:api'
+include ':feature:ai-edge:vision:impl'

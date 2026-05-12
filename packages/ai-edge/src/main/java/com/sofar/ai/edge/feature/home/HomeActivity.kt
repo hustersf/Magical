@@ -8,13 +8,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.sofar.ai.edge.R
-import com.sofar.ai.edge.core.ui.BaseUIActivity
-import com.sofar.ai.edge.core.ui.FragmentAdapter
-import com.sofar.ai.edge.feature.agent.AgentHomeFragment
-import com.sofar.ai.edge.feature.chat.ui.ChatHomeFragment
-import com.sofar.ai.edge.feature.meeting.MeetingHomeFragment
-import com.sofar.ai.edge.feature.model.ModelHomeFragment
-import com.sofar.ai.edge.feature.vision.VisionHomeFragment
+import com.sofar.core.ui.BaseUIActivity
+import com.sofar.core.ui.FragmentAdapter
+import com.sofar.feature.ai.edge.agent.impl.AgentHomeFragment
+import com.sofar.feature.ai.edge.chat.impl.ui.ChatHomeFragment
+import com.sofar.feature.ai.edge.meeting.impl.MeetingHomeFragment
+import com.sofar.feature.ai.edge.models.impl.ModelsHomeFragment
+import com.sofar.feature.ai.edge.vision.impl.VisionHomeFragment
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -68,7 +68,7 @@ class HomeActivity : BaseUIActivity() {
     list.add(AgentHomeFragment())
     list.add(VisionHomeFragment())
     list.add(MeetingHomeFragment())
-    list.add(ModelHomeFragment())
+    list.add(ModelsHomeFragment())
     return list
   }
 
