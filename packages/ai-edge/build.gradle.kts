@@ -52,6 +52,7 @@ dependencies {
   androidTestImplementation(libs.androidx.espresso.core)
 
   implementation(project(":core:ui"))
+  implementation(project(":core:ai-edge:design"))
 
   implementation(project(":feature:ai-edge:agent:api"))
   implementation(project(":feature:ai-edge:agent:impl"))
