@@ -49,6 +49,8 @@ include ':core:auto-play'
 include ':core:download'
 include ':core:network'
 include ':core:ui'
+include ':core:res'
+include ':core:common'
 
 include ':core:ai-edge:data'
 include ':core:ai-edge:design'

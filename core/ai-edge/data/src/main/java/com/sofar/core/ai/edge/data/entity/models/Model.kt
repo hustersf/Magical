@@ -1,4 +1,4 @@
-package com.sofar.core.ai.edge.data.model
+package com.sofar.core.ai.edge.data.entity.models
 
 data class Model(
   val name: String,

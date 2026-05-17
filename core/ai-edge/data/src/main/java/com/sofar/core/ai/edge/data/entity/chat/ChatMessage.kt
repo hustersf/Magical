@@ -1,4 +1,4 @@
-package com.sofar.core.ai.edge.data.chat
+package com.sofar.core.ai.edge.data.entity.chat
 
 enum class ChatMessageType {
   INFO, WARNING, ERROR, TEXT, IMAGE, AUDIO_CLIP, LOADING, THINKING, SYSTEM

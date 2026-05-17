@@ -1,11 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView style="@style/CoreUiCardView.Standard"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
-  android:layout_height="match_parent">
+  android:layout_height="wrap_content">
 
-  <TextView
-    android:id="@+id/display_name_tv"
+  <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"/>
+    android:layout_height="match_parent"
+    android:padding="@dimen/core_ui_spacing_lg">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+      android:id="@+id/model_name_tv"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:textAppearance="@style/CoreUiTextAppearance.TitleSecondary"
+      app:layout_constraintEnd_toStartOf="@+id/delete_iv"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+      android:id="@+id/delete_iv"
+      android:layout_width="@dimen/core_ui_touch_target_action_icon"
+      android:layout_height="@dimen/core_ui_touch_target_action_icon"
+      app:layout_constraintBottom_toBottomOf="@+id/model_name_tv"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="@+id/model_name_tv" />
+
+    <ImageView
+      android:id="@+id/status_icon_iv"
+      android:layout_width="@dimen/core_ui_inline_status_icon"
+      android:layout_height="@dimen/core_ui_inline_status_icon"
+      android:layout_marginTop="@dimen/core_ui_spacing_xs"
+      android:src="@drawable/core_ic_circle_download"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/model_name_tv" />
+
+    <TextView
+      android:id="@+id/model_size_tv"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/core_ui_spacing_xs"
+      android:textAppearance="@style/CoreUiTextAppearance.Body"
+      app:layout_constraintBottom_toBottomOf="@+id/status_icon_iv"
+      app:layout_constraintStart_toEndOf="@+id/status_icon_iv"
+      app:layout_constraintTop_toTopOf="@+id/status_icon_iv" />
+
+    <TextView
+      android:id="@+id/model_description_tv"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/core_ui_spacing_md"
+      android:lineSpacingMultiplier="1.2"
+      android:textAppearance="@style/CoreUiTextAppearance.Caption"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/status_icon_iv" />
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/download_btn"
+      style="@style/CoreUiButton.Primary.Small"
+      android:layout_width="0dp"
+      android:layout_marginTop="@dimen/core_ui_spacing_md"
+      android:text="@string/feature_models_download"
+      android:visibility="gone"
+      app:iconGravity="textStart"
+      app:icon="@drawable/core_ic_download"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/model_description_tv" />
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/benchmark_btn"
+      style="@style/CoreUiButton.Secondary.Small"
+      android:layout_width="0dp"
+      android:layout_marginEnd="@dimen/core_ui_spacing_sm"
+      android:layout_marginTop="@dimen/core_ui_spacing_md"
+      android:text="@string/feature_models_benchmark"
+      android:visibility="visible"
+      app:iconGravity="textStart"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toStartOf="@+id/try_it_btn"
+      app:layout_constraintHorizontal_chainStyle="spread"
+      app:layout_constraintHorizontal_weight="1"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/model_description_tv" />
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/try_it_btn"
+      style="@style/CoreUiButton.Primary.Small"
+      android:layout_width="0dp"
+      android:layout_marginStart="@dimen/core_ui_spacing_sm"
+      android:text="@string/feature_models_try_it"
+      android:visibility="visible"
+      app:iconGravity="textEnd"
+      app:layout_constraintBottom_toBottomOf="@+id/benchmark_btn"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_weight="1.2"
+      app:layout_constraintStart_toEndOf="@+id/benchmark_btn"
+      app:layout_constraintTop_toTopOf="@+id/benchmark_btn" />
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

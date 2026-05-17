@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- ================================================================= -->
+  <!-- 核心 UI 按钮组件样式族 (CoreUi Button Styles)                      -->
+  <!-- ================================================================= -->
+
+  <!-- 基础抽象样式：统一收拢全圆角与零内衬设计规范 -->
+  <style name="CoreUiButton.Base" parent="Widget.Material3.Button">
+    <item name="cornerRadius">@dimen/core_ui_corner_radius_pill</item>
+    <item name="android:insetTop">0dp</item>
+    <item name="android:insetBottom">0dp</item>
+  </style>
+
+  <!-- ==================== Primary 核心实心按钮 ==================== -->
+
+  <!-- 标准尺寸实心按钮：适用于页面级核心操作（如发送、下载） -->
+  <style name="CoreUiButton.Primary" parent="CoreUiButton.Base">
+    <item name="android:layout_height">@dimen/core_ui_button_height_standard</item>
+    <item name="android:textSize">@dimen/core_ui_text_size_title</item>
+  </style>
+
+  <!-- 紧凑尺寸实心按钮：适用于卡片内或轻量级核心操作 -->
+  <style name="CoreUiButton.Primary.Small" parent="CoreUiButton.Base">
+    <item name="android:layout_height">@dimen/core_ui_button_height_small</item>
+    <item name="android:textSize">@dimen/core_ui_text_size_caption</item>
+  </style>
+
+  <!-- 标准尺寸色调按钮：适用于次级重要操作，视觉表现柔和（如重新生成、启用模型） -->
+  <style name="CoreUiButton.Secondary" parent="CoreUiButton.Base">
+    <item name="materialThemeOverlay">@style/ThemeOverlay.Material3.Button.TonalButton</item>
+    <item name="android:layout_height">@dimen/core_ui_button_height_standard</item>
+    <item name="android:textSize">@dimen/core_ui_text_size_title</item>
+  </style>
+
+  <!-- 紧凑尺寸色调按钮：适用于轻量级次级操作或筛选标签 -->
+  <style name="CoreUiButton.Secondary.Small" parent="CoreUiButton.Base">
+    <item name="materialThemeOverlay">@style/ThemeOverlay.Material3.Button.TonalButton</item>
+    <item name="android:layout_height">@dimen/core_ui_button_height_small</item>
+    <item name="android:textSize">@dimen/core_ui_text_size_caption</item>
+  </style>
+</resources>

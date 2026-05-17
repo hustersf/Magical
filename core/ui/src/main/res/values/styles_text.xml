@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- 全局基础排版样式继承线：锁定系统默认无衬线字体系列，方便后续需要时在底层全局无缝更换企业特殊字体 -->
+  <style name="CoreUiTextAppearance" parent="TextAppearance.Material3.BodyMedium">
+    <item name="android:fontFamily">sans-serif</item>
+  </style>
+
+  <!-- 规范：页面级标题风格。适用于顶部导航栏标题文字，采用 20sp + 粗体 (Bold) -->
+  <style name="CoreUiTextAppearance.Header">
+    <item name="android:textSize">@dimen/core_ui_text_size_header</item>
+    <item name="android:textStyle">bold</item>
+    <item name="android:textColor">?attr/colorOnSurface</item>
+  </style>
+
+  <!-- 规范：信息容器核心标题风格。适用于卡片头部主标题、核心设置项，采用 16sp + 粗体 (Bold) -->
+  <style name="CoreUiTextAppearance.Title">
+    <item name="android:textSize">@dimen/core_ui_text_size_title</item>
+    <item name="android:textStyle">bold</item>
+    <item name="android:textColor">?attr/colorOnSurface</item>
+  </style>
+
+  <!-- 规范：次级容器/卡片内部主标题风格。适用于列表项核心英文标题、卡片次级标题，采用 16sp + 常规体 (Normal) -->
+  <style name="CoreUiTextAppearance.TitleSecondary" parent="CoreUiTextAppearance">
+    <item name="android:textSize">@dimen/core_ui_text_size_title</item>
+    <item name="android:textStyle">normal</item>
+    <item name="android:textColor">?attr/colorOnSurface</item>
+  </style>
+
+  <!-- 规范：常规标准内容正文风格。适用于内容流主体、常规列表详情描述，采用 14sp + 常规体 (Normal) -->
+  <style name="CoreUiTextAppearance.Body">
+    <item name="android:textSize">@dimen/core_ui_text_size_body</item>
+    <item name="android:textStyle">normal</item>
+    <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+  </style>
+
+  <!-- 规范：弱提示/辅助次要文字风格。适用于时间戳、数量单位后缀、次要灰色辅助说明，采用 12sp + 常规体 (Normal) -->
+  <style name="CoreUiTextAppearance.Caption">
+    <item name="android:textSize">@dimen/core_ui_text_size_caption</item>
+    <item name="android:textStyle">normal</item>
+    <item name="android:textColor">?attr/colorOutline</item>
+  </style>
+</resources>

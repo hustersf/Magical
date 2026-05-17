@@ -3,11 +3,14 @@ package com.sofar.feature.ai.edge.models.impl
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.sofar.core.ai.edge.data.model.Model
+import com.sofar.core.ai.edge.data.entity.models.Model
+import com.sofar.core.common.ByteConvertUtil
+import io.noties.markwon.Markwon
 
-class ModelAdapter : RecyclerView.Adapter<ModelViewHolder>() {
+class ModelsAdapter : RecyclerView.Adapter<ModelViewHolder>() {
 
   private val items = mutableListOf<Model>()
 
@@ -35,9 +38,22 @@ class ModelAdapter : RecyclerView.Adapter<ModelViewHolder>() {
 }
 
 class ModelViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-  private val nameTv: TextView = itemView.findViewById(R.id.display_name_tv)
+  private val nameTv: TextView = itemView.findViewById(R.id.model_name_tv)
+  private val sizeTv: TextView = itemView.findViewById(R.id.model_size_tv)
+  private val descTv: TextView = itemView.findViewById(R.id.model_description_tv)
 
+  private val downloadBtn: Button = itemView.findViewById(R.id.download_btn)
+  private val benchmarkBtn: Button = itemView.findViewById(R.id.benchmark_btn)
+  private val tryBtn: Button = itemView.findViewById(R.id.try_it_btn)
   fun bind(item: Model) {
-    nameTv.text = item.displayName
+    nameTv.text = item.name
+    sizeTv.text = ByteConvertUtil.formatBytes(item.sizeInBytes)
+
+    val markwon = Markwon.create(descTv.context)
+    markwon.setMarkdown(descTv, item.info)
+
+    benchmarkBtn.visibility= View.GONE
+    tryBtn.visibility= View.GONE
+    downloadBtn.visibility= View.VISIBLE
   }
 }

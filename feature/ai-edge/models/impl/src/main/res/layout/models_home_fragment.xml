@@ -1,15 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
-  android:layout_height="match_parent">
+  android:layout_height="match_parent"
+  android:paddingEnd="@dimen/core_ui_spacing_lg"
+  android:paddingStart="@dimen/core_ui_spacing_lg">
+
+  <com.google.android.material.appbar.AppBarLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/core_ui_spacing_lg"
+      android:orientation="vertical"
+      app:layout_scrollFlags="scroll">
+
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/feature_models_storage_hub_title"
+        android:textAppearance="@style/CoreUiTextAppearance.Title" />
+
+      <com.google.android.material.card.MaterialCardView
+        style="@style/CoreUiCardView.Standard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/core_ui_spacing_sm">
+
+        <RelativeLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:padding="@dimen/core_ui_spacing_lg">
+
+          <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/storage_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:max="100"
+            android:progress="50"
+            app:indicatorSize="@dimen/feature_models_storage_progress_size"
+            app:trackThickness="@dimen/core_ui_progress_track_thickness_standard" />
+
+          <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/storage_progress"
+            android:layout_alignLeft="@id/storage_progress"
+            android:layout_alignRight="@id/storage_progress"
+            android:layout_alignTop="@id/storage_progress"
+            android:gravity="center"
+            android:textAppearance="@style/CoreUiTextAppearance.Title" />
+
+          <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/core_ui_spacing_lg"
+            android:layout_toRightOf="@id/storage_progress"
+            android:orientation="vertical">
+
+            <TextView
+              android:id="@+id/storage_used_tv"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/feature_models_storage_used_format"
+              android:textAppearance="@style/CoreUiTextAppearance.Body" />
+
+            <com.google.android.material.button.MaterialButton
+              android:id="@+id/optimize_btn"
+              style="@style/CoreUiButton.Primary.Small"
+              android:layout_width="wrap_content"
+              android:layout_marginTop="@dimen/core_ui_spacing_sm"
+              android:text="@string/feature_models_btn_optimize" />
+          </LinearLayout>
+        </RelativeLayout>
+      </com.google.android.material.card.MaterialCardView>
+
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/core_ui_spacing_md"
+        android:text="@string/feature_models_repository_title"
+        android:textAppearance="@style/CoreUiTextAppearance.Title"
+        android:textStyle="bold" />
+    </LinearLayout>
+
+  </com.google.android.material.appbar.AppBarLayout>
 
   <androidx.recyclerview.widget.RecyclerView
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+    android:id="@+id/models_rv"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/core_ui_spacing_sm"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

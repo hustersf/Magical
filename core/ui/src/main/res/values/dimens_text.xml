@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- 辅助/次要文字 (12sp)：用于列表项的时间戳、状态标注、长表单或免责声明底部的辅助说明文本 -->
+  <dimen name="core_ui_text_size_caption">12sp</dimen>
+  <!-- 标准正文 (14sp)：全线应用使用频率最高的基础字号。用于各类内容流正文、标准列表描述、表单输入框文本 -->
+  <dimen name="core_ui_text_size_body">14sp</dimen>
+  <!-- 模块/项级标题 (16sp)：用于卡片组件头部的核心加粗标题、列表项的主名称、核心功能菜单的文本 -->
+  <dimen name="core_ui_text_size_title">16sp</dimen>
+  <!-- 页面级标题 (20sp)：专门用于顶部标准导航栏（AppBar / Toolbar / Header）的全局页面标题文本 -->
+  <dimen name="core_ui_text_size_header">20sp</dimen>
+</resources>

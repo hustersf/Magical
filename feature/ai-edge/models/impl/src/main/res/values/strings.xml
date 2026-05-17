@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="feature_models_storage_hub_title">Storage Hub &amp; Cleanup</string>
+  <string name="feature_models_storage_used_format">%1$s / %2$s Used</string>
+  <string name="feature_models_btn_optimize">One-Click Optimize</string>
+  <string name="feature_models_repository_title">Model Repository</string>
+  <string name="feature_models_benchmark">Benchmark</string>
+  <string name="feature_models_try_it">Try it</string>
+  <string name="feature_models_download">Download</string>
+</resources>

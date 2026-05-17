@@ -37,13 +37,12 @@ android {
 
 dependencies {
   implementation(libs.androidx.core.ktx)
+  implementation(libs.androidx.fragment.ktx)
   implementation(libs.androidx.appcompat)
   implementation(libs.androidx.splashscreen)
   implementation(libs.androidx.viewpager2)
   implementation(libs.material)
-
   implementation(libs.coroutines.android)
-
   implementation(libs.hilt.android)
   ksp(libs.hilt.compiler)
 
@@ -52,7 +51,9 @@ dependencies {
   androidTestImplementation(libs.androidx.espresso.core)
 
   implementation(project(":core:ui"))
+  implementation(project(":core:res"))
   implementation(project(":core:ai-edge:design"))
+  implementation(project(":core:ai-edge:data"))
 
   implementation(project(":feature:ai-edge:agent:api"))
   implementation(project(":feature:ai-edge:agent:impl"))

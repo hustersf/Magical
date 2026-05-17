@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- 通用基础组件：标准悬浮卡片样式定义 -->
+  <style name="CoreUiCardView.Standard" parent="Widget.Material3.CardView.Elevated">
+    <item name="cardCornerRadius">@dimen/core_ui_corner_radius_md</item>
+    <item name="strokeWidth">@dimen/core_ui_card_stroke</item>
+  </style>
+</resources>

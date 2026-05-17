@@ -1,6 +1,7 @@
 plugins {
   alias(libs.plugins.android.library)
   alias(libs.plugins.kotlin.android)
+  alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -34,4 +35,6 @@ dependencies {
   implementation(libs.okhttp)
   implementation(libs.okhttp.logging)
   implementation(libs.coroutines.android)
+
+  implementation(project(":core:network"))
 }

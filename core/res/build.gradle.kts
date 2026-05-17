@@ -1,11 +1,10 @@
 plugins {
   alias(libs.plugins.android.library)
   alias(libs.plugins.kotlin.android)
-  alias(libs.plugins.kotlin.serialization)
 }
 
 android {
-  namespace = "com.sofar.feature.ai.edge.models.impl"
+  namespace = "com.sofar.core.res"
   compileSdk = libs.versions.compileSdk.get().toInt()
 
   defaultConfig {
@@ -31,16 +30,5 @@ android {
 dependencies {
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.appcompat)
-  implementation(libs.androidx.constraintlayout)
-  implementation(libs.androidx.recyclerview)
-  implementation(libs.androidx.coordinatorlayout)
   implementation(libs.material)
-  implementation(libs.androidx.fragment.ktx)
-  implementation(libs.kotlinx.serialization)
-  implementation(libs.markwon)
-
-  implementation(project(":core:ui"))
-  implementation(project(":core:res"))
-  implementation(project(":core:common"))
-  implementation(project(":core:ai-edge:data"))
 }
