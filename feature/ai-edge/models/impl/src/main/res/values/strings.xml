@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="feature_models_storage_hub_title">Storage Hub &amp; Cleanup</string>
-  <string name="feature_models_storage_used_format">%1$s / %2$s Used</string>
+  <string name="feature_models_storage_scanning">Scanning storage…</string>
+  <string name="feature_models_storage_used_format">%1$s / %2$s Free</string>
   <string name="feature_models_btn_optimize">One-Click Optimize</string>
   <string name="feature_models_repository_title">Model Repository</string>
   <string name="feature_models_benchmark">Benchmark</string>
   <string name="feature_models_try_it">Try it</string>
   <string name="feature_models_download">Download</string>
+  <string name="feature_models_download_partial">Downloaded %1$d%% (Resume)</string>
+  <string name="feature_models_download_progress">%1$d%% (%2$s/%3$s, %4$s left)</string>
+  <string name="feature_models_download_unzipping">Unzipping…</string>
+  <string name="feature_models_download_retry">Retry Download</string>
+  <string name="feature_models_time_minutes">%1$d min</string>
+  <string name="feature_models_delete_dialog_title">Uninstall Model</string>
+  <string name="feature_models_delete_dialog_message">Are you sure you want to uninstall %1$s? You will not be able to use it offline, and it must be re-downloaded to use again.</string>
+  <string name="feature_models_delete_dialog_confirm">Uninstall</string>
+  <string name="feature_models_delete_dialog_cancel">Cancel</string>
 </resources>

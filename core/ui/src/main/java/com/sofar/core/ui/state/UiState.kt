@@ -1,4 +1,4 @@
-package com.sofar.core.ui
+package com.sofar.core.ui.state
 
 sealed interface UiState<out T> {
   data object Loading : UiState<Nothing>

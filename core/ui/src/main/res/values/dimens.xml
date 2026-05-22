@@ -47,6 +47,7 @@
 
   <!-- 业界标准无感操作图标热区大小（符合 Google MD3 无障碍最小触控热区建议） -->
   <dimen name="core_ui_touch_target_action_icon">40dp</dimen>
+  <dimen name="core_ui_touch_target_action_icon_padding">8dp</dimen>
   <!-- 标准行内次要状态图标的物理尺寸（如卡片内的状态指示勾选框、小警告图标） -->
   <dimen name="core_ui_inline_status_icon">16dp</dimen>
 </resources>

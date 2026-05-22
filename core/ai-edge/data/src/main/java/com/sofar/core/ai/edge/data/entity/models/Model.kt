@@ -1,5 +1,12 @@
 package com.sofar.core.ai.edge.data.entity.models
 
+import android.content.Context
+import com.sofar.core.ai.edge.data.storage.AppStorageHub
+import java.io.File
+
+private val NORMALIZE_NAME_REGEX = Regex("[^a-zA-Z0-9]")
+const val TMP_FILE_EXT = "tmp"
+
 data class Model(
   val name: String,
   val displayName: String = "",
@@ -38,6 +45,79 @@ data class Model(
 
   /** Whether the LLM model supports thinking mode. */
   val llmSupportThinking: Boolean = false,
+
+  /** The max token for llm model. */
+  val llmMaxToken: Int = 0,
+
+  var normalizedName: String = "",
+) {
+
+  init {
+    normalizedName = NORMALIZE_NAME_REGEX.replace(name, "_")
+  }
+
+  fun getBaseDir(context: Context): String {
+    return listOf(
+      AppStorageHub.modelsDir(context).absolutePath,
+      normalizedName,
+      version
+    ).joinToString(File.separator)
+  }
+
+  fun getPath(context: Context, fileName: String = downloadFileName): String {
+    val baseDir = getBaseDir(context)
+    return if (isZip && unzipDir.isNotEmpty()) {
+      listOf(baseDir, unzipDir).joinToString(File.separator)
+    } else {
+      listOf(baseDir, fileName).joinToString(File.separator)
+    }
+  }
+
+  fun getTmpPath(context: Context): String {
+    return getPath(context, fileName = "$downloadFileName.$TMP_FILE_EXT")
+  }
+
+  fun getDownloadStatus(context: Context): ModelDownloadStatus {
+    val fileOrDir = File(getPath(context))
+    val tmpFile = File(getTmpPath(context))
+
+    return when {
+      // 状态 A：正式文件完美存在、且是个单文件、体积大于 0
+      fileOrDir.exists() && fileOrDir.isFile && fileOrDir.length() == sizeInBytes -> {
+        ModelDownloadStatus(statusType = ModelDownloadStatusType.SUCCEEDED)
+      }
+
+      // 状态 B：正式文件还没就绪，但发现本地躺着一个有体积的 .tmp 临时文件！
+      tmpFile.exists() && tmpFile.isFile && tmpFile.length() > 0 -> {
+        ModelDownloadStatus(
+          statusType = ModelDownloadStatusType.PARTIALLY_DOWNLOADED,
+          totalBytes = this.sizeInBytes,   // 线上预计的总大小
+          receivedBytes = tmpFile.length()  // 本地上一次已经下载完的断点字节数
+        )
+      }
+
+      // 状态 C：全都没有，白纸一张
+      else -> {
+        ModelDownloadStatus(statusType = ModelDownloadStatusType.NOT_DOWNLOADED)
+      }
+    }
+  }
+}
+
+enum class ModelDownloadStatusType {
+  NOT_DOWNLOADED,
+  PARTIALLY_DOWNLOADED,
+  IN_PROGRESS,
+  UNZIPPING,
+  SUCCEEDED,
+  FAILED,
+}
+
+data class ModelDownloadStatus(
+  val statusType: ModelDownloadStatusType,
+  val totalBytes: Long = 0,
+  val receivedBytes: Long = 0,
+  val errorMessage: String = "",
+  val bytesPerSecond: Long = 0,
+  val remainingMs: Long = 0,
 )
-
-

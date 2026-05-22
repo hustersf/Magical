@@ -9,10 +9,10 @@ import java.util.zip.ZipInputStream
 
 object ZipUtil {
 
-  fun unzip(zipFilePath: String, destDir: File, deleteSource: Boolean = false) {
+  fun unzip(zipFile: File, destDir: File, deleteSource: Boolean = false) {
     if (!destDir.exists()) destDir.mkdirs()
     val unzipBuffer = ByteArray(4096)
-    ZipInputStream(BufferedInputStream(FileInputStream(zipFilePath))).use { zipIn ->
+    ZipInputStream(BufferedInputStream(FileInputStream(zipFile))).use { zipIn ->
       var zipEntry: ZipEntry? = zipIn.nextEntry
       while (zipEntry != null) {
         val filePath = destDir.absolutePath + File.separator + zipEntry.name
@@ -32,7 +32,6 @@ object ZipUtil {
     }
 
     if (deleteSource) {
-      val zipFile = File(zipFilePath)
       zipFile.delete()
     }
   }

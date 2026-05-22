@@ -45,6 +45,7 @@
             app:trackThickness="@dimen/core_ui_progress_track_thickness_standard" />
 
           <TextView
+            android:id="@+id/storage_progress_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/storage_progress"
@@ -63,7 +64,7 @@
             android:orientation="vertical">
 
             <TextView
-              android:id="@+id/storage_used_tv"
+              android:id="@+id/storage_usage_tv"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:text="@string/feature_models_storage_used_format"

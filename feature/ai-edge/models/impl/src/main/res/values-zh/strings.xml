@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="feature_models_storage_hub_title">存储中心与清理</string>
-  <string name="feature_models_storage_used_format">已使用 %1$s / %2$s</string>
+  <string name="feature_models_storage_scanning">存储空间扫描中…</string>
+  <string name="feature_models_storage_used_format">%1$s / %2$s 可用</string>
   <string name="feature_models_btn_optimize">一键优化</string>
   <string name="feature_models_repository_title">模型仓库</string>
   <string name="feature_models_benchmark">跑分测试</string>
   <string name="feature_models_try_it">立即试用</string>
   <string name="feature_models_download">下载模型</string>
+  <string name="feature_models_download_partial">已下载 %1$d%% (继续下载)</string>
+  <string name="feature_models_download_progress">%1$d%% (%2$s/%3$s，剩余 %4$s)</string>
+  <string name="feature_models_download_unzipping">解压中…</string>
+  <string name="feature_models_download_retry">重试下载</string>
+  <string name="feature_models_time_minutes">%1$d 分钟</string>
+  <string name="feature_models_delete_dialog_title">确认卸载模型</string>
+  <string name="feature_models_delete_dialog_message">确定要从手机中卸载模型 %1$s 吗？卸载后将无法在离线状态下使用该模型，重新试用需要重新下载。</string>
+  <string name="feature_models_delete_dialog_confirm">确定卸载</string>
+  <string name="feature_models_delete_dialog_cancel">取消</string>
 </resources>

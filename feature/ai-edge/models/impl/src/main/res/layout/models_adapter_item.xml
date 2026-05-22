@@ -16,14 +16,16 @@
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:textAppearance="@style/CoreUiTextAppearance.TitleSecondary"
-      app:layout_constraintEnd_toStartOf="@+id/delete_iv"
+      app:layout_constraintEnd_toStartOf="@+id/model_delete_iv"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-      android:id="@+id/delete_iv"
+      android:id="@+id/model_delete_iv"
       android:layout_width="@dimen/core_ui_touch_target_action_icon"
       android:layout_height="@dimen/core_ui_touch_target_action_icon"
+      android:padding="@dimen/core_ui_touch_target_action_icon_padding"
+      android:src="@drawable/core_ic_delete"
       app:layout_constraintBottom_toBottomOf="@+id/model_name_tv"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintTop_toTopOf="@+id/model_name_tv" />
@@ -65,8 +67,8 @@
       android:layout_marginTop="@dimen/core_ui_spacing_md"
       android:text="@string/feature_models_download"
       android:visibility="gone"
-      app:iconGravity="textStart"
       app:icon="@drawable/core_ic_download"
+      app:iconGravity="textStart"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"

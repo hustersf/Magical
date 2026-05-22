@@ -17,11 +17,9 @@ object ModelsDataManager {
   private lateinit var appContext: Context
   private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
   private val repository = ModelRepository()
-
-  // 2. 核心：创建一个 replay = 1 的 SharedFlow
-  // 它就像一个只能装 1 个数据的“热点缓存”，谁订阅（first）谁就能拿到最新值
-  // 如果预加载还没完成，订阅者会自动挂起等待
   private val _dataFlow = MutableSharedFlow<ModelAllowlist>(replay = 1)
+
+  private const val MODEL_ALLOWLIST_FILENAME = "model_allowlist.json"
 
   // 对外暴露只读的 Flow
   val dataFlow get() = _dataFlow
@@ -47,6 +45,10 @@ object ModelsDataManager {
     }
   }
 
+  fun appContext(): Context {
+    return appContext
+  }
+
   // 4. 页面获取数据的方法（完美契合你的诉求）
   suspend fun getModelData(): ModelAllowlist {
     // 诉求2：先检查本地有没有缓存
@@ -60,10 +62,14 @@ object ModelsDataManager {
     return _dataFlow.first()
   }
 
+  private fun modelConfigFile(): File {
+    return File(appContext.getExternalFilesDir(null), MODEL_ALLOWLIST_FILENAME)
+  }
+
   private suspend fun loadFromLocalFile(): ModelAllowlist? =
     withContext(Dispatchers.IO) {
       return@withContext try {
-        val file = File(appContext.filesDir, "model_cache.json")
+        val file = modelConfigFile()
         if (file.exists()) {
           val content = file.readText()
           Json.decodeFromString<ModelAllowlist>(content)
@@ -76,7 +82,7 @@ object ModelsDataManager {
   private suspend fun saveToLocalFile(data: ModelAllowlist) =
     withContext(Dispatchers.IO) {
       try {
-        val file = File(appContext.filesDir, "model_cache.json")
+        val file = modelConfigFile()
         val jsonString = Json.encodeToString(data)
         file.writeText(jsonString)
       } catch (e: Exception) {

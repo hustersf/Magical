@@ -37,4 +37,5 @@ dependencies {
   implementation(libs.coroutines.android)
 
   implementation(project(":core:network"))
+  implementation(project(":core:download"))
 }
