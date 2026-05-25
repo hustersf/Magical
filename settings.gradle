@@ -14,8 +14,16 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        google()
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
         mavenCentral()
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/public' }
         maven { url 'https://jitpack.io' }
     }
 }
@@ -54,6 +62,7 @@ include ':core:common'
 
 include ':core:ai-edge:data'
 include ':core:ai-edge:design'
+include ':core:ai-edge:database'
 
 include ':feature:ai-edge:agent:api'
 include ':feature:ai-edge:agent:impl'
