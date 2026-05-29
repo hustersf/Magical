@@ -1,4 +1,4 @@
-package com.sofar.core.common
+package com.sofar.core.common.util
 
 import java.math.BigDecimal
 import java.math.RoundingMode

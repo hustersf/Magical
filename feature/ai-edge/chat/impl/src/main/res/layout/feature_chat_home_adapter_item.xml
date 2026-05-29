@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="@dimen/feature_chat_home_item_height"
+  android:paddingEnd="@dimen/core_ui_spacing_lg"
+  android:paddingLeft="@dimen/core_ui_spacing_lg">
+
+  <TextView
+    android:id="@+id/chat_avatar_tv"
+    android:layout_width="@dimen/feature_chat_home_avatar_height"
+    android:layout_height="@dimen/feature_chat_home_avatar_height"
+    android:background="@drawable/core_shape_circle"
+    android:gravity="center"
+    android:textSize="@dimen/core_ui_icon_size_medium"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+  <TextView
+    android:id="@+id/chat_title_tv"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/core_ui_spacing_md"
+    android:ellipsize="end"
+    android:maxLines="1"
+    android:textAppearance="@style/CoreUiTextAppearance.Title"
+    app:layout_constraintBottom_toTopOf="@+id/chat_preview_tv"
+    app:layout_constraintStart_toEndOf="@+id/chat_avatar_tv"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintVertical_chainStyle="packed"
+    tools:text="英语口语教练" />
+
+  <TextView
+    android:id="@+id/chat_preview_tv"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/core_ui_spacing_xs"
+    android:ellipsize="end"
+    android:maxLines="1"
+    android:textAppearance="@style/CoreUiTextAppearance.Body"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="@+id/chat_title_tv"
+    app:layout_constraintStart_toStartOf="@+id/chat_title_tv"
+    app:layout_constraintTop_toBottomOf="@+id/chat_title_tv"
+    tools:text="[图片] 查看历史分析记录" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

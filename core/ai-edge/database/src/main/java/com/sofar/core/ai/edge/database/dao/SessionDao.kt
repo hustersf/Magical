@@ -15,8 +15,11 @@ interface SessionDao {
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   suspend fun insertSession(session: SessionEntity)
 
-  @Query("SELECT * FROM sessions ORDER BY updated_at DESC")
+  @Query("SELECT * FROM sessions ORDER BY priority DESC, updated_at DESC")
   fun getAllSessions(): Flow<List<SessionEntity>> // 响应式倒序流：数据库写盘后自动推流实现列表置顶
+
+  @Query("SELECT COUNT(*) FROM sessions WHERE priority = :workspacePriority")
+  suspend fun getWorkspaceCount(workspacePriority: Int): Int
 
   @Query("SELECT * FROM sessions WHERE id = :sessionId")
   suspend fun getSessionById(sessionId: String): SessionEntity? // 单次挂起：用于原子事务分支校验

@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sofar.core.ai.edge.data.entity.models.Model
 import com.sofar.core.ai.edge.data.entity.models.ModelDownloadStatus
 import com.sofar.core.ai.edge.data.entity.models.ModelDownloadStatusType
-import com.sofar.core.common.ByteConvertUtil
 import io.noties.markwon.Markwon
 
 class ModelsAdapter(
@@ -27,7 +26,7 @@ class ModelsAdapter(
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ModelViewHolder {
     val itemView = LayoutInflater.from(parent.context)
-      .inflate(R.layout.models_adapter_item, parent, false)
+      .inflate(R.layout.feature_models_adapter_item, parent, false)
     return ModelViewHolder(itemView)
   }
 

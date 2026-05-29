@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="feature_chat_home_title">对话</string>
+  <string name="feature_chat_input_hint">发消息或按住说话...</string>
+</resources>

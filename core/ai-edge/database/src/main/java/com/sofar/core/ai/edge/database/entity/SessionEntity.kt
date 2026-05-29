@@ -18,9 +18,9 @@ import androidx.room.PrimaryKey
  *    大模型交互时，会话的更新极其频繁（每次收发字词都会导致时间戳变更）。将时间戳隔离在独立的会话表，
  *    能让写盘动作只发生在轻量单行上，大幅减少磁盘随机写入开销，保护手机闪存寿命。
  * 3. 性能索引设计理由 (indices)：
- *    - Index([updated_at])：Tab 1 列表需要以极高的频率执行 `ORDER BY updated_at DESC` 进行微信式的置顶刷新。
- *      加了索引后，SQLite 无需在全表做耗时的内存排序，直接通过 B-Tree 索引秒级输出倒序列表，消除滑动的掉帧感。
- *    - Index([agent_id])：必须为外键列显式创建索引，防止 agents 表发生变动时 SQLite 进行全表扫描引发编译警告或死锁。
+ *    - Index([priority, updated_at])：多列复合索引。首页执行 `ORDER BY priority DESC, updated_at DESC` 时，
+ *      SQLite 能够直接通过 B-Tree 索引硬件级输出完美队列，免去全表内存排序，彻底消除冷启动与滑动的掉帧感。
+ *    - Index([agent_id])：必须为外键列显式创建索引，防止 agents 表发生变动时触发全表扫描，引发卡顿或死锁警
  * 4. 外键级联行为设计理由 (ForeignKey)：
  *    关联 [AgentEntity]，配置 [onDelete = SET_NULL]。当用户在 Tab 2 删除了某个自定义智能体人设时，该人设产生过的
  *    历史对话不应该被连带误删，而是让外键自动置空，将会话安全降级为普通自由对话，保障用户单机数据资产安全。
@@ -36,7 +36,7 @@ import androidx.room.PrimaryKey
     )
   ],
   indices = [
-    Index(value = ["updated_at"]),
+    Index(value = ["priority", "updated_at"]),
     Index(value = ["agent_id"])
   ]
 )
@@ -48,5 +48,6 @@ data class SessionEntity(
   val agentId: String?,                               // 关联的智能体人设 ID (为 NULL 代表纯大模型自由自由对话)
   val type: String,                                   // 会话多模态来源类型约束 (TEXT: 普通/智能体, VISION: 识图, MEETING: 会议)
   @ColumnInfo(name = "updated_at")
-  val updatedAt: Long                                 // 核心置顶指标：最后一条消息交互的毫秒时间戳，用于 Tab 1 降序排列
+  val updatedAt: Long,                                // 核心置顶指标：最后一条消息交互的毫秒时间戳，用于 Tab 1 降序排列
+  val priority: Int = 0                               // 策略级置顶指标：会话优先级数值(越大越靠前)，用于常驻顶部或手动置顶
 )

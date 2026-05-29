@@ -5,4 +5,26 @@
     <item name="cardCornerRadius">@dimen/core_ui_corner_radius_md</item>
     <item name="strokeWidth">@dimen/core_ui_card_stroke</item>
   </style>
+
+  <style name="CoreUiCardView.InputBarContainer" parent="Widget.Material3.CardView.Elevated">
+    <item name="cardBackgroundColor">?attr/colorSurface</item>
+    <item name="cardCornerRadius">@dimen/core_ui_corner_radius_md</item>
+    <item name="cardElevation">@dimen/core_ui_card_elevation</item>
+    <item name="strokeWidth">0dp</item>
+  </style>
+
+  <!-- 通用基础组件：标准图标按钮样式定义 -->
+  <style name="CoreUiButton.IconButton" parent="Widget.Material3.Button.IconButton">
+    <item name="iconSize">@dimen/core_ui_icon_size_medium</item>
+    <item name="android:layout_width">@dimen/core_ui_touch_target_action_icon</item>
+    <item name="android:layout_height">@dimen/core_ui_touch_target_action_icon</item>
+    <item name="android:paddingLeft">@dimen/core_ui_touch_target_action_icon_padding</item>
+    <item name="android:paddingRight">@dimen/core_ui_touch_target_action_icon_padding</item>
+    <item name="android:paddingTop">@dimen/core_ui_touch_target_action_icon_padding</item>
+    <item name="android:paddingBottom">@dimen/core_ui_touch_target_action_icon_padding</item>
+    <item name="android:insetLeft">0dp</item>
+    <item name="android:insetRight">0dp</item>
+    <item name="android:insetTop">0dp</item>
+    <item name="android:insetBottom">0dp</item>
+  </style>
 </resources>

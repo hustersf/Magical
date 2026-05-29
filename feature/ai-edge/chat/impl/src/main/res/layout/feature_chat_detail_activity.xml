@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:paddingEnd="@dimen/core_ui_spacing_lg"
+  android:paddingStart="@dimen/core_ui_spacing_lg">
+
+  <com.google.android.material.appbar.MaterialToolbar
+    android:id="@+id/chat_detail_toolbar"
+    android:layout_width="0dp"
+    android:layout_height="@dimen/core_ui_toolbar_height_standard"
+    android:theme="@style/ThemeOverlay.Material3.ActionBar"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:navigationIcon="@drawable/core_ic_back"
+    app:title="@string/feature_chat_home_title"
+    app:titleCentered="true"
+    app:titleTextAppearance="@style/CoreUiTextAppearance.Header">
+
+  </com.google.android.material.appbar.MaterialToolbar>
+
+  <androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/chat_detail_list"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:paddingRight="@dimen/core_ui_spacing_lg"
+    android:paddingStart="@dimen/core_ui_spacing_lg"
+    app:layout_constraintBottom_toTopOf="@+id/chat_detail_input_card"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/chat_detail_toolbar" />
+
+  <com.google.android.material.card.MaterialCardView
+    android:id="@+id/chat_detail_input_card"
+    style="@style/CoreUiCardView.InputBarContainer"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/core_ui_spacing_lg"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="@dimen/core_ui_spacing_sm">
+
+      <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/chat_detail_edit_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/core_ui_spacing_sm"
+        android:layout_weight="1"
+        android:background="@null"
+        android:hint="@string/feature_chat_input_hint"
+        android:minHeight="@dimen/core_ui_input_field_min_height_standard"
+        android:textAppearance="@style/CoreUiTextAppearance.Body"
+        app:layout_constraintEnd_toStartOf="@+id/chat_detail_cancel_btn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+      <com.google.android.material.button.MaterialButton
+        android:id="@+id/chat_detail_cancel_btn"
+        style="@style/CoreUiButton.IconButton"
+        android:visibility="gone"
+        app:icon="@drawable/core_ic_cancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/chat_detail_edit_text" />
+
+      <com.google.android.material.button.MaterialButton
+        android:id="@+id/chat_detail_more_btn"
+        style="@style/CoreUiButton.IconButton"
+        app:icon="@drawable/core_ic_circle_more"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chat_detail_edit_text" />
+
+      <com.google.android.material.button.MaterialButton
+        android:id="@+id/chat_detail_talk_btn"
+        style="@style/CoreUiButton.IconButton"
+        app:icon="@drawable/core_ic_circle_talk"
+        app:layout_constraintEnd_toStartOf="@+id/chat_detail_send_btn"
+        app:layout_constraintTop_toTopOf="@+id/chat_detail_more_btn" />
+
+      <com.google.android.material.button.MaterialButton
+        android:id="@+id/chat_detail_send_btn"
+        style="@style/CoreUiButton.IconButton"
+        android:visibility="gone"
+        app:icon="@drawable/core_ic_circle_send"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/chat_detail_more_btn" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+  </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

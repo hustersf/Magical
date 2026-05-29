@@ -20,9 +20,27 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 
+  // 签名信息配置
+  signingConfigs {
+    create("myConfig") {
+      storeFile = rootProject.file("magical.keystore")
+      storePassword = "123456"
+      keyAlias = "sofar"
+      keyPassword = "123456"
+      enableV1Signing = true
+      enableV2Signing = true
+    }
+  }
+
   buildTypes {
-    release {
+    debug {
+      signingConfig = signingConfigs.getByName("myConfig")
       isMinifyEnabled = false
+      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+    }
+    release {
+      signingConfig = signingConfigs.getByName("myConfig")
+      isMinifyEnabled = true
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
     }
   }

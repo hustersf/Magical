@@ -20,4 +20,7 @@ interface AgentDao {
 
   @Query("SELECT * FROM agents WHERE id = :agentId")
   suspend fun getAgentById(agentId: String): AgentEntity? // 单次挂起反查：用于新开老会话时加载模型记忆
+
+  @Query("SELECT COUNT(*) FROM agents")
+  suspend fun getAgentCount(): Int   // 单次挂起计数：用于 Repository 判断是否需要保底初始化内置人设
 }

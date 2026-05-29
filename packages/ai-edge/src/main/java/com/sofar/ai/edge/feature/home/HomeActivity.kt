@@ -13,14 +13,15 @@ import com.sofar.ai.edge.feature.home.viewmodel.HomeViewModel
 import com.sofar.core.ui.BaseUIActivity
 import com.sofar.core.ui.FragmentAdapter
 import com.sofar.feature.ai.edge.agent.impl.AgentHomeFragment
-import com.sofar.feature.ai.edge.chat.impl.ui.ChatHomeFragment
+import com.sofar.feature.ai.edge.chat.impl.home.ChatHomeFragment
 import com.sofar.feature.ai.edge.meeting.impl.MeetingHomeFragment
-import com.sofar.feature.ai.edge.models.impl.ModelsDataManager
 import com.sofar.feature.ai.edge.models.impl.ModelsHomeFragment
 import com.sofar.feature.ai.edge.vision.impl.VisionHomeFragment
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class HomeActivity : BaseUIActivity() {
   private lateinit var viewPager2: ViewPager2
   private lateinit var adapter: FragmentAdapter

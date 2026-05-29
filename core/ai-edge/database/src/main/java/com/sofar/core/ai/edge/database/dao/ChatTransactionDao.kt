@@ -8,11 +8,7 @@ import com.sofar.core.ai.edge.database.entity.MessageEntity
  * 跨表复合本地事务接口 —— 供 Repository 数据层调用
  */
 @Dao
-abstract class ChatTransactionDao {
-
-  // 抽象注入底层关联的 DAO
-  abstract fun sessionDao(): SessionDao
-  abstract fun messageDao(): MessageDao
+abstract class ChatTransactionDao : SessionDao, MessageDao {
 
   /**
    * 复合本地事务：
@@ -20,15 +16,14 @@ abstract class ChatTransactionDao {
    */
   @Transaction
   open suspend fun sendMessageAndUpsertSession(message: MessageEntity, sessionTitle: String) {
-    // 1. 插入消息记录
-    messageDao().insertMessage(message)
+    // 1. 插入消息记录 (来自 MessageDao)
+    insertMessage(message)
 
-    // 2. 检查会话是否存在，存在则更新，不存在则创建
-    val sessionDao = sessionDao()
-    val existingSession = sessionDao.getSessionById(message.sessionId)
+    // 2. 检查会话是否存在，存在则更新 (来自 SessionDao)
+    val existingSession = getSessionById(message.sessionId)
 
     if (existingSession != null) {
-      sessionDao.updateSessionTimeAndTitle(
+      updateSessionTimeAndTitle(
         sessionId = message.sessionId,
         time = message.createdAt,
         title = sessionTitle

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
   <!-- ================================================================= -->
-  <!-- 基础网格间距 (Spacing Tokens) - 单位 [dp]                            -->
+  <!-- 🪐 1. 基础网格间距系统 (Spacing Tokens) - 单位 [dp]                  -->
   <!-- ================================================================= -->
   <!-- 超小间距：用于图文微调与密集行距 -->
   <dimen name="core_ui_spacing_xs">4dp</dimen>
@@ -16,8 +17,9 @@
   <!-- 巨大间距：页面顶部/底部的起始大面积留白 -->
   <dimen name="core_ui_spacing_xxl">32dp</dimen>
 
+
   <!-- ================================================================= -->
-  <!-- 组件圆角规范 (Corner Radius Tokens) - 单位 [dp]                       -->
+  <!-- 📐 2. 组件圆角规范 (Corner Radius Tokens) - 单位 [dp]                -->
   <!-- ================================================================= -->
   <!-- 中圆角：用于标准列表卡片、多选项背景剪裁 -->
   <dimen name="core_ui_corner_radius_md">12dp</dimen>
@@ -26,28 +28,63 @@
   <!-- 全圆角：用于胶囊按钮、圆形头像、状态标签 -->
   <dimen name="core_ui_corner_radius_pill">999dp</dimen>
 
+
   <!-- ================================================================= -->
-  <!-- 卡片组件物理常量 (Card Tokens) - 单位 [dp]                           -->
+  <!-- 📦 3. 卡片与布局物理常量 (Card & Layout Tokens) - 单位 [dp]         -->
   <!-- ================================================================= -->
   <!-- 卡片标准阴影高度：赋予卡片自然的漂浮立体感 -->
   <dimen name="core_ui_card_elevation">2dp</dimen>
   <!-- 卡片标准描边线宽：0dp 代表纯阴影切分，无死板粗边框 -->
   <dimen name="core_ui_card_stroke">0.5dp</dimen>
-
   <!-- 全局标准圆形进度条的轨道厚度（设计系统规范） -->
   <dimen name="core_ui_progress_track_thickness_standard">5dp</dimen>
 
+
   <!-- ================================================================= -->
-  <!-- 按钮组件物理常量 (Button Tokens) - 单位 [dp]                         -->
+  <!-- ⚡ 4. 按钮与触控热区规范 (Button & Touch Targets) - 单位 [dp]         -->
   <!-- ================================================================= -->
   <!-- 小号/辅助按钮的标准固定高度：用于卡片内次要操作、一键清理或辅助行动点 -->
   <dimen name="core_ui_button_height_small">36dp</dimen>
   <!-- 标准/主行动按钮的视觉高度：符合移动端核心点击区域的标准设计 -->
   <dimen name="core_ui_button_height_standard">48dp</dimen>
-
   <!-- 业界标准无感操作图标热区大小（符合 Google MD3 无障碍最小触控热区建议） -->
   <dimen name="core_ui_touch_target_action_icon">40dp</dimen>
+  <!-- 无感操作图标热区的内部边距 -->
   <dimen name="core_ui_touch_target_action_icon_padding">8dp</dimen>
+
+
+  <!-- ================================================================= -->
+  <!-- 🎛️ 5. 导航与标题栏规范 (Toolbar & Header Tokens) - 单位 [dp]          -->
+  <!-- ================================================================= -->
+  <!-- 标题栏标准物理高度：对齐 Google Material 设计指南中标准单行栏高 (56dp) -->
+  <dimen name="core_ui_toolbar_height_standard">56dp</dimen>
+  <!-- 标题栏大标题模式物理高度：适用于主看板首屏，提供更宽裕的视觉呼吸感 (64dp) -->
+  <dimen name="core_ui_toolbar_height_large">64dp</dimen>
+
+
+  <!-- ================================================================= -->
+  <!-- 📝 6. 文本输入组件规范 (Input Field Tokens) - 单位 [dp]               -->
+  <!-- ================================================================= -->
+  <!-- 通用输入框的标准单行最小高度：44dp（完美对接 M3 触控目标） -->
+  <dimen name="core_ui_input_field_min_height_standard">50dp</dimen>
+
+
+  <!-- ================================================================= -->
+  <!-- 🎨 7. 图标与头像视窗尺寸规范 (Icon & Avatar Density System)           -->
+  <!-- ================================================================= -->
+  <!-- 超小图标：适用于文本内嵌小标、辅助状态微标 (如聊天气泡旁已读/未读的小勾) -->
+  <dimen name="core_ui_icon_size_xs">12dp</dimen>
   <!-- 标准行内次要状态图标的物理尺寸（如卡片内的状态指示勾选框、小警告图标） -->
   <dimen name="core_ui_inline_status_icon">16dp</dimen>
+  <!-- 小型图标：适用于次级辅助操作、 Toolbar 辅助返回键或气泡旁的小操作 -->
+  <dimen name="core_ui_icon_size_small">16dp</dimen>
+  <!-- 标准/中型图标（最常用）：对接大厂所有的核心标准按钮、Toolbar 右上角主菜单图标 -->
+  <dimen name="core_ui_icon_size_medium">24dp</dimen>
+  <!-- 大型图标：适用于重点功能引导、无盘冷启动列表的大按钮图标 -->
+  <dimen name="core_ui_icon_size_large">32dp</dimen>
+  <!-- 巨型图标/头像级视窗：用于 Tab 1 列表左侧圆形头像的专属维度 -->
+  <dimen name="feature_chat_home_avatar_height">48dp</dimen>
+  <!-- 顶配巨型图标：适用于 App 首次冷启动时，无数据的 Empty State 兜底大机器人图标 -->
+  <dimen name="core_ui_icon_size_xxl">64dp</dimen>
+
 </resources>
