@@ -20,4 +20,7 @@ interface MessageDao {
 
   @Query("DELETE FROM messages WHERE session_id = :sessionId")
   suspend fun clearMessagesBySession(sessionId: String) // 物理删除：用于重置本地模型的上下文 Token 视窗
+
+  @Query("DELETE FROM messages WHERE id = :messageId")
+  suspend fun deleteMessageById(messageId: String)
 }

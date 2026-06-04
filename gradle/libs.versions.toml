@@ -51,6 +51,7 @@ hilt = "2.58"
 fragmentKtx = "1.6.2"
 markwon = "4.6.2"
 room = "2.8.4"
+litertlm = "0.12.0"
 
 [libraries]
 #tool
@@ -148,6 +149,9 @@ media3-common = { group = "androidx.media3", name = "media3-common", version.ref
 #inject
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+
+#ai
+litertlm = { group = "com.google.ai.edge.litertlm", name = "litertlm-android", version.ref = "litertlm" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

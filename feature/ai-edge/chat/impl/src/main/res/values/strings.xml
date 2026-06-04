@@ -2,4 +2,6 @@
 <resources>
   <string name="feature_chat_home_title">Chats</string>
   <string name="feature_chat_input_hint">Type a message or hold to talk...</string>
+  <string name="feature_chat_title_default">✨ New Chat</string>
+  <string name="feature_chat_ai_thinking">AI is thinking...</string>
 </resources>

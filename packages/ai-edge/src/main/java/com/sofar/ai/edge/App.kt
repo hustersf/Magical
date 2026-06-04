@@ -1,7 +1,7 @@
 package com.sofar.ai.edge
 
 import android.app.Application
-import com.sofar.feature.ai.edge.models.impl.ModelsDataManager
+import com.sofar.core.ai.edge.data.repository.ModelsDataManager
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp

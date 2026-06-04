@@ -4,6 +4,7 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="@dimen/feature_chat_home_item_height"
+  android:background="@drawable/feature_chat_home_item_bg"
   android:paddingEnd="@dimen/core_ui_spacing_lg"
   android:paddingLeft="@dimen/core_ui_spacing_lg">
 
@@ -41,7 +42,7 @@
     android:maxLines="1"
     android:textAppearance="@style/CoreUiTextAppearance.Body"
     app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="@+id/chat_title_tv"
+    app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="@+id/chat_title_tv"
     app:layout_constraintTop_toBottomOf="@+id/chat_title_tv"
     tools:text="[图片] 查看历史分析记录" />

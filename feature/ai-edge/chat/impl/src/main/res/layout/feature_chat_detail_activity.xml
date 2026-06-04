@@ -80,8 +80,15 @@
         android:id="@+id/chat_detail_talk_btn"
         style="@style/CoreUiButton.IconButton"
         app:icon="@drawable/core_ic_circle_talk"
-        app:layout_constraintEnd_toStartOf="@+id/chat_detail_send_btn"
+        app:layout_constraintEnd_toStartOf="@+id/action_buttons_barrier"
         app:layout_constraintTop_toTopOf="@+id/chat_detail_more_btn" />
+
+      <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/action_buttons_barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="start"
+        app:constraint_referenced_ids="chat_detail_send_btn,chat_detail_stop_btn" />
 
       <com.google.android.material.button.MaterialButton
         android:id="@+id/chat_detail_send_btn"
@@ -90,6 +97,15 @@
         app:icon="@drawable/core_ic_circle_send"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/chat_detail_more_btn" />
+
+      <com.google.android.material.button.MaterialButton
+        android:id="@+id/chat_detail_stop_btn"
+        style="@style/CoreUiButton.IconButton"
+        android:visibility="gone"
+        app:icon="@drawable/core_ic_circle_stop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/chat_detail_more_btn" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
   </com.google.android.material.card.MaterialCardView>
 

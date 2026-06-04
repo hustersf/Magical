@@ -1,12 +1,15 @@
-package com.sofar.feature.ai.edge.models.impl
+package com.sofar.core.ai.edge.data.repository
 
 import android.content.Context
+import com.sofar.core.ai.edge.data.entity.models.Model
 import com.sofar.core.ai.edge.data.entity.models.ModelAllowlist
-import com.sofar.core.ai.edge.data.repository.ModelRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -18,6 +21,10 @@ object ModelsDataManager {
   private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
   private val repository = ModelRepository()
   private val _dataFlow = MutableSharedFlow<ModelAllowlist>(replay = 1)
+
+  // 当前选中的大模型
+  private val _activeModelFlow = MutableStateFlow<Model?>(null)
+  val activeModelFlow: StateFlow<Model?> = _activeModelFlow.asStateFlow()
 
   private const val MODEL_ALLOWLIST_FILENAME = "model_allowlist.json"
 
@@ -89,4 +96,11 @@ object ModelsDataManager {
         e.printStackTrace()
       }
     }
+
+
+  fun updateActiveModel(model: Model) {
+    _activeModelFlow.value = model
+  }
+
+  fun getActiveModelConfig(): Model? = _activeModelFlow.value
 }

@@ -29,4 +29,7 @@ interface SessionDao {
 
   @Query("UPDATE sessions SET updated_at = :time, title = :title WHERE id = :sessionId")
   suspend fun updateSessionTimeAndTitle(sessionId: String, time: Long, title: String) // 增量覆写修改时序
+
+  @Query("UPDATE sessions SET updated_at = :time, title = :title, last_message = :preview WHERE id = :sessionId")
+  suspend fun updateSessionPreviewAndTitle(sessionId: String, time: Long, title: String, preview: String?)
 }

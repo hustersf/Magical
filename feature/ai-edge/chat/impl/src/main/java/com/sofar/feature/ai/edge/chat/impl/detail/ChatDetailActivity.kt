@@ -7,20 +7,23 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import androidx.activity.viewModels
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.addTextChangedListener
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.sofar.core.ai.edge.data.entity.chat.ChatDetailArgs
-import com.sofar.core.ai.edge.data.entity.chat.ChatMessageRole
-import com.sofar.core.ai.edge.data.entity.chat.ChatMessageType
-import com.sofar.core.ai.edge.database.entity.MessageEntity
 import com.sofar.core.common.extension.getParcelableCompat
 import com.sofar.core.ui.BaseUIActivity
 import com.sofar.core.ui.recyclerview.LinearMarginItemDecoration
 import com.sofar.feature.ai.edge.chat.impl.R
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.util.UUID
 
 @AndroidEntryPoint
@@ -32,12 +35,18 @@ class ChatDetailActivity : BaseUIActivity() {
   private lateinit var moreBtn: Button
   private lateinit var talkBtn: Button
   private lateinit var sendBtn: Button
+  private lateinit var stopBtn: Button
 
   private lateinit var recyclerView: RecyclerView
   private lateinit var adapter: ChatDetailAdapter
 
+  private val viewModel: ChatDetailViewModel by viewModels()
+
+  private var currentSessionId: String = ""
+
   companion object {
     private const val EXTRA_CHAT_DETAIL_ARGS = "extra_chat_detail_args"
+    private const val TAG = "ChatDetailActivity"
 
     @JvmStatic
     fun launch(context: Context, args: ChatDetailArgs? = null) {
@@ -55,6 +64,7 @@ class ChatDetailActivity : BaseUIActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.feature_chat_detail_activity)
     val detailArgs = intent.getParcelableCompat<ChatDetailArgs>(EXTRA_CHAT_DETAIL_ARGS)
+    currentSessionId = detailArgs?.sessionId ?: UUID.randomUUID().toString()
     initView()
     setupListeners()
     initData()
@@ -67,6 +77,7 @@ class ChatDetailActivity : BaseUIActivity() {
     moreBtn = findViewById(R.id.chat_detail_more_btn)
     talkBtn = findViewById(R.id.chat_detail_talk_btn)
     sendBtn = findViewById(R.id.chat_detail_send_btn)
+    stopBtn = findViewById(R.id.chat_detail_stop_btn)
 
     recyclerView = findViewById(R.id.chat_detail_list)
     val layoutManager = LinearLayoutManager(this).apply {
@@ -92,6 +103,7 @@ class ChatDetailActivity : BaseUIActivity() {
     }
 
     chatEditText.addTextChangedListener { text ->
+      if (viewModel.uiState.value.isAiResponding) return@addTextChangedListener
       val isNotEmpty = !text.isNullOrBlank()
       if (isNotEmpty) {
         cancelBtn.visibility = View.VISIBLE
@@ -121,61 +133,94 @@ class ChatDetailActivity : BaseUIActivity() {
         chatEditText.text?.clear() // 发送后清空
       }
     }
+
+    stopBtn.setOnClickListener {
+      viewModel.stopModelResponse()
+    }
   }
 
   fun initData() {
-    val sessionId = UUID.randomUUID().toString()
-    val currentTime = System.currentTimeMillis()
+    lifecycleScope.launch {
+      repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewModel.uiState.collect { state ->
+          renderUiState(state)
+        }
+      }
+    }
+    viewModel.startObservingSession(currentSessionId)
+  }
 
-    val msg1 = MessageEntity(
-      id = UUID.randomUUID().toString(),
-      sessionId = sessionId,
-      role = ChatMessageRole.USER,
-      contentType = ChatMessageType.TEXT,
-      textContent = "皮疹能擦保湿霜吗？",
-      filePath = null,
-      createdAt = currentTime - 60000 // 1分钟前
-    )
+  private fun renderUiState(state: ChatDetailUiState) {
+    // A. 实时同步顶部工具栏标题（大模型在说完第一句后会自动覆写重命名该摘要标题）
+    toolbar.title = state.sessionTitle.ifEmpty {
+      getString(R.string.feature_chat_title_default)
+    }
 
-    val msg2 = MessageEntity(
-      id = UUID.randomUUID().toString(),
-      sessionId = sessionId,
-      role = ChatMessageRole.ASSISTANT,
-      contentType = ChatMessageType.TEXT,
-      textContent = "皮疹可以涂保湿霜，而且是基础护理首选。\n\n1、日常用法\n• 无破溃流水：一天2~3次厚涂，建立皮肤屏障。\n• 伴随红肿痒：建议搭配炉甘石洗剂，半小时后再涂保湿霜。",
-      filePath = null,
-      createdAt = currentTime - 30000 // 30秒前
-    )
+    // B. 数据缝合：将 Room 离线优先推出的最新气泡集合单向提交给你的 ListAdapter
+    adapter.submitList(state.messages) {
+      // 如果历史记录发生了位置移动，或者尾部顶出了新气泡，列表利用平滑定位动画滑至最底端位置
+      if (state.messages.isNotEmpty()) {
+        recyclerView.smoothScrollToPosition(state.messages.size - 1)
+      }
+    }
 
-    val msg3 = MessageEntity(
-      id = UUID.randomUUID().toString(),
-      sessionId = sessionId,
-      role = ChatMessageRole.USER,
-      contentType = ChatMessageType.TEXT,
-      textContent = "那如果有破损流水的严重情况呢？那如果有破损流水的严重情况呢？那如果有破损流水的严重情况呢？那如果有破损流水的严重情况呢？那如果有破损流水的严重情况呢？",
-      filePath = null,
-      createdAt = currentTime - 10000 // 10秒前
-    )
+    val hasText = !chatEditText.text.isNullOrBlank()
 
-    // 4. 💎 重点设计：模拟发送动作后，立刻顶出的“AI正在思考...”灰色气泡
-    val msgStreamingAi = MessageEntity(
-      id = UUID.randomUUID().toString(),
-      sessionId = sessionId,
-      role = ChatMessageRole.ASSISTANT,
-      contentType = ChatMessageType.TEXT,
-      textContent = null, // 💡 故意传入 null！触发我们刚刚在 AiTextViewHolder 里面写的“AI 正在思考...”兜底字样
-      filePath = null,
-      createdAt = currentTime
-    )
+    // C. 控制界面组件置灰锁与思考态：大模型初次加载图或进入首字计算期时，将对应的动作组件加锁
+    when {
+      // 状态一：底层 C++ 引擎正在读二进制文件、跑神经网络图编译（冷启动/刚进房间/切大模型）
+      state.isEngineLoading -> {
+        sendBtn.isEnabled = false
+        talkBtn.isEnabled = false
+        stopBtn.isEnabled = false
+      }
 
-    // 5. 全量打包推入内存池，并交付给 ListAdapter 引擎渲染首屏 UI
-    val mockMessagesList = mutableListOf<MessageEntity>()
-    mockMessagesList.addAll(listOf(msg1, msg2, msg3, msgStreamingAi))
-    adapter.submitList(mockMessagesList)
+      // 状态二：模型未初始化成功
+      !state.isModelReady -> {
+        sendBtn.isEnabled = false
+        talkBtn.isEnabled = false
+        stopBtn.visibility = View.GONE
+        sendBtn.visibility = if (hasText) View.VISIBLE else View.GONE
+      }
+
+      // 状态三：大模型早已 Ready，且目前正在流式输出一句话（高频蹦字生成期）
+      state.isAiResponding -> {
+        talkBtn.isEnabled = false
+        sendBtn.visibility = View.GONE
+        stopBtn.visibility = View.VISIBLE
+        stopBtn.isEnabled = true
+      }
+
+      // 状态四：寂静期、日常常态（AI 没在说话，引擎随时听候调遣）
+      else -> {
+        stopBtn.visibility = View.GONE
+        sendBtn.visibility = if (hasText) View.VISIBLE else View.GONE
+        sendBtn.isEnabled = true
+        talkBtn.isEnabled = true
+      }
+    }
+
+    // D. 手机本地随机写盘异常或芯片中断等报错捕捉
+    state.errorMessage?.let { error ->
+      MaterialAlertDialogBuilder(this)
+        .setTitle("发生错误")
+        .setMessage(error)
+        .setCancelable(true)
+        .setPositiveButton("确定") { dialog, _ ->
+          dialog.dismiss()
+        }
+        .show()
+    }
   }
 
   private fun sendMessage(text: String) {
-    // TODO: 处理发送逻辑
+    // 🧠 干净利落：彻底消灭 onTextChunksReceived 回调接口，只管发送，不操心刷新
+    viewModel.performSendMessage(
+      sessionId = currentSessionId,
+      inputTextFieldValue = text,
+      sandboxedImagesPath = listOf(), // 预留给 Tab 3
+      sandboxedAudioPath = null       // 预留给 Tab 4
+    )
   }
 
   override fun windowInsetsType(): Int {

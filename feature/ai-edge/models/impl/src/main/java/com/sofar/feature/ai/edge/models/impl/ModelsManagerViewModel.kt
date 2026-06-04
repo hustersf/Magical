@@ -7,6 +7,7 @@ import com.sofar.core.ai.edge.data.entity.models.Model
 import com.sofar.core.ai.edge.data.entity.models.ModelDownloadStatus
 import com.sofar.core.ai.edge.data.entity.models.ModelDownloadStatusType
 import com.sofar.core.ai.edge.data.repository.DownloadRepository
+import com.sofar.core.ai.edge.data.repository.ModelsDataManager
 import com.sofar.core.ui.state.Event
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

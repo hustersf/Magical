@@ -44,6 +44,8 @@ data class SessionEntity(
   @PrimaryKey
   val id: String,                                     // 会话全局唯一 ID (建议使用随机 UUID 字符串)
   val title: String,                                  // 会话在 Tab 1 列表显示的标题 (如 "昨晚的会议摘要")
+  @ColumnInfo(name = "last_message")
+  val lastMessage: String? = null,                    // 会话最后一条消息
   @ColumnInfo(name = "agent_id")
   val agentId: String?,                               // 关联的智能体人设 ID (为 NULL 代表纯大模型自由自由对话)
   val type: String,                                   // 会话多模态来源类型约束 (TEXT: 普通/智能体, VISION: 识图, MEETING: 会议)

@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.sofar.core.ai.edge.data.entity.chat.ChatPriority
 import com.sofar.core.ai.edge.data.entity.chat.ChatSessionType
 import com.sofar.core.ai.edge.database.entity.SessionEntity
 import com.sofar.feature.ai.edge.chat.impl.R
@@ -41,7 +42,9 @@ class ChatHomeViewHolder(
 
   fun bind(item: SessionEntity) {
     itemView.setOnClickListener { onItemClick(item, itemView) }
-    titleTv.text = item.title
+    titleTv.text = item.title.ifEmpty {
+      titleTv.context.getString(R.string.feature_chat_title_default)
+    }
 
     var targetColorRes = R.color.feature_chat_home_avatar_pink
     when (item.type) {
@@ -74,8 +77,13 @@ class ChatHomeViewHolder(
         previewTv.text = "继续对话"
       }
     }
+
+    item.lastMessage?.let {
+      previewTv.text = it
+    }
+    itemView.isActivated = item.priority > ChatPriority.NORMAL
     val targetColor = ContextCompat.getColor(itemView.context, targetColorRes)
-    val backgroundDrawable = avatarTv.background as? GradientDrawable
+    val backgroundDrawable = avatarTv.background?.mutate() as? GradientDrawable
     backgroundDrawable?.setColor(targetColor)
   }
 }

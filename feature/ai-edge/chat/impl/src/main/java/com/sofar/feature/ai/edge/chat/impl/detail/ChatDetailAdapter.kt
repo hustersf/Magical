@@ -1,5 +1,6 @@
 package com.sofar.feature.ai.edge.chat.impl.detail
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,12 +11,15 @@ import com.sofar.core.ai.edge.data.entity.chat.ChatMessageRole
 import com.sofar.core.ai.edge.data.entity.chat.ChatMessageType
 import com.sofar.core.ai.edge.database.entity.MessageEntity
 import com.sofar.feature.ai.edge.chat.impl.R
+import io.noties.markwon.Markwon
 
 class ChatDetailAdapter(
   private val diffCallback: ChatDetailDiffCallback = ChatDetailDiffCallback()
 ) : ListAdapter<MessageEntity, RecyclerView.ViewHolder>(diffCallback) {
 
   companion object {
+    const val PAYLOAD_TEXT_INLINE_ONLY = "payload_text_inline_only"
+
     const val TYPE_USER_TEXT = 1
     const val TYPE_AI_TEXT = 2
     const val TYPE_USER_IMAGE = 3
@@ -105,18 +109,26 @@ class ChatDetailAdapter(
     }
   }
 
-  /**
-   * 💎 大模型局部非阻塞流式刷新接口
-   */
-  fun updateLastAiTextMessageInline(recyclerView: RecyclerView, accumulatedText: String) {
-    if (itemCount == 0) return
-    val lastIndex = itemCount - 1
-    val lastMessage = getItem(lastIndex)
+  override fun onBindViewHolder(
+    holder: RecyclerView.ViewHolder,
+    position: Int,
+    payloads: List<Any?>
+  ) {
+    if (payloads.isNotEmpty()) {
+      val bundle = payloads.firstOrNull() as? Bundle
 
-    if (lastMessage.role == ChatMessageRole.ASSISTANT && lastMessage.contentType == ChatMessageType.TEXT) {
-      val holder = recyclerView.findViewHolderForAdapterPosition(lastIndex) as? AiTextViewHolder
-      holder?.updateTextInline(accumulatedText)
+      // 🎯 精准拦截：如果是打字机流式追加，且当前是 AI 文本的 Holder
+      if (bundle != null && bundle.getBoolean(PAYLOAD_TEXT_INLINE_ONLY, false)
+        && holder is AiTextViewHolder
+      ) {
+        val item = getItem(position)
+        // 直接现场拿最新文本局部刷新，不重绘整个气泡
+        holder.updateTextInline(item.textContent)
+        return
+      }
     }
+    // 如果 payloads 为空，或者不是 AI 吐字引起的变更，无缝降级走上面你写好的全量绑定
+    super.onBindViewHolder(holder, position, payloads)
   }
 }
 
@@ -128,10 +140,10 @@ class ChatDetailAdapter(
  * 用户纯文本气泡
  */
 class UserTextViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-  private val tvContent: TextView = itemView.findViewById(R.id.content_tv)
+  private val contentTv: TextView = itemView.findViewById(R.id.content_tv)
 
   fun bind(item: MessageEntity) {
-    tvContent.text = item.textContent ?: ""
+    contentTv.text = item.textContent ?: ""
   }
 }
 
@@ -139,15 +151,21 @@ class UserTextViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
  * AI 纯文本气泡（专门承载打字机高频擦写）
  */
 class AiTextViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-  private val tvContent: TextView = itemView.findViewById(R.id.content_tv)
+  private val contentTv: TextView = itemView.findViewById(R.id.content_tv)
+
+  private val markwon = Markwon.create(contentTv.context)
 
   fun bind(item: MessageEntity) {
-    // 首次顶出气泡时，若内容为 null 自动展示思考兜底字样
-    tvContent.text = item.textContent ?: "AI 正在思考..."
+    // 首次顶出气泡时，若内容为空自动展示思考兜底字样
+    if (item.textContent.isNullOrEmpty()) {
+      contentTv.text = itemView.context.getString(R.string.feature_chat_ai_thinking)
+    } else {
+      updateTextInline(item.textContent)
+    }
   }
 
-  fun updateTextInline(newText: String) {
-    tvContent.text = newText
+  fun updateTextInline(newText: String?) {
+    markwon.setMarkdown(contentTv, newText ?: "")
   }
 }
 

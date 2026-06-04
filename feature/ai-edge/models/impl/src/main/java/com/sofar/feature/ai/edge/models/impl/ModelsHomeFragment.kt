@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.sofar.core.ai.edge.data.entity.models.Model
+import com.sofar.core.ai.edge.data.repository.ModelsDataManager
 import com.sofar.core.ai.edge.data.storage.AppStorageHub
 import com.sofar.core.ui.recyclerview.LinearMarginItemDecoration
 import com.sofar.core.ui.state.observeEvent
@@ -66,8 +67,8 @@ class ModelsHomeFragment : Fragment() {
         when (view.id) {
           R.id.download_btn -> viewModel.downloadModel(model)
           R.id.model_delete_iv -> showDeleteConfirmationDialog(model)
-          R.id.benchmark_btn -> jump()
-          R.id.try_it_btn -> jump()
+          R.id.benchmark_btn -> jump(model)
+          R.id.try_it_btn -> jump(model)
         }
       }
     )
@@ -136,7 +137,7 @@ class ModelsHomeFragment : Fragment() {
       .show()
   }
 
-  private fun jump() {
-
+  private fun jump(model: Model) {
+    ModelsDataManager.updateActiveModel(model)
   }
 }

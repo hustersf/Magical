@@ -41,6 +41,7 @@ dependencies {
   implementation(libs.coroutines.android)
   implementation(libs.hilt.android)
   ksp(libs.hilt.compiler)
+  implementation(libs.litertlm)
 
   implementation(project(":core:network"))
   implementation(project(":core:download"))
