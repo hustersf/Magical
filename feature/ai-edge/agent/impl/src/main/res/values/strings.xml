@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="feature_agent_home_title">Discover Agents</string>
+  <string name="feature_agent_home_description_default">AI Assistant</string>
+  <string name="feature_agent_empty_state">No agents found. Tap the top right corner to create one.</string>
+
+  <string name="feature_agent_create_title">New Agent</string>
+  <string name="feature_agent_edit_title">Edit Agent</string>
+  <string name="feature_agent_delete_title">Delete Agent</string>
+  <string name="feature_agent_delete_message">Are you sure you want to delete \"%1$s\"? This action cannot be undone.</string>
+
+  <string name="feature_agent_action_create">Create</string>
+  <string name="feature_agent_action_save">Save</string>
+  <string name="feature_agent_action_edit">Edit</string>
+  <string name="feature_agent_action_delete">Delete</string>
+  <string name="feature_agent_action_cancel">Cancel</string>
+  <string name="feature_agent_action_chat">Chat</string>
+
+  <string name="feature_agent_field_avatar">Avatar Emoji</string>
+  <string name="feature_agent_field_name">Agent Name</string>
+  <string name="feature_agent_field_model_id">Model ID (Optional)</string>
+  <string name="feature_agent_field_prompt">System Prompt</string>
+  <string name="feature_agent_model_unbound">Unbound</string>
+  <string name="feature_agent_detail_message">Avatar: %1$s\nModel: %2$s\n\nSystem Prompt:\n%3$s</string>
+
+  <string name="feature_agent_tag_official">Official</string>
+</resources>

@@ -53,16 +53,16 @@ class DefaultLiteRtLmDataSource @Inject constructor() : LiteRtLmDataSource {
     enableConversationConstrainedDecoding: Boolean,
   ) {
     // 1. 读取并校验上下文窗口容量限制（Token 上限），优先使用业务模型定义的阈值，若无则使用全局系统默认值
-    val maxTokens = if (model.llmMaxToken > 0) model.llmMaxToken else DEFAULT_MAX_TOKEN
+    val maxTokens = model.llmMaxToken
 
     // 2. 加载大模型采样核心超参数：TopK（候选词截断）、TopP（核采样概率分布上限）和 Temperature（文本生成随机度）
-    val topK = DEFAULT_TOPK
-    val topP = DEFAULT_TOPP
-    val temperature = DEFAULT_TEMPERATURE
+    val topK = model.llmTopK
+    val topP = model.llmTopP
+    val temperature = model.llmTemperature
 
     // 3. 配置核心推断加速器以及多模态视觉芯片后端，默认使用硬件图形加速芯片（GPU）
-    val accelerator = Accelerator.CPU.label
-    val visionAccelerator = DEFAULT_VISION_ACCELERATOR.label
+    val accelerator = model.accelerators.getOrNull(0)?.label ?: Accelerator.GPU.label
+    val visionAccelerator = model.visionAccelerator.label
 
     // 4. 根据多模态视觉硬件标签，实例化对应的执行后端（CPU / GPU / NPU）。若选用 NPU 则需注入当前 App 的动态链接库物理路径
     val visionBackend = when (visionAccelerator) {
@@ -140,7 +140,7 @@ class DefaultLiteRtLmDataSource @Inject constructor() : LiteRtLmDataSource {
     } catch (e: Exception) {
       // 14. 捕获模型文件缺失、损坏或底层编译翻车等运行期异常，通过清洗函数规范化来自 C++ 层的原生报错堆栈后向上回调
       onDone(cleanUpMediapipeTaskErrorMessage(e.message ?: "Unknown error"))
-      Log.d(TAG, "初始化模型失败: '${model.name}'")
+      Log.d(TAG, "初始化模型失败: '${model.name}', 原因: ${e.message}")
       return
     }
     // 15. 初始化流程圆满结束，回传空字符串向上层通知当前模型已成功常驻内存并就绪

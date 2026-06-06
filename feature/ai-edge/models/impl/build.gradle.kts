@@ -2,6 +2,8 @@ plugins {
   alias(libs.plugins.android.library)
   alias(libs.plugins.kotlin.android)
   alias(libs.plugins.kotlin.serialization)
+  alias(libs.plugins.ksp)
+  alias(libs.plugins.hilt)
 }
 
 android {
@@ -38,7 +40,10 @@ dependencies {
   implementation(libs.androidx.fragment.ktx)
   implementation(libs.kotlinx.serialization)
   implementation(libs.markwon)
+  implementation(libs.hilt.android)
+  ksp(libs.hilt.compiler)
 
+  implementation(project(":feature:ai-edge:chat:api"))
   implementation(project(":core:ui"))
   implementation(project(":core:res"))
   implementation(project(":core:common"))

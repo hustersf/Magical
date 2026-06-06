@@ -43,6 +43,7 @@ class ChatDetailActivity : BaseUIActivity() {
   private val viewModel: ChatDetailViewModel by viewModels()
 
   private var currentSessionId: String = ""
+  private var agentId: String? = null
 
   companion object {
     private const val EXTRA_CHAT_DETAIL_ARGS = "extra_chat_detail_args"
@@ -65,6 +66,7 @@ class ChatDetailActivity : BaseUIActivity() {
     setContentView(R.layout.feature_chat_detail_activity)
     val detailArgs = intent.getParcelableCompat<ChatDetailArgs>(EXTRA_CHAT_DETAIL_ARGS)
     currentSessionId = detailArgs?.sessionId ?: UUID.randomUUID().toString()
+    agentId = detailArgs?.agentId
     initView()
     setupListeners()
     initData()
@@ -147,7 +149,7 @@ class ChatDetailActivity : BaseUIActivity() {
         }
       }
     }
-    viewModel.startObservingSession(currentSessionId)
+    viewModel.init(currentSessionId, agentId)
   }
 
   private fun renderUiState(state: ChatDetailUiState) {
@@ -158,9 +160,11 @@ class ChatDetailActivity : BaseUIActivity() {
 
     // B. 数据缝合：将 Room 离线优先推出的最新气泡集合单向提交给你的 ListAdapter
     adapter.submitList(state.messages) {
-      // 如果历史记录发生了位置移动，或者尾部顶出了新气泡，列表利用平滑定位动画滑至最底端位置
       if (state.messages.isNotEmpty()) {
-        recyclerView.smoothScrollToPosition(state.messages.size - 1)
+        // 如果历史记录发生了位置移动，或者尾部顶出了新气泡，列表始终滑至最底端位置
+        val layoutManager = recyclerView.layoutManager as? LinearLayoutManager ?: return@submitList
+        val targetPosition = state.messages.size - 1
+        layoutManager.scrollToPositionWithOffset(targetPosition, Int.MIN_VALUE)
       }
     }
 
@@ -217,6 +221,7 @@ class ChatDetailActivity : BaseUIActivity() {
     // 🧠 干净利落：彻底消灭 onTextChunksReceived 回调接口，只管发送，不操心刷新
     viewModel.performSendMessage(
       sessionId = currentSessionId,
+      agentId = agentId,
       inputTextFieldValue = text,
       sandboxedImagesPath = listOf(), // 预留给 Tab 3
       sandboxedAudioPath = null       // 预留给 Tab 4

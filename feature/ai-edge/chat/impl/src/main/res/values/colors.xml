@@ -4,4 +4,6 @@
   <color name="feature_chat_home_avatar_green">#E6F4EA</color>
   <color name="feature_chat_home_avatar_yellow">#FEF7E0</color>
   <color name="feature_chat_home_avatar_pink">#FCE8E6</color>
+
+  <color name="feature_chat_home_avatar_agent">@color/md_theme_primary</color>
 </resources>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <dimen name="feature_agent_home_avatar_height">60dp</dimen>
+</resources>

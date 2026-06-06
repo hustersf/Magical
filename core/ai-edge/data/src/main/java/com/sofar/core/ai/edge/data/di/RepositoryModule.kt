@@ -24,10 +24,11 @@ internal object RepositoryModule {
   fun providesChatRepository(
     sessionDao: SessionDao,// Hilt 会全自动去 DaosModule 里面帮你把这个 Dao 找过来
     messageDao: MessageDao,
+    agentDao: AgentDao,
     dataSource: LiteRtLmDataSource
   ): ChatRepository {
     // 在这里进行显式的、可见的 new 操作，一目了然
-    return ChatRepository(sessionDao, messageDao, dataSource)
+    return ChatRepository(sessionDao, messageDao, agentDao, dataSource)
   }
 
   @Provides

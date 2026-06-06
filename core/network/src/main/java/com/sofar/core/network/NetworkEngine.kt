@@ -23,6 +23,8 @@ class NetworkEngine(
       ignoreUnknownKeys = true
       // 如果字段有默认值，解析时若服务器没传，则使用本地默认值
       coerceInputValues = true
+      // 字段缺失时不抛出异常，自动解析为 null 属性
+      explicitNulls = false
       // 允许宽松的 JSON 格式
       isLenient = true
     }

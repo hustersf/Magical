@@ -5,14 +5,18 @@ import android.graphics.Bitmap
 import android.util.Log
 import com.google.ai.edge.litertlm.Contents
 import com.google.ai.edge.litertlm.ToolProvider
+import com.sofar.core.ai.edge.data.cache.AgentCache
 import com.sofar.core.ai.edge.data.datasource.LiteRtLmDataSource
+import com.sofar.core.ai.edge.data.entity.agent.AgentSourceType
 import com.sofar.core.ai.edge.data.entity.chat.ChatMessageRole
 import com.sofar.core.ai.edge.data.entity.chat.ChatMessageType
 import com.sofar.core.ai.edge.data.entity.chat.ChatPriority
 import com.sofar.core.ai.edge.data.entity.chat.ChatSessionType
 import com.sofar.core.ai.edge.data.entity.models.Model
+import com.sofar.core.ai.edge.database.dao.AgentDao
 import com.sofar.core.ai.edge.database.dao.MessageDao
 import com.sofar.core.ai.edge.database.dao.SessionDao
+import com.sofar.core.ai.edge.database.entity.AgentEntity
 import com.sofar.core.ai.edge.database.entity.MessageEntity
 import com.sofar.core.ai.edge.database.entity.SessionEntity
 import kotlinx.coroutines.Dispatchers
@@ -33,10 +37,12 @@ import java.util.UUID
 class ChatRepository(
   private val sessionDao: SessionDao,
   private val messageDao: MessageDao,
+  private val agentDao: AgentDao,
   private val dataSource: LiteRtLmDataSource
 ) {
 
   private var lastInitializedModelName: String? = null
+  private var lastInitializedSystemPrompt: String? = null
 
   // =================================================================================
   // 🧱 第一部分：会话列表（Sessions）核心管理逻辑
@@ -56,14 +62,28 @@ class ChatRepository(
    * 确保数据库里至少存在一个置顶的工作区
    */
   private suspend fun ensureWorkspaceExist() {
+    val babyId = AgentCache.BABY_KELE_ID
+
+
+    // 🚀 步骤 ①：先让大后方安全着陆！检查并把 1 岁宝宝的隐藏配置写入 agents 表
+    if (agentDao.getAgentById(babyId) == null) {
+      val babyConfig = AgentEntity(
+        id = babyId,
+        name = "可乐",
+        avatar = "🍼",
+        systemPrompt = "你叫可乐，是一个刚刚满 1 岁、正在咿呀学语的 AI 小宝宝。回答字数严格控制在 10 个字以内！...",
+        sourceType = AgentSourceType.HIDDEN_SYSTEM // 🎯 注入隐藏内置代号
+      )
+      agentDao.insertAgent(babyConfig)
+    }
     // 检查当前数据库中是否已经有置顶的常驻对话框
     val hasWorkspace = sessionDao.getWorkspaceCount(ChatPriority.WORKSPACE) > 0
     if (!hasWorkspace) {
       // 如果是初次冷启动（用户刚下载 App），原地在数据库中正式持久化一条置顶主会话
       val defaultWorkspace = SessionEntity(
         id = UUID.randomUUID().toString(),
-        title = "阿福",
-        agentId = null,
+        title = "逗逗小可乐",
+        agentId = babyId,
         type = ChatSessionType.TEXT,
         updatedAt = System.currentTimeMillis(),
         priority = ChatPriority.WORKSPACE
@@ -74,6 +94,30 @@ class ChatRepository(
 
   suspend fun getSessionById(sessionId: String): SessionEntity? {
     return sessionDao.getSessionById(sessionId)
+  }
+
+  suspend fun updateSessionTitle(sessionId: String, title: String) {
+    sessionDao.updateSessionTimeAndTitle(sessionId, System.currentTimeMillis(), title)
+  }
+
+  suspend fun updateSessionAgentId(sessionId: String, agentId: String?) {
+    sessionDao.updateSessionAgentId(sessionId, agentId)
+  }
+
+  suspend fun deleteSessionById(sessionId: String) {
+    sessionDao.deleteSessionById(sessionId)
+  }
+
+  suspend fun deleteMessagesBySessionId(sessionId: String) {
+    messageDao.clearMessagesBySession(sessionId)
+  }
+
+  suspend fun updateSessionPreviewAndTitle(
+    sessionId: String,
+    title: String,
+    preview: String?
+  ) {
+    sessionDao.updateSessionPreviewAndTitle(sessionId, System.currentTimeMillis(), title, preview)
   }
 
   /**
@@ -100,8 +144,8 @@ class ChatRepository(
     tools: List<ToolProvider> = listOf()
   ): String = withContext(Dispatchers.IO) { // ⚡【核心保护】：强制切到子线程（I/O 线程池）
 
-    if (lastInitializedModelName == model.name) {
-      Log.d("ChatRepository", "模型 '${model.name}' 已经初始化过，跳过本次初始化")
+    if (lastInitializedModelName == model.name && lastInitializedSystemPrompt == agentSystemPrompt) {
+      Log.d("ChatRepository", "模型 '${model.name}' 已经初始化且人设完全一致，跳过本次初始化")
       return@withContext ""
     }
 
@@ -134,7 +178,7 @@ class ChatRepository(
         }
       )
     }
-
+    lastInitializedSystemPrompt = agentSystemPrompt
     lastInitializedModelName = if (errorMessage.isEmpty()) {
       model.name
     } else {
@@ -217,9 +261,8 @@ class ChatRepository(
       )
 
       // 更新会话置顶
-      sessionDao.updateSessionTimeAndTitle(
+      updateSessionTitle(
         sessionId,
-        System.currentTimeMillis(),
         currentSession.title
       )
     }
@@ -297,9 +340,8 @@ class ChatRepository(
 
               // AI 彻底说完后，用大模型最终答案作为最新的 lastMessage 覆写数据库
               val aiPreviewText = finalAnswer.trim().replace("\n", " ")
-              sessionDao.updateSessionPreviewAndTitle(
+              updateSessionPreviewAndTitle(
                 sessionId,
-                System.currentTimeMillis(),
                 autoSummaryTitle,
                 aiPreviewText
               )

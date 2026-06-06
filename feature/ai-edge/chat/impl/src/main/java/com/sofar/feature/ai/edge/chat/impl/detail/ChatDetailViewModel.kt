@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sofar.core.ai.edge.data.entity.models.Model
+import com.sofar.core.ai.edge.data.repository.AgentRepository
 import com.sofar.core.ai.edge.data.repository.ChatRepository
 import com.sofar.core.ai.edge.data.repository.ModelsDataManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ChatDetailViewModel @Inject constructor(
   private val repository: ChatRepository,
+  private val agentRepository: AgentRepository
 ) : ViewModel() {
 
   // 内部私有变量：负责动态修改状态
@@ -37,25 +39,12 @@ class ChatDetailViewModel @Inject constructor(
 
   private val _currentActiveModel = MutableStateFlow<Model?>(null)
 
-  init {
-    modelObservationJob = viewModelScope.launch {
-      ModelsDataManager.activeModelFlow.collect { freshModel ->
-        _currentActiveModel.value = freshModel
-        if (freshModel == null) {
-          _uiState.update { it.copy(errorMessage = "当前未在设置中激活任何本地大模型") }
-        } else {
-          prepareEngine(ModelsDataManager.appContext())
-        }
-      }
-    }
-  }
-
   /**
    * 🧱 业务一：单向挂载观察本地 Room 消息数据流
    * 🎯 大闭环关键：只要大模型在推理结束时往数据库塞数据，这根管道会瞬间捕捉，
    * 自动把最新列表同步进 _uiState.messages，从而触发 Activity 里的 ListAdapter 刷新！
    */
-  fun startObservingSession(sessionId: String) {
+  fun init(sessionId: String, agentId: String? = null) {
     // 1. 如果之前已经挂载了别的对话，先安全断开，防止历史数据串门
     dbObservationJob?.cancel()
 
@@ -65,9 +54,29 @@ class ChatDetailViewModel @Inject constructor(
     // 3. 强力挂载 Room 流监听
     dbObservationJob = viewModelScope.launch {
       val session = repository.getSessionById(sessionId)
-      _uiState.update {
-        it.copy(sessionTitle = session?.title ?: "")
+      val agent = agentId?.let { agentRepository.getAgentById(it) }
+      val title = if (agentId != null) {
+        // 去 agent 表里捞对应的智能体名称（如“英语口语教练”）
+        agentRepository.getAgentById(agentId)?.name ?: session?.title ?: ""
+      } else {
+        session?.title ?: ""
       }
+      _uiState.update {
+        it.copy(sessionTitle = title)
+      }
+
+      launch {
+        ModelsDataManager.activeModelFlow.collect { freshModel ->
+          _currentActiveModel.value = freshModel
+          if (freshModel == null) {
+            _uiState.update { it.copy(errorMessage = "当前未在模型Tab激活任何本地大模型") }
+          } else {
+            // 初始化
+            prepareEngine(ModelsDataManager.appContext(), freshModel, agent?.systemPrompt)
+          }
+        }
+      }
+
 
       repository.getMessagesBySession(sessionId)
         .collect { freshMessages ->
@@ -80,12 +89,7 @@ class ChatDetailViewModel @Inject constructor(
    * 🧱 业务二：初始化并唤醒端侧 AI 引擎
    * 对应 Activity 的 initData 阶段，或者用户去 Tab 5 页面动态重载大模型时调用
    */
-  fun prepareEngine(context: Context, agentSystemPrompt: String? = null) {
-    val activeModel = _currentActiveModel.value ?: run {
-      _uiState.update { it.copy(errorMessage = "当前未在设置中激活任何本地大模型") }
-      return
-    }
-
+  private fun prepareEngine(context: Context, model: Model, agentSystemPrompt: String?) {
     // 1. 开启界面思考锁，置灰发送键，控制 UI 展示转圈 Loading 状态
     _uiState.update { it.copy(isEngineLoading = true, errorMessage = null) }
 
@@ -93,7 +97,7 @@ class ChatDetailViewModel @Inject constructor(
     viewModelScope.launch {
       val errorResult = repository.initializeModel(
         context = context,
-        model = activeModel,
+        model = model,
         agentSystemPrompt = agentSystemPrompt
       )
 
@@ -113,6 +117,7 @@ class ChatDetailViewModel @Inject constructor(
    */
   fun performSendMessage(
     sessionId: String,
+    agentId: String? = null,
     inputTextFieldValue: String,
     sandboxedImagesPath: List<String> = listOf(),
     sandboxedAudioPath: String? = null
@@ -166,6 +171,7 @@ class ChatDetailViewModel @Inject constructor(
         }
         .onCompletion {
           // 整个大模型流式喷射谢幕，重置响应指标，把画面权完美交还给 Room
+          repository.updateSessionAgentId(sessionId, agentId)
           val session = repository.getSessionById(sessionId)
           _uiState.update {
             it.copy(

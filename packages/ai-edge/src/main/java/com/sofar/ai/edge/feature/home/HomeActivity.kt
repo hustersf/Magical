@@ -12,7 +12,7 @@ import com.sofar.ai.edge.R
 import com.sofar.ai.edge.feature.home.viewmodel.HomeViewModel
 import com.sofar.core.ui.BaseUIActivity
 import com.sofar.core.ui.FragmentAdapter
-import com.sofar.feature.ai.edge.agent.impl.AgentHomeFragment
+import com.sofar.feature.ai.edge.agent.impl.home.AgentHomeFragment
 import com.sofar.feature.ai.edge.chat.impl.home.ChatHomeFragment
 import com.sofar.feature.ai.edge.meeting.impl.MeetingHomeFragment
 import com.sofar.feature.ai.edge.models.impl.ModelsHomeFragment

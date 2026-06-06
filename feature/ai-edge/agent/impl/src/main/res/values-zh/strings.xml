@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="feature_agent_home_title">发现智能体</string>
+  <string name="feature_agent_home_description_default">智能助手</string>
+  <string name="feature_agent_empty_state">暂时没有智能体，点击右上角创建一个吧</string>
+
+  <string name="feature_agent_create_title">新建智能体</string>
+  <string name="feature_agent_edit_title">编辑智能体</string>
+  <string name="feature_agent_delete_title">删除智能体</string>
+  <string name="feature_agent_delete_message">确认删除“%1$s”吗？删除后无法恢复。</string>
+
+  <string name="feature_agent_action_create">创建</string>
+  <string name="feature_agent_action_save">保存</string>
+  <string name="feature_agent_action_edit">编辑</string>
+  <string name="feature_agent_action_delete">删除</string>
+  <string name="feature_agent_action_cancel">取消</string>
+  <string name="feature_agent_action_chat">开始对话</string>
+
+  <string name="feature_agent_field_avatar">头像 Emoji</string>
+  <string name="feature_agent_field_name">智能体名称</string>
+  <string name="feature_agent_field_model_id">绑定模型 ID（可选）</string>
+  <string name="feature_agent_field_prompt">系统提示词</string>
+  <string name="feature_agent_model_unbound">未绑定</string>
+  <string name="feature_agent_detail_message">头像：%1$s\n模型：%2$s\n\n系统提示词：\n%3$s</string>
+
+  <string name="feature_agent_tag_official">官方</string>
+</resources>

@@ -40,4 +40,19 @@ class AgentRepository(private val agentDao: AgentDao) {
     }
   }
 
+  suspend fun createAgent(agent: AgentEntity) = withContext(Dispatchers.IO) {
+    agentDao.insertAgent(agent)
+  }
+
+  suspend fun updateAgent(agent: AgentEntity) = withContext(Dispatchers.IO) {
+    agentDao.insertAgent(agent)
+  }
+
+  suspend fun deleteAgent(agentId: String) = withContext(Dispatchers.IO) {
+    agentDao.deleteAgentById(agentId)
+  }
+
+  suspend fun getAgentById(agentId: String): AgentEntity? = withContext(Dispatchers.IO) {
+    agentDao.getAgentById(agentId)
+  }
 }

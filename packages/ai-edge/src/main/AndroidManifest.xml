@@ -9,6 +9,16 @@
     android:roundIcon="@mipmap/app_icon"
     android:supportsRtl="true"
     android:theme="@style/AppTheme">
+
+    <!-- 强行通知 Android 系统，在启动该 App 进程时，必须把手机底层的硬件驱动映射到 App 的私有命名空间中。
+      如果不配置，系统出于安全隔离机制会直接切断 C++ 层的硬件访问权限，导致加载多模态图片算子时直接发生段错误闪退。 -->
+    <!-- 1. 注入 VNDK（Vendor Native Development Kit）支持库：用于确保 C++ 原生层能够合法调用厂商提供的硬件加速 API -->
+    <uses-native-library android:name="libvndksupport.so" android:required="false"/>
+    <!-- 2. 注入 GPU 核心驱动：大模型 Gemma 3n 编译 Vision 视觉特征网络（看图功能）所需的底层 OpenCL 硬件加速连接层 -->
+    <uses-native-library android:name="libOpenCL.so" android:required="false"/>
+    <!-- 3. 注入高通计算加速驱动：用于高通 Snapdragon 芯片平台底层的数字信号处理器（DSP）和张量加速器硬件调度 -->
+    <uses-native-library android:name="libcdsprpc.so" android:required="false" />
+
     <activity
       android:name=".feature.home.HomeActivity"
       android:theme="@style/Theme.App.Splash"

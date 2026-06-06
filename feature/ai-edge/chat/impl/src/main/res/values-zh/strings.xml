@@ -4,4 +4,6 @@
   <string name="feature_chat_input_hint">发消息或按住说话...</string>
   <string name="feature_chat_title_default">✨ 发起新对话</string>
   <string name="feature_chat_ai_thinking">AI 正在思考...</string>
+  <string name="feature_chat_action_clear_history">清空对话记录</string>
+  <string name="feature_chat_action_delete">删除对话</string>
 </resources>

@@ -8,20 +8,23 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.sofar.core.ai.edge.data.cache.AgentCache
 import com.sofar.core.ai.edge.data.entity.chat.ChatPriority
 import com.sofar.core.ai.edge.data.entity.chat.ChatSessionType
 import com.sofar.core.ai.edge.database.entity.SessionEntity
 import com.sofar.feature.ai.edge.chat.impl.R
 
 class ChatHomeAdapter(
+  private val agentCache: AgentCache,
   private val onItemClick: (SessionEntity, View) -> Unit,
+  private val onItemLongClick: (SessionEntity, View) -> Unit,
   private val diffCallback: ChatHomeDiffCallback = ChatHomeDiffCallback()
 ) : ListAdapter<SessionEntity, ChatHomeViewHolder>(diffCallback) {
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatHomeViewHolder {
     val itemView = LayoutInflater.from(parent.context)
       .inflate(R.layout.feature_chat_home_adapter_item, parent, false)
-    return ChatHomeViewHolder(itemView, onItemClick)
+    return ChatHomeViewHolder(itemView, agentCache, onItemClick, onItemLongClick)
   }
 
   override fun onBindViewHolder(holder: ChatHomeViewHolder, position: Int) {
@@ -33,20 +36,28 @@ class ChatHomeAdapter(
 
 class ChatHomeViewHolder(
   itemView: View,
-  private val onItemClick: (SessionEntity, View) -> Unit
+  private val agentCache: AgentCache,
+  private val onItemClick: (SessionEntity, View) -> Unit,
+  private val onItemLongClick: (SessionEntity, View) -> Unit
 ) : RecyclerView.ViewHolder(itemView) {
 
   private val avatarTv: TextView = itemView.findViewById(R.id.chat_avatar_tv)
   private val titleTv: TextView = itemView.findViewById(R.id.chat_title_tv)
   private val previewTv: TextView = itemView.findViewById(R.id.chat_preview_tv)
+  private val tagTv: TextView = itemView.findViewById(R.id.chat_tag_tv)
 
   fun bind(item: SessionEntity) {
     itemView.setOnClickListener { onItemClick(item, itemView) }
+    itemView.setOnLongClickListener {
+      onItemLongClick(item, itemView)
+      true
+    }
     titleTv.text = item.title.ifEmpty {
       titleTv.context.getString(R.string.feature_chat_title_default)
     }
 
     var targetColorRes = R.color.feature_chat_home_avatar_pink
+    tagTv.visibility = View.GONE
     when (item.type) {
       ChatSessionType.VISION -> {
         avatarTv.text = "🖼️"
@@ -66,9 +77,14 @@ class ChatHomeViewHolder(
           previewTv.text = "点击继续自由对话"
           targetColorRes = R.color.feature_chat_home_avatar_pink
         } else {
-          avatarTv.text = "🤖"
+          val agent = agentCache.get(item.agentId)
+          avatarTv.text = agent?.avatar ?: "🤖"
           previewTv.text = "智能体对话中..."
-          targetColorRes = R.color.feature_chat_home_avatar_yellow
+          targetColorRes = R.color.feature_chat_home_avatar_agent
+          agent?.name?.let {
+            tagTv.visibility = View.VISIBLE
+            tagTv.text = it
+          }
         }
       }
 

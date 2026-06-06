@@ -1,6 +1,7 @@
 package com.sofar.core.ai.edge.data.entity.models
 
 import android.content.Context
+import com.sofar.core.ai.edge.data.entity.llm.Accelerator
 import com.sofar.core.ai.edge.data.storage.AppStorageHub
 import java.io.File
 
@@ -47,7 +48,17 @@ data class Model(
   val llmSupportThinking: Boolean = false,
 
   /** The max token for llm model. */
-  val llmMaxToken: Int = 0,
+  val llmMaxToken: Int = 1024,
+
+  val llmTopK: Int = 64,
+  val llmTopP: Float = 0.95f,
+  val llmTemperature: Float = 1.0f,
+
+  /** Compatible accelerators. */
+  val accelerators: List<Accelerator> = listOf(),
+
+  /** Accelerator for running vision encoder. */
+  val visionAccelerator: Accelerator = Accelerator.GPU,
 
   var normalizedName: String = "",
 ) {

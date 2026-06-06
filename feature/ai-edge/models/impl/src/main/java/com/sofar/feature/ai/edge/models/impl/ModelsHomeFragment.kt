@@ -21,8 +21,12 @@ import com.sofar.core.ai.edge.data.repository.ModelsDataManager
 import com.sofar.core.ai.edge.data.storage.AppStorageHub
 import com.sofar.core.ui.recyclerview.LinearMarginItemDecoration
 import com.sofar.core.ui.state.observeEvent
+import com.sofar.feature.ai.edge.chat.api.ChatNavigator
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class ModelsHomeFragment : Fragment() {
 
   private lateinit var storageUsageTv: TextView
@@ -32,6 +36,9 @@ class ModelsHomeFragment : Fragment() {
   private lateinit var adapter: ModelsAdapter
 
   private val viewModel: ModelsManagerViewModel by viewModels()
+
+  @Inject
+  lateinit var chatNavigator: ChatNavigator
 
   private var lastStorageRefreshTime: Long = 0L
 
@@ -139,5 +146,6 @@ class ModelsHomeFragment : Fragment() {
 
   private fun jump(model: Model) {
     ModelsDataManager.updateActiveModel(model)
+    chatNavigator.launchChatDetail(requireContext())
   }
 }

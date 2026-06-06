@@ -32,4 +32,7 @@ interface SessionDao {
 
   @Query("UPDATE sessions SET updated_at = :time, title = :title, last_message = :preview WHERE id = :sessionId")
   suspend fun updateSessionPreviewAndTitle(sessionId: String, time: Long, title: String, preview: String?)
+
+  @Query("UPDATE sessions SET agent_id = :agentId WHERE id = :sessionId")
+  suspend fun updateSessionAgentId(sessionId: String, agentId: String?)
 }
