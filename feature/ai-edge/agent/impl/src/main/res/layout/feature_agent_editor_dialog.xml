@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
-  android:layout_height="wrap_content"
-  android:fillViewport="true">
+  android:layout_height="wrap_content">
 
-  <LinearLayout
+  <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/core_ui_spacing_sm"
-    android:paddingTop="@dimen/core_ui_spacing_sm">
+    android:padding="@dimen/core_ui_spacing_sm">
 
     <com.google.android.material.textfield.TextInputLayout
-      android:layout_width="match_parent"
+      android:id="@+id/agent_editor_avatar_til"
+      android:layout_width="0dp"
       android:layout_height="wrap_content"
-      android:hint="@string/feature_agent_field_avatar">
+      android:hint="@string/feature_agent_field_avatar"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent">
 
       <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/agent_editor_avatar_et"
@@ -27,51 +28,43 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-      android:layout_width="match_parent"
+      android:id="@+id/agent_editor_name_til"
+      android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_marginTop="@dimen/core_ui_spacing_sm"
-      android:hint="@string/feature_agent_field_name">
+      android:hint="@string/feature_agent_field_name"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/agent_editor_avatar_til">
 
       <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/agent_editor_name_et"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName|textCapWords"
         android:maxLines="1" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-      android:layout_width="match_parent"
+      android:id="@+id/agent_editor_prompt_til"
+      android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_marginTop="@dimen/core_ui_spacing_sm"
-      android:hint="@string/feature_agent_field_model_id">
-
-      <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/agent_editor_model_id_et"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="text"
-        android:maxLines="1" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="@dimen/core_ui_spacing_sm"
-      android:hint="@string/feature_agent_field_prompt">
+      android:hint="@string/feature_agent_field_prompt"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/agent_editor_name_til">
 
       <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/agent_editor_prompt_et"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="top|start"
-        android:inputType="textMultiLine|textCapSentences"
         android:minLines="5" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
-  </LinearLayout>
+  </androidx.constraintlayout.widget.ConstraintLayout>
 
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

@@ -23,6 +23,7 @@ data class AgentEntity(
   val avatar: String,         // 头像路径或 Emoji 图标
   val systemPrompt: String,   // 喂给 Google AI Edge 的系统提示词
   val sourceType: Int = 0,        // Agent 来源类型
+  val updatedAt: Long = System.currentTimeMillis(), // 更新时间戳
   val modelId: String? = null // 绑定的特定模型 ID
 )
 

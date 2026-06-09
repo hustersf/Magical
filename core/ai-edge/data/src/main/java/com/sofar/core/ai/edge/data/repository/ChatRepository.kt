@@ -144,8 +144,24 @@ class ChatRepository(
     tools: List<ToolProvider> = listOf()
   ): String = withContext(Dispatchers.IO) { // ⚡【核心保护】：强制切到子线程（I/O 线程池）
 
-    if (lastInitializedModelName == model.name && lastInitializedSystemPrompt == agentSystemPrompt) {
-      Log.d("ChatRepository", "模型 '${model.name}' 已经初始化且人设完全一致，跳过本次初始化")
+    if (lastInitializedModelName == model.name) {
+      if (lastInitializedSystemPrompt == agentSystemPrompt) {
+        Log.d("ChatRepository", "模型 '${model.name}' 已经初始化且人设完全一致，跳过本次初始化")
+        return@withContext ""
+      }
+      Log.d("ChatRepository", "模型底座命中常驻内存，检测到人设或会话变更，启动秒级热重置...")
+      val systemInstruction = agentSystemPrompt?.let { Contents.of(it) }
+
+      dataSource.resetConversation(
+        model = model,
+        supportImage = model.llmSupportImage,
+        supportAudio = model.llmSupportAudio,
+        systemInstruction = systemInstruction,
+        tools = tools,
+        enableConversationConstrainedDecoding = false // 根据具体多模态或强Schema业务按需传入
+      )
+
+      lastInitializedSystemPrompt = agentSystemPrompt
       return@withContext ""
     }
 
@@ -178,12 +194,14 @@ class ChatRepository(
         }
       )
     }
-    lastInitializedSystemPrompt = agentSystemPrompt
-    lastInitializedModelName = if (errorMessage.isEmpty()) {
-      model.name
+    if (errorMessage.isEmpty()) {
+      lastInitializedModelName = model.name
+      lastInitializedSystemPrompt = agentSystemPrompt
+      Log.d("ChatRepository", "模型 '${model.name}' 全量图编译冷启动彻底成功，内存标记已对齐")
     } else {
-      // 如果初始化失败了，清空标记，确保下次进来能允许重试
-      null
+      lastInitializedModelName = null
+      lastInitializedSystemPrompt = null
+      Log.e("ChatRepository", "模型冷启动编译硬报错，原因: $errorMessage，已清理内存标记")
     }
 
     return@withContext errorMessage

@@ -43,7 +43,7 @@ class AgentHomeViewModel @Inject constructor(
     name: String,
     avatar: String,
     systemPrompt: String,
-    modelId: String
+    modelId: String? = null
   ): Boolean {
     val agent = buildValidatedAgent(
       id = UUID.randomUUID().toString(),
@@ -69,7 +69,7 @@ class AgentHomeViewModel @Inject constructor(
     name: String,
     avatar: String,
     systemPrompt: String,
-    modelId: String
+    modelId: String? = null
   ): Boolean {
     val agent = buildValidatedAgent(
       id = id,
@@ -107,7 +107,7 @@ class AgentHomeViewModel @Inject constructor(
     name: String,
     avatar: String,
     systemPrompt: String,
-    modelId: String
+    modelId: String? = null
   ): AgentEntity? {
     val normalizedName = name.trim()
     if (normalizedName.isEmpty()) {
@@ -120,12 +120,13 @@ class AgentHomeViewModel @Inject constructor(
       return null
     }
     val normalizedAvatar = avatar.trim().ifEmpty { "🤖" }
-    val normalizedModelId = modelId.trim().ifEmpty { null }
+    val normalizedModelId = modelId?.trim()?.ifEmpty { null }
     return AgentEntity(
       id = id,
       name = normalizedName,
       avatar = normalizedAvatar,
       systemPrompt = normalizedPrompt,
+      sourceType = AgentSourceType.CUSTOM,
       modelId = normalizedModelId
     )
   }

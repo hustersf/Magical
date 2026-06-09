@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
+import com.sofar.core.ai.edge.data.entity.agent.AgentSourceType
 import com.sofar.core.ai.edge.database.entity.AgentEntity
 import com.sofar.feature.ai.edge.agent.impl.R
 import com.sofar.feature.ai.edge.chat.api.ChatNavigator
@@ -60,6 +61,9 @@ class AgentHomeFragment : Fragment() {
     adapter = AgentHomeAdapter(
       onItemClick = { agent ->
         onAgentSelected(agent)
+      },
+      onItemLongClick = { agent ->
+        showAgentMenuDialog(agent)
       }
     )
     recyclerView.adapter = adapter
@@ -112,17 +116,40 @@ class AgentHomeFragment : Fragment() {
       .show()
   }
 
+  private fun showAgentMenuDialog(agent: AgentEntity) {
+    // 官方内置智能体不可被编辑和删除
+    if (agent.sourceType == AgentSourceType.SYSTEM) {
+      return
+    }
+
+    val options = arrayOf(
+      getString(R.string.feature_agent_action_edit),
+      getString(R.string.feature_agent_action_delete)
+    )
+
+    MaterialAlertDialogBuilder(requireContext())
+      .setTitle(agent.name)
+      .setItems(options) { dialog, which ->
+        dialog.dismiss()
+        when (which) {
+          0 -> showAgentEditorDialog(agent)       // 点击“编辑”，带入旧实体数据回显
+          1 -> showDeleteConfirmationDialog(agent) // 点击“删除”，呼出二次确认弹窗
+        }
+      }
+      .show()
+  }
+
   private fun showAgentEditorDialog(agent: AgentEntity? = null) {
     val dialogView = layoutInflater.inflate(R.layout.feature_agent_editor_dialog, null, false)
     val avatarEt = dialogView.findViewById<TextInputEditText>(R.id.agent_editor_avatar_et)
     val nameEt = dialogView.findViewById<TextInputEditText>(R.id.agent_editor_name_et)
-    val modelIdEt = dialogView.findViewById<TextInputEditText>(R.id.agent_editor_model_id_et)
     val promptEt = dialogView.findViewById<TextInputEditText>(R.id.agent_editor_prompt_et)
 
     avatarEt.setText(agent?.avatar ?: "🤖")
     nameEt.setText(agent?.name.orEmpty())
-    modelIdEt.setText(agent?.modelId.orEmpty())
-    promptEt.setText(agent?.systemPrompt.orEmpty())
+    promptEt.setText(
+      agent?.systemPrompt ?: resources.getString(R.string.feature_agent_default_prompt_content)
+    )
 
     val dialog = MaterialAlertDialogBuilder(requireContext())
       .setTitle(if (agent == null) R.string.feature_agent_create_title else R.string.feature_agent_edit_title)
@@ -141,7 +168,6 @@ class AgentHomeFragment : Fragment() {
             name = nameEt.text?.toString().orEmpty(),
             avatar = avatarEt.text?.toString().orEmpty(),
             systemPrompt = promptEt.text?.toString().orEmpty(),
-            modelId = modelIdEt.text?.toString().orEmpty()
           )
         } else {
           viewModel.updateAgent(
@@ -149,7 +175,6 @@ class AgentHomeFragment : Fragment() {
             name = nameEt.text?.toString().orEmpty(),
             avatar = avatarEt.text?.toString().orEmpty(),
             systemPrompt = promptEt.text?.toString().orEmpty(),
-            modelId = modelIdEt.text?.toString().orEmpty()
           )
         }
         if (handled) {

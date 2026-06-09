@@ -1,10 +1,10 @@
-
 package com.sofar.core.ai.edge.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.sofar.core.ai.edge.database.entity.AgentEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -19,7 +19,10 @@ interface AgentDao {
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   suspend fun insertAgent(agent: AgentEntity)
 
-  @Query("SELECT * FROM agents ORDER BY name COLLATE NOCASE ASC")
+  @Update
+  suspend fun updateAgent(agent: AgentEntity)
+
+  @Query("SELECT * FROM agents ORDER BY sourceType ASC, name COLLATE NOCASE ASC")
   fun getAllAgents(): Flow<List<AgentEntity>> // 响应式冷流：Tab 2 界面可见时才按需监听
 
   @Query("SELECT * FROM agents WHERE id = :agentId")

@@ -12,13 +12,14 @@ import com.sofar.feature.ai.edge.agent.impl.R
 
 class AgentHomeAdapter(
   private val onItemClick: (AgentEntity) -> Unit,
+  private val onItemLongClick: (AgentEntity) -> Unit,
   private val diffCallback: AgentHomeDiffCallback = AgentHomeDiffCallback()
 ) : ListAdapter<AgentEntity, AgentHomeViewHolder>(diffCallback) {
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AgentHomeViewHolder {
     val itemView = LayoutInflater.from(parent.context)
       .inflate(R.layout.feature_agent_home_adapter_item, parent, false)
-    return AgentHomeViewHolder(itemView, onItemClick)
+    return AgentHomeViewHolder(itemView, onItemClick, onItemLongClick)
   }
 
   override fun onBindViewHolder(holder: AgentHomeViewHolder, position: Int) {
@@ -29,7 +30,8 @@ class AgentHomeAdapter(
 
 class AgentHomeViewHolder(
   itemView: View,
-  private val onItemClick: (AgentEntity) -> Unit
+  private val onItemClick: (AgentEntity) -> Unit,
+  private val onItemLongClick: (AgentEntity) -> Unit
 ) : RecyclerView.ViewHolder(itemView) {
 
   private val avatarTv: TextView = itemView.findViewById(R.id.agent_avatar_tv)
@@ -39,6 +41,10 @@ class AgentHomeViewHolder(
 
   fun bind(item: AgentEntity) {
     itemView.setOnClickListener { onItemClick(item) }
+    itemView.setOnLongClickListener {
+      onItemLongClick(item)
+      true
+    }
     // 设置头像（Emoji 或图片）
     avatarTv.text = item.avatar
     // 设置智能体名称

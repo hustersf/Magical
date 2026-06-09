@@ -168,10 +168,10 @@ class DefaultLiteRtLmDataSource @Inject constructor() : LiteRtLmDataSource {
 
       // 3. 复用当前已常驻内存的底层引擎实例，避免重新执行数 GB 大模型文件的反序列化与图编译耗时
       val engine = instance.engine
-      val topK = DEFAULT_TOPK
-      val topP = DEFAULT_TOPP
-      val temperature = DEFAULT_TEMPERATURE
-      val accelerator = Accelerator.GPU.label
+      val topK = model.llmTopK
+      val topP = model.llmTopP
+      val temperature = model.llmTemperature
+      val accelerator = model.accelerators.getOrNull(0)?.label ?: Accelerator.GPU.label
 
       // 4. 临时配置约束解码的全局实验性标记位，以便在重新构建会话时应用最新的 Schema 强约束规则
       ExperimentalFlags.enableConversationConstrainedDecoding =

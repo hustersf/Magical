@@ -2,6 +2,7 @@
 
   <string name="bottom_nav_page_chat">对话</string>
   <string name="bottom_nav_page_agent">智能体</string>
+  <string name="bottom_nav_page_explore">探索</string>
   <string name="bottom_nav_page_vision">识图</string>
   <string name="bottom_nav_page_meeting">会议</string>
   <string name="bottom_nav_page_model">模型</string>

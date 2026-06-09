@@ -45,7 +45,7 @@ class AgentRepository(private val agentDao: AgentDao) {
   }
 
   suspend fun updateAgent(agent: AgentEntity) = withContext(Dispatchers.IO) {
-    agentDao.insertAgent(agent)
+    agentDao.updateAgent(agent)
   }
 
   suspend fun deleteAgent(agentId: String) = withContext(Dispatchers.IO) {

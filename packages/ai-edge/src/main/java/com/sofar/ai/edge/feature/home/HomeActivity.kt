@@ -14,9 +14,8 @@ import com.sofar.core.ui.BaseUIActivity
 import com.sofar.core.ui.FragmentAdapter
 import com.sofar.feature.ai.edge.agent.impl.home.AgentHomeFragment
 import com.sofar.feature.ai.edge.chat.impl.home.ChatHomeFragment
-import com.sofar.feature.ai.edge.meeting.impl.MeetingHomeFragment
+import com.sofar.feature.ai.edge.explore.impl.ExploreHomeFragment
 import com.sofar.feature.ai.edge.models.impl.ModelsHomeFragment
-import com.sofar.feature.ai.edge.vision.impl.VisionHomeFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -52,9 +51,8 @@ class HomeActivity : BaseUIActivity() {
       when (item.itemId) {
         R.id.nav_chat -> selectItem(0)
         R.id.nav_agent -> selectItem(1)
-        R.id.nav_vision -> selectItem(2)
-        R.id.nav_meeting -> selectItem(3)
-        R.id.nav_model -> selectItem(4)
+        R.id.nav_explore -> selectItem(2)
+        R.id.nav_model -> selectItem(3)
       }
       true
     }
@@ -72,8 +70,7 @@ class HomeActivity : BaseUIActivity() {
     val list = mutableListOf<Fragment>()
     list.add(ChatHomeFragment())
     list.add(AgentHomeFragment())
-    list.add(VisionHomeFragment())
-    list.add(MeetingHomeFragment())
+    list.add(ExploreHomeFragment())
     list.add(ModelsHomeFragment())
     return list
   }

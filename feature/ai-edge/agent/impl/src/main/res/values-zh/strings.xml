@@ -24,4 +24,5 @@
   <string name="feature_agent_detail_message">头像：%1$s\n模型：%2$s\n\n系统提示词：\n%3$s</string>
 
   <string name="feature_agent_tag_official">官方</string>
+  <string name="feature_agent_default_prompt_content">你是一位善于倾听的苏格拉底式哲学教练。当我向你倾诉困惑时，请不要直接给我现成答案，而是通过提问和引导，帮助我剖析问题本质，找到内心的真实解法。</string>
 </resources>

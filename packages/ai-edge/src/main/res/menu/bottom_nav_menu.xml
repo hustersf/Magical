@@ -11,15 +11,10 @@
     android:icon="@drawable/core_ic_agent"
     android:title="@string/bottom_nav_page_agent" />
   <item
-    android:id="@+id/nav_vision"
+    android:id="@+id/nav_explore"
     android:enabled="true"
-    android:icon="@drawable/core_ic_photo"
-    android:title="@string/bottom_nav_page_vision" />
-  <item
-    android:id="@+id/nav_meeting"
-    android:enabled="true"
-    android:icon="@drawable/core_ic_audio"
-    android:title="@string/bottom_nav_page_meeting" />
+    android:icon="@drawable/core_ic_explore"
+    android:title="@string/bottom_nav_page_explore" />
   <item
     android:id="@+id/nav_model"
     android:enabled="true"

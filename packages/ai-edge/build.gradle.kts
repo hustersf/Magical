@@ -83,4 +83,6 @@ dependencies {
   implementation(project(":feature:ai-edge:vision:impl"))
   implementation(project(":feature:ai-edge:models:api"))
   implementation(project(":feature:ai-edge:models:impl"))
+  implementation(project(":feature:ai-edge:explore:api"))
+  implementation(project(":feature:ai-edge:explore:impl"))
 }
