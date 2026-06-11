@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import com.google.ai.edge.litertlm.Contents
+import com.google.ai.edge.litertlm.Message
 import com.google.ai.edge.litertlm.ToolProvider
 import com.sofar.core.ai.edge.data.cache.AgentCache
 import com.sofar.core.ai.edge.data.datasource.LiteRtLmDataSource
@@ -41,8 +42,19 @@ class ChatRepository(
   private val dataSource: LiteRtLmDataSource
 ) {
 
+  companion object {
+    private const val TAG = "ChatRepository"
+
+    private const val WINDOW_LIMIT_LARGE_MODEL = 10   // 针对 7B 等大容量模型的历史视窗
+    private const val WINDOW_LIMIT_SMALL_MODEL = 6    // 针对 2B 等小容量模型的标准历史视窗
+    private const val WINDOW_LIMIT_MIN_SAFE = 4       // 内存极度受限时的安全视窗下限
+    private const val WINDOW_LIMIT_MAX_SAFE = 12      // 硬件运行稳定的安全视窗上限
+    private const val AVERAGE_CHARS_PER_TOKEN = 500   // Token 换算系数
+  }
+
   private var lastInitializedModelName: String? = null
   private var lastInitializedSystemPrompt: String? = null
+  private var lastInitializedSessionId: String? = null
 
   // =================================================================================
   // 🧱 第一部分：会话列表（Sessions）核心管理逻辑
@@ -140,16 +152,23 @@ class ChatRepository(
   suspend fun initializeModel(
     context: Context,
     model: Model,
+    sessionId: String,
     agentSystemPrompt: String? = null,
     tools: List<ToolProvider> = listOf()
   ): String = withContext(Dispatchers.IO) { // ⚡【核心保护】：强制切到子线程（I/O 线程池）
 
+    if (lastInitializedModelName == model.name &&
+      lastInitializedSystemPrompt == agentSystemPrompt &&
+      lastInitializedSessionId == sessionId
+    ) {
+      Log.d(TAG, "模型、人设与会话ID一致，复用 KV Cache，跳过本次初始化")
+      return@withContext ""
+    }
+
+    val initialMessages = loadHistory(sessionId, model)
+
     if (lastInitializedModelName == model.name) {
-      if (lastInitializedSystemPrompt == agentSystemPrompt) {
-        Log.d("ChatRepository", "模型 '${model.name}' 已经初始化且人设完全一致，跳过本次初始化")
-        return@withContext ""
-      }
-      Log.d("ChatRepository", "模型底座命中常驻内存，检测到人设或会话变更，启动秒级热重置...")
+      Log.d(TAG, "模型底座已在内存中，检测到人设或会话变更，触发热重置...")
       val systemInstruction = agentSystemPrompt?.let { Contents.of(it) }
 
       dataSource.resetConversation(
@@ -157,11 +176,13 @@ class ChatRepository(
         supportImage = model.llmSupportImage,
         supportAudio = model.llmSupportAudio,
         systemInstruction = systemInstruction,
+        initialMessages = initialMessages,
         tools = tools,
         enableConversationConstrainedDecoding = false // 根据具体多模态或强Schema业务按需传入
       )
 
       lastInitializedSystemPrompt = agentSystemPrompt
+      lastInitializedSessionId = sessionId
       return@withContext ""
     }
 
@@ -179,16 +200,14 @@ class ChatRepository(
         supportImage = model.llmSupportImage,
         supportAudio = model.llmSupportAudio,
         systemInstruction = systemInstruction,
+        initialMessages = initialMessages,
         tools = tools,
         onDone = { errorMessage ->
           // 4. 当底层 C++ 引擎在后台彻底初始化或图编译（Graph Compilation）完毕后，触发此回调
           if (continuation.isActive) {
             // 回传报错信息（或空字串），宣告协程苏醒
             continuation.resume(errorMessage) { cause, _, _ ->
-              Log.d(
-                "ChatRepository",
-                "初始化结果回传时协程遭强掐熔断，原因: ${cause.message}"
-              )
+              Log.d(TAG, "初始化结果回调时协程已取消，原因: ${cause.message}")
             }
           }
         }
@@ -197,14 +216,45 @@ class ChatRepository(
     if (errorMessage.isEmpty()) {
       lastInitializedModelName = model.name
       lastInitializedSystemPrompt = agentSystemPrompt
-      Log.d("ChatRepository", "模型 '${model.name}' 全量图编译冷启动彻底成功，内存标记已对齐")
+      lastInitializedSessionId = sessionId
+      Log.d(TAG, "模型 '${model.name}' 冷启动与图编译完成，已同步内存缓存状态")
     } else {
       lastInitializedModelName = null
       lastInitializedSystemPrompt = null
-      Log.e("ChatRepository", "模型冷启动编译硬报错，原因: $errorMessage，已清理内存标记")
+      lastInitializedSessionId = null
+      Log.e(TAG, "模型冷启动失败，原因: $errorMessage，已重置内存状态标记")
     }
 
     return@withContext errorMessage
+  }
+
+  private suspend fun loadHistory(
+    sessionId: String,
+    model: Model
+  ): List<Message> {
+    // 根据当前初始化模型的规格，动态裁剪安全的端侧视窗上限
+    val limit = when {
+      model.name.contains("7b", ignoreCase = true) -> WINDOW_LIMIT_LARGE_MODEL
+      model.name.contains("2b", ignoreCase = true) -> WINDOW_LIMIT_SMALL_MODEL
+      model.llmMaxToken > 0 -> {
+        (model.llmMaxToken / AVERAGE_CHARS_PER_TOKEN)
+          .coerceIn(WINDOW_LIMIT_MIN_SAFE, WINDOW_LIMIT_MAX_SAFE)
+      }
+
+      else -> WINDOW_LIMIT_SMALL_MODEL
+    }
+
+    Log.d(TAG, "正在加载房间 [ $sessionId ] 历史，动态视窗裁剪策略界限为: $limit 条")
+
+    // 从 Room 数据库拉取该会话最近的倒序历史
+    val dbMessages = messageDao.getRecentMessages(sessionId, limit = limit)
+
+    return dbMessages.reversed().map { dbMsg ->
+      when (dbMsg.role) {
+        ChatMessageRole.ASSISTANT -> Message.model(dbMsg.textContent ?: "")
+        else -> Message.user(dbMsg.textContent ?: "")
+      }
+    }
   }
 
   /**
@@ -370,7 +420,7 @@ class ChatRepository(
         }
       },
       cleanUpListener = {
-        Log.d("ChatRepository", "单次推理结束，底层芯片缓存清理成功。")
+        Log.d(TAG, "单次推理结束，底层芯片缓存清理成功。")
       },
       onError = { errorMessage ->
         // 发生异常时同样使用守护线程去清理和销毁，确保状态正确

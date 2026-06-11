@@ -3,6 +3,7 @@ package com.sofar.core.ai.edge.data.datasource
 import android.content.Context
 import android.graphics.Bitmap
 import com.google.ai.edge.litertlm.Contents
+import com.google.ai.edge.litertlm.Message
 import com.google.ai.edge.litertlm.ToolProvider
 import com.sofar.core.ai.edge.data.entity.models.Model
 
@@ -34,6 +35,7 @@ interface LiteRtLmDataSource {
    * @param supportAudio 是否启用音频多模态支持
    * @param onDone 初始化完成后的回调通知（返回初始化状态或信息）
    * @param systemInstruction 系统指令/提示词，用于设定 AI 的角色、语气或行为准则
+   * @param initialMessages 预载入的多轮历史对话记录列表（用于在状态机初始化时原生挂载上下文 KV 缓存）
    * @param tools 提供给模型的外部工具/函数列表（用于 Function Calling 功能）
    * @param enableConversationConstrainedDecoding 是否开启对话约束解码（限制或规范模型的生成范围）
    * @param coroutineScope 用于执行异步初始化操作的协程作用域
@@ -45,6 +47,7 @@ interface LiteRtLmDataSource {
     supportAudio: Boolean,
     onDone: (String) -> Unit,
     systemInstruction: Contents? = null,
+    initialMessages: List<Message> = listOf(),
     tools: List<ToolProvider> = listOf(),
     enableConversationConstrainedDecoding: Boolean = false,
   )
@@ -58,6 +61,7 @@ interface LiteRtLmDataSource {
     supportImage: Boolean = false,
     supportAudio: Boolean = false,
     systemInstruction: Contents? = null,
+    initialMessages: List<Message> = listOf(),
     tools: List<ToolProvider> = listOf(),
     enableConversationConstrainedDecoding: Boolean = false,
   )

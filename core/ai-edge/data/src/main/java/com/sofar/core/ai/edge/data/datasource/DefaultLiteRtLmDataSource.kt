@@ -49,6 +49,7 @@ class DefaultLiteRtLmDataSource @Inject constructor() : LiteRtLmDataSource {
     supportAudio: Boolean,
     onDone: (String) -> Unit,
     systemInstruction: Contents?,
+    initialMessages: List<Message>,
     tools: List<ToolProvider>,
     enableConversationConstrainedDecoding: Boolean,
   ) {
@@ -128,6 +129,7 @@ class DefaultLiteRtLmDataSource @Inject constructor() : LiteRtLmDataSource {
             )
           },
           systemInstruction = systemInstruction, // 注入系统预设提示词（System Prompt），建立智能体的角色边界与行为准则
+          initialMessages = initialMessages, // 注入历史消息上下文
           tools = tools, // 注册提供给大模型的本地可调用函数或工具列表，激活端侧 Function Calling 插件生态
         )
       )
@@ -154,6 +156,7 @@ class DefaultLiteRtLmDataSource @Inject constructor() : LiteRtLmDataSource {
     supportImage: Boolean,
     supportAudio: Boolean,
     systemInstruction: Contents?,
+    initialMessages: List<Message>,
     tools: List<ToolProvider>,
     enableConversationConstrainedDecoding: Boolean
   ) {
@@ -193,6 +196,7 @@ class DefaultLiteRtLmDataSource @Inject constructor() : LiteRtLmDataSource {
             )
           },
           systemInstruction = systemInstruction, // 重新注入最新的系统预设提示词（System Prompt），实现智能体人设的动态覆写
+          initialMessages = initialMessages, // 注入历史消息上下文
           tools = tools, // 重新绑定或更新当前会话允许调用的端侧 Function Calling 工具链列表
         )
       )

@@ -72,7 +72,12 @@ class ChatDetailViewModel @Inject constructor(
             _uiState.update { it.copy(errorMessage = "当前未在模型Tab激活任何本地大模型") }
           } else {
             // 初始化
-            prepareEngine(ModelsDataManager.appContext(), freshModel, agent?.systemPrompt)
+            prepareEngine(
+              ModelsDataManager.appContext(),
+              freshModel,
+              sessionId,
+              agent?.systemPrompt
+            )
           }
         }
       }
@@ -89,7 +94,12 @@ class ChatDetailViewModel @Inject constructor(
    * 🧱 业务二：初始化并唤醒端侧 AI 引擎
    * 对应 Activity 的 initData 阶段，或者用户去 Tab 5 页面动态重载大模型时调用
    */
-  private fun prepareEngine(context: Context, model: Model, agentSystemPrompt: String?) {
+  private fun prepareEngine(
+    context: Context,
+    model: Model,
+    sessionId: String,
+    agentSystemPrompt: String?
+  ) {
     // 1. 开启界面思考锁，置灰发送键，控制 UI 展示转圈 Loading 状态
     _uiState.update { it.copy(isEngineLoading = true, errorMessage = null) }
 
@@ -98,6 +108,7 @@ class ChatDetailViewModel @Inject constructor(
       val errorResult = repository.initializeModel(
         context = context,
         model = model,
+        sessionId = sessionId,
         agentSystemPrompt = agentSystemPrompt
       )
 
