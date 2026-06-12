@@ -52,7 +52,7 @@ class ChatRepository(
     private const val AVERAGE_CHARS_PER_TOKEN = 500   // Token 换算系数
   }
 
-  private var lastInitializedModelName: String? = null
+  private var lastInitializedModel: Model? = null
   private var lastInitializedSystemPrompt: String? = null
   private var lastInitializedSessionId: String? = null
 
@@ -157,7 +157,7 @@ class ChatRepository(
     tools: List<ToolProvider> = listOf()
   ): String = withContext(Dispatchers.IO) { // ⚡【核心保护】：强制切到子线程（I/O 线程池）
 
-    if (lastInitializedModelName == model.name &&
+    if (lastInitializedModel?.name == model.name &&
       lastInitializedSystemPrompt == agentSystemPrompt &&
       lastInitializedSessionId == sessionId
     ) {
@@ -167,7 +167,7 @@ class ChatRepository(
 
     val initialMessages = loadHistory(sessionId, model)
 
-    if (lastInitializedModelName == model.name) {
+    if (lastInitializedModel?.name == model.name) {
       Log.d(TAG, "模型底座已在内存中，检测到人设或会话变更，触发热重置...")
       val systemInstruction = agentSystemPrompt?.let { Contents.of(it) }
 
@@ -194,6 +194,15 @@ class ChatRepository(
 
     // 3. 异步转挂起胶水：在子线程环境中，静静等待底层的异步回调
     val errorMessage = suspendCancellableCoroutine { continuation ->
+      val prevModel = lastInitializedModel
+      if (prevModel != null) {
+        Log.d(TAG, "检测到模型切换，后台开始注销旧模型内存: ${prevModel.name}")
+        releaseModelInstance(prevModel, onDone = {
+          Log.d(TAG, "旧模型 '${prevModel.name}' 物理内存已成功由 C++ 引擎强制退还给系统。")
+        })
+
+        lastInitializedModel = null
+      }
       dataSource.initialize(
         context = appContext,
         model = model,
@@ -214,12 +223,12 @@ class ChatRepository(
       )
     }
     if (errorMessage.isEmpty()) {
-      lastInitializedModelName = model.name
+      lastInitializedModel = model
       lastInitializedSystemPrompt = agentSystemPrompt
       lastInitializedSessionId = sessionId
       Log.d(TAG, "模型 '${model.name}' 冷启动与图编译完成，已同步内存缓存状态")
     } else {
-      lastInitializedModelName = null
+      lastInitializedModel = null
       lastInitializedSystemPrompt = null
       lastInitializedSessionId = null
       Log.e(TAG, "模型冷启动失败，原因: $errorMessage，已重置内存状态标记")
