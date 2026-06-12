@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.addTextChangedListener
@@ -144,8 +145,17 @@ class ChatDetailActivity : BaseUIActivity() {
   fun initData() {
     lifecycleScope.launch {
       repeatOnLifecycle(Lifecycle.State.STARTED) {
-        viewModel.uiState.collect { state ->
-          renderUiState(state)
+        // 启动独立子协程收集 UiState，不阻塞外层主流程
+        launch {
+          viewModel.uiState.collect { state ->
+            renderUiState(state)
+          }
+        }
+        // 启动独立子协程收集 Effect，两个流同时并行并发收集
+        launch {
+          viewModel.effectFlow.collect { effect ->
+            handleEffect(effect)
+          }
         }
       }
     }
@@ -203,17 +213,24 @@ class ChatDetailActivity : BaseUIActivity() {
         talkBtn.isEnabled = true
       }
     }
+  }
 
-    // D. 手机本地随机写盘异常或芯片中断等报错捕捉
-    state.errorMessage?.let { error ->
-      MaterialAlertDialogBuilder(this)
-        .setTitle("发生错误")
-        .setMessage(error)
-        .setCancelable(true)
-        .setPositiveButton("确定") { dialog, _ ->
-          dialog.dismiss()
-        }
-        .show()
+  private fun handleEffect(effect: ChatDetailEffect) {
+    when (effect) {
+      is ChatDetailEffect.ShowToast -> {
+        Toast.makeText(this, effect.message, Toast.LENGTH_SHORT).show()
+      }
+
+      is ChatDetailEffect.ShowAlert -> {
+        MaterialAlertDialogBuilder(this)
+          .setTitle("发生错误")
+          .setMessage(effect.message)
+          .setCancelable(true)
+          .setPositiveButton("确定") { dialog, _ ->
+            dialog.dismiss()
+          }
+          .show()
+      }
     }
   }
 

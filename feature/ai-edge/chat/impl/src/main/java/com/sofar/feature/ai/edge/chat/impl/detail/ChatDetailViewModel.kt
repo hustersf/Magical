@@ -11,11 +11,14 @@ import com.sofar.core.ai.edge.data.repository.ModelsDataManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -28,9 +31,13 @@ class ChatDetailViewModel @Inject constructor(
   private val agentRepository: AgentRepository
 ) : ViewModel() {
 
-  // 内部私有变量：负责动态修改状态
+  //  负责持续性状态
   private val _uiState = MutableStateFlow(ChatDetailUiState())
   val uiState: StateFlow<ChatDetailUiState> = _uiState.asStateFlow()
+
+  // 负责一次性事件（使用 Channel，确保事件不丢、不重、阅后即焚）
+  private val _effectChannel = Channel<ChatDetailEffect>(Channel.BUFFERED)
+  val effectFlow: Flow<ChatDetailEffect> = _effectChannel.receiveAsFlow()
 
   // 观察离线数据库变动的工作句柄，换对话时用来强行掐断老的流
   private var dbObservationJob: Job? = null
@@ -45,13 +52,10 @@ class ChatDetailViewModel @Inject constructor(
    * 自动把最新列表同步进 _uiState.messages，从而触发 Activity 里的 ListAdapter 刷新！
    */
   fun init(sessionId: String, agentId: String? = null) {
-    // 1. 如果之前已经挂载了别的对话，先安全断开，防止历史数据串门
+    // 如果之前已经挂载了别的对话，先安全断开，防止历史数据串门
     dbObservationJob?.cancel()
 
-    // 2. 清空上一轮的残余报错信息
-    _uiState.update { it.copy(errorMessage = null) }
-
-    // 3. 强力挂载 Room 流监听
+    // 强力挂载 Room 流监听
     dbObservationJob = viewModelScope.launch {
       val session = repository.getSessionById(sessionId)
       val agent = agentId?.let { agentRepository.getAgentById(it) }
@@ -69,7 +73,7 @@ class ChatDetailViewModel @Inject constructor(
         ModelsDataManager.activeModelFlow.collect { freshModel ->
           _currentActiveModel.value = freshModel
           if (freshModel == null) {
-            _uiState.update { it.copy(errorMessage = "当前未在模型Tab激活任何本地大模型") }
+            alertEffect("当前未在模型Tab激活任何本地大模型")
           } else {
             // 初始化
             prepareEngine(
@@ -100,10 +104,10 @@ class ChatDetailViewModel @Inject constructor(
     sessionId: String,
     agentSystemPrompt: String?
   ) {
-    // 1. 开启界面思考锁，置灰发送键，控制 UI 展示转圈 Loading 状态
-    _uiState.update { it.copy(isEngineLoading = true, errorMessage = null) }
+    // 开启界面思考锁，置灰发送键，控制 UI 展示转圈 Loading 状态
+    _uiState.update { it.copy(isEngineLoading = true) }
 
-    // 2. 🚀 在主线程作用域中无忧启动协程，保持 UI 的极速响应
+    // 🚀 在主线程作用域中无忧启动协程，保持 UI 的极速响应
     viewModelScope.launch {
       val errorResult = repository.initializeModel(
         context = context,
@@ -112,13 +116,16 @@ class ChatDetailViewModel @Inject constructor(
         agentSystemPrompt = agentSystemPrompt
       )
 
-      // 4. 👍 子线程的 C++ 图编译彻底闭环，协程在主线程苏醒，直接在线性代码下方丝滑刷新 UI 状态
+      // 👍 子线程的 C++ 图编译彻底闭环，协程在主线程苏醒，直接在线性代码下方丝滑刷新 UI 状态
+      val isSuccess = errorResult.isEmpty()
       _uiState.update {
         it.copy(
           isEngineLoading = false,
-          isModelReady = errorResult.isEmpty(),
-          errorMessage = errorResult.ifEmpty { null } // 若返回空字串代表启动成功，清除报错状态
+          isModelReady = isSuccess,
         )
+      }
+      if (!isSuccess) {
+        toastEffect(errorResult)
       }
     }
   }
@@ -137,7 +144,7 @@ class ChatDetailViewModel @Inject constructor(
     if (userPrompt.isEmpty() && sandboxedImagesPath.isEmpty() && sandboxedAudioPath == null) return
 
     val activeModel = _currentActiveModel.value ?: run {
-      _uiState.update { it.copy(errorMessage = "当前未在设置中激活任何本地大模型") }
+      alertEffect("当前未在设置中激活任何本地大模型")
       return
     }
 
@@ -148,7 +155,6 @@ class ChatDetailViewModel @Inject constructor(
       it.copy(
         isAiResponding = true,
         currentStreamingText = null,
-        errorMessage = null
       )
     }
 
@@ -176,9 +182,9 @@ class ChatDetailViewModel @Inject constructor(
             it.copy(
               isAiResponding = false,
               currentStreamingText = null,
-              errorMessage = exception.message
             )
           }
+          toastEffect(exception.message)
         }
         .onCompletion {
           // 整个大模型流式喷射谢幕，重置响应指标，把画面权完美交还给 Room
@@ -214,6 +220,18 @@ class ChatDetailViewModel @Inject constructor(
         isAiResponding = false,
         currentStreamingText = null
       )
+    }
+  }
+
+  private fun toastEffect(msg: String?) {
+    msg?.let {
+      _effectChannel.trySend(ChatDetailEffect.ShowToast(it))
+    }
+  }
+
+  private fun alertEffect(msg: String?) {
+    msg?.let {
+      _effectChannel.trySend(ChatDetailEffect.ShowAlert(it))
     }
   }
 
