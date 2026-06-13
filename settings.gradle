@@ -59,6 +59,8 @@ include ':core:network'
 include ':core:ui'
 include ':core:res'
 include ':core:common'
+include ':core:media'
+include ':core:image'
 
 include ':core:ai-edge:data'
 include ':core:ai-edge:design'

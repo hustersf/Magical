@@ -3,7 +3,9 @@ package com.sofar.feature.ai.edge.chat.impl.detail
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -20,6 +22,8 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.sofar.core.ai.edge.data.entity.chat.ChatDetailArgs
 import com.sofar.core.common.extension.getParcelableCompat
+import com.sofar.core.media.GetMediaContract
+import com.sofar.core.media.MediaAction
 import com.sofar.core.ui.BaseUIActivity
 import com.sofar.core.ui.recyclerview.LinearMarginItemDecoration
 import com.sofar.feature.ai.edge.chat.impl.R
@@ -59,6 +63,12 @@ class ChatDetailActivity : BaseUIActivity() {
         }
       }
       context.startActivity(intent)
+    }
+  }
+
+  private val mediaLauncher = registerForActivityResult(GetMediaContract()) { uris: List<Uri> ->
+    if (uris.isNotEmpty()) {
+      handleSelectedImages(uris)
     }
   }
 
@@ -123,10 +133,12 @@ class ChatDetailActivity : BaseUIActivity() {
 
     moreBtn.setOnClickListener {
       // TODO: 弹出更多功能面板（照片、文件等）
+      mediaLauncher.launch(MediaAction.PICK_IMAGE)
     }
 
     talkBtn.setOnClickListener {
       // TODO: 触发对讲/录音功能
+      mediaLauncher.launch(MediaAction.TAKE_PHOTO)
     }
 
     sendBtn.setOnClickListener {
@@ -172,7 +184,8 @@ class ChatDetailActivity : BaseUIActivity() {
     adapter.submitList(state.messages) {
       if (state.messages.isNotEmpty()) {
         // 如果历史记录发生了位置移动，或者尾部顶出了新气泡，列表始终滑至最底端位置
-        val layoutManager = recyclerView.layoutManager as? LinearLayoutManager ?: return@submitList
+        val layoutManager =
+          recyclerView.layoutManager as? LinearLayoutManager ?: return@submitList
         val targetPosition = state.messages.size - 1
         layoutManager.scrollToPositionWithOffset(targetPosition, Int.MIN_VALUE)
       }
@@ -245,6 +258,13 @@ class ChatDetailActivity : BaseUIActivity() {
     )
   }
 
+  private fun handleSelectedImages(uris: List<Uri>) {
+    Log.d("MediaLauncher", "收到图片结果，总共选择了 ${uris.size} 张图片")
+    // 循环打印每一个 Uri 的详细路径
+    uris.forEachIndexed { index, uri ->
+      Log.d("MediaLauncher", "第 [${index + 1}] 张图片 Uri: $uri")
+    }
+  }
   override fun windowInsetsType(): Int {
     return WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime()
   }

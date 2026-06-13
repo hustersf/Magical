@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- 声明 RoundImageView 的自定义属性 -->
+  <declare-styleable name="RoundImageView">
+    <!-- 是否是正圆形 -->
+    <attr name="is_circle" format="boolean" />
+    <!-- 统一的圆角半径 -->
+    <attr name="radius" format="dimension" />
+  </declare-styleable>
+</resources>

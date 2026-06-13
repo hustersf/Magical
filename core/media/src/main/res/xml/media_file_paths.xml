@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+  <!-- 仅开放 cacheDir，确保文件绝对私有且安全 -->
+  <cache-path
+    name="media_temp_cache"
+    path="." />
+</paths>
