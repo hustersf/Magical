@@ -3,6 +3,7 @@
 
   <application>
     <activity android:name=".detail.ChatDetailActivity" />
+    <activity android:name=".detail.image.ImagePreviewActivity" />
   </application>
 
 </manifest>

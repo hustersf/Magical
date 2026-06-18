@@ -6,4 +6,5 @@
   <color name="feature_chat_home_avatar_pink">#FCE8E6</color>
 
   <color name="feature_chat_home_avatar_agent">@color/md_theme_primary</color>
+  <color name="feature_chat_detail_image_prevew_bg">#000000</color>
 </resources>

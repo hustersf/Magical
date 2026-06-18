@@ -1,15 +1,14 @@
 package com.sofar.feature.ai.edge.chat.impl.detail
 
 import android.content.Context
-import android.graphics.BitmapFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sofar.core.ai.edge.data.entity.models.Model
 import com.sofar.core.ai.edge.data.repository.AgentRepository
 import com.sofar.core.ai.edge.data.repository.ChatRepository
 import com.sofar.core.ai.edge.data.repository.ModelsDataManager
+import com.sofar.feature.ai.edge.chat.impl.detail.image.SelectedImageState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -21,8 +20,6 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -138,10 +135,10 @@ class ChatDetailViewModel @Inject constructor(
     agentId: String? = null,
     inputTextFieldValue: String,
     sandboxedImagesPath: List<String> = listOf(),
-    sandboxedAudioPath: String? = null
+    sandboxedAudioPath: List<String> = listOf()
   ) {
     val userPrompt = inputTextFieldValue.trim()
-    if (userPrompt.isEmpty() && sandboxedImagesPath.isEmpty() && sandboxedAudioPath == null) return
+    if (userPrompt.isEmpty() && sandboxedImagesPath.isEmpty() && sandboxedAudioPath.isEmpty()) return
 
     val activeModel = _currentActiveModel.value ?: run {
       alertEffect("当前未在设置中激活任何本地大模型")
@@ -155,25 +152,14 @@ class ChatDetailViewModel @Inject constructor(
       it.copy(
         isAiResponding = true,
         currentStreamingText = null,
+        selectedImages = emptyList(),
       )
     }
 
     viewModelScope.launch {
-      // 在子线程中优雅解析多模态大文件，主线程获得绝对安全保护
-      val (rawBitmaps, rawAudioBytes) = withContext(Dispatchers.IO) {
-        val bitmaps = sandboxedImagesPath.mapNotNull { path ->
-          val file = File(path)
-          if (file.exists()) BitmapFactory.decodeFile(file.absolutePath) else null
-        }
-        val audioBytes =
-          sandboxedAudioPath?.let { path -> File(path).let { if (it.exists()) it.readBytes() else null } }
-        bitmaps to audioBytes
-      }
-
       // 🌊 核心流式对接：调度底层的 LiteRT 推理管道
       repository.sendMessageStream(
         sessionId = sessionId, model = activeModel, input = userPrompt,
-        images = rawBitmaps, audioClips = rawAudioBytes?.let { listOf(it) } ?: listOf(),
         inputImagesPath = sandboxedImagesPath, inputAudioPath = sandboxedAudioPath
       )
         .catch { exception ->
@@ -232,6 +218,12 @@ class ChatDetailViewModel @Inject constructor(
   private fun alertEffect(msg: String?) {
     msg?.let {
       _effectChannel.trySend(ChatDetailEffect.ShowAlert(it))
+    }
+  }
+
+  fun updateSelectedImages(newImages: List<SelectedImageState>) {
+    _uiState.update { currentState ->
+      currentState.copy(selectedImages = newImages)
     }
   }
 

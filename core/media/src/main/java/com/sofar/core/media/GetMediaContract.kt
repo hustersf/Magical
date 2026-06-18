@@ -3,9 +3,7 @@ package com.sofar.core.media
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContract
-import androidx.core.content.IntentCompat
 
 /**
  * 媒体文件操作类型枚举
@@ -18,9 +16,9 @@ enum class MediaAction {
 /**
  * 自定义媒体选择/拍摄契约
  * 输入参数：[MediaAction] 指令
- * 返回参数：[List<Uri>] 选择或拍摄后的 Uri 列表（统一转为 List 方便上层处理）
+ * 返回参数：[List<String>] 选择或拍摄后的本地沙盒永久物理路径列表（统一转为路径方便上层直接操作文件）
  */
-class GetMediaContract : ActivityResultContract<MediaAction, List<Uri>>() {
+class GetMediaContract : ActivityResultContract<MediaAction, List<String>>() {
 
   companion object {
     /**
@@ -35,29 +33,12 @@ class GetMediaContract : ActivityResultContract<MediaAction, List<Uri>>() {
     }
   }
 
-  override fun parseResult(resultCode: Int, intent: Intent?): List<Uri> {
+  override fun parseResult(resultCode: Int, intent: Intent?): List<String> {
     if (resultCode != Activity.RESULT_OK || intent == null) {
       return emptyList()
     }
 
-    val uriList = mutableListOf<Uri>()
-
-    // 1. 优先尝试解析多选结果（对应你代码中的 finishWithListResult）
-    val list = IntentCompat.getParcelableArrayListExtra(
-      intent,
-      MediaLauncherActivity.EXTRA_SELECTED_URIS,
-      Uri::class.java
-    )
-    if (list != null) {
-      uriList.addAll(list)
-    }
-
-    // 2. 如果多选为空，尝试解析单选/拍照结果（对应你代码中的 finishWithResult）
-    if (uriList.isEmpty()) {
-      intent.data?.let { uri ->
-        uriList.add(uri)
-      }
-    }
-    return uriList
+    return intent.getStringArrayListExtra(MediaLauncherActivity.EXTRA_SELECTED_PATHS)
+      ?: emptyList()
   }
 }

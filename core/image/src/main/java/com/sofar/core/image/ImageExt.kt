@@ -1,7 +1,9 @@
 package com.sofar.core.image
 
 import android.net.Uri
+import android.util.Log
 import android.widget.ImageView
+import coil3.dispose
 import coil3.load
 import coil3.request.crossfade
 import coil3.request.error
@@ -23,5 +25,15 @@ fun ImageView.loadImage(
     crossfade(true)
     placeholder(R.drawable.core_img_default_placeholder)
     error(R.drawable.core_img_default_error)
+    listener(
+      onStart = { request -> Log.d("CoilDebug", "开始加载: ${request.data}") },
+      onError = { request, result -> Log.e("CoilDebug", "首次加载失败原因: ", result.throwable) },
+      onSuccess = { request, result -> Log.d("CoilDebug", "加载成功") }
+    )
   }
+}
+
+fun ImageView.clearImage() {
+  this.dispose()
+  this.setImageDrawable(null)
 }

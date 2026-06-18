@@ -2,4 +2,7 @@
 <resources>
   <dimen name="feature_chat_home_item_height">80dp</dimen>
   <dimen name="feature_chat_home_avatar_height">60dp</dimen>
+  <dimen name="feature_chat_detail_image_size">80dp</dimen>
+  <dimen name="feature_chat_detail_single_image_max_width">165dp</dimen>
+  <dimen name="feature_chat_detail_single_image_max_height">265dp</dimen>
 </resources>

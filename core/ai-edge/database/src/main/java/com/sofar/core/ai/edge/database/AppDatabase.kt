@@ -2,6 +2,7 @@ package com.sofar.core.ai.edge.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.sofar.core.ai.edge.database.dao.AgentDao
 import com.sofar.core.ai.edge.database.dao.ChatTransactionDao
 import com.sofar.core.ai.edge.database.dao.MessageDao
@@ -15,6 +16,7 @@ import com.sofar.core.ai.edge.database.entity.SessionEntity
   version = 1,
   exportSchema = false
 )
+@TypeConverters(RoomConverters::class)
 abstract class AppDatabase : RoomDatabase() {
 
   // 垂直拆分后的 DAO 统一出口

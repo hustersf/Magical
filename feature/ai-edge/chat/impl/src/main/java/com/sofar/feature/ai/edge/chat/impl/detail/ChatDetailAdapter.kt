@@ -5,12 +5,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.sofar.core.ai.edge.data.entity.chat.ChatMessageRole
 import com.sofar.core.ai.edge.data.entity.chat.ChatMessageType
 import com.sofar.core.ai.edge.database.entity.MessageEntity
+import com.sofar.core.image.loadImage
+import com.sofar.core.ui.image.RoundImageView
+import com.sofar.core.ui.recyclerview.LinearMarginItemDecoration
 import com.sofar.feature.ai.edge.chat.impl.R
+import com.sofar.feature.ai.edge.chat.impl.detail.image.ImagePreviewActivity
+import com.sofar.feature.ai.edge.chat.impl.detail.image.SelectedImageAdapter
+import com.sofar.feature.ai.edge.chat.impl.detail.image.SelectedImageState
 import io.noties.markwon.Markwon
 
 class ChatDetailAdapter(
@@ -64,10 +71,9 @@ class ChatDetailAdapter(
         )
       )
 
-      // 临时占位，未来直接在这里替换为你写好的外部独立多模态 ViewHolder
-      TYPE_USER_IMAGE -> DummyViewHolder(
+      TYPE_USER_IMAGE -> UserImageViewHolder(
         inflater.inflate(
-          R.layout.feature_chat_detail_user_text_item,
+          R.layout.feature_chat_detail_user_image_item,
           parent,
           false
         )
@@ -106,6 +112,7 @@ class ChatDetailAdapter(
     when (holder) {
       is UserTextViewHolder -> holder.bind(item)
       is AiTextViewHolder -> holder.bind(item)
+      is UserImageViewHolder -> holder.bind(item)
     }
   }
 
@@ -166,6 +173,69 @@ class AiTextViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
   fun updateTextInline(newText: String?) {
     markwon.setMarkdown(contentTv, newText ?: "")
+  }
+}
+
+/**
+ * 用户带图片的气泡
+ */
+class UserImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+  private val contentTv: TextView = itemView.findViewById(R.id.content_tv)
+  private val textCardView: View = itemView.findViewById(R.id.text_card_view)
+  private val singleIv: RoundImageView = itemView.findViewById(R.id.single_preview_iv)
+  private val singleMaskIv: RoundImageView = itemView.findViewById(R.id.single_image_mask_iv)
+  private val multiImageRecyclerView: RecyclerView = itemView.findViewById(R.id.multi_image_rv)
+
+  private val subImageAdapter = SelectedImageAdapter()
+
+  init {
+    multiImageRecyclerView.layoutManager =
+      LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
+    multiImageRecyclerView.adapter = subImageAdapter
+    val imagePadding = itemView.context.resources.getDimension(R.dimen.core_ui_spacing_sm).toInt()
+    multiImageRecyclerView.addItemDecoration(
+      LinearMarginItemDecoration(
+        RecyclerView.HORIZONTAL,
+        imagePadding,
+        imagePadding
+      )
+    )
+  }
+
+  fun bind(item: MessageEntity) {
+    val paths = item.filePath ?: emptyList()
+
+    // 动态判断并显示单图、多图或隐藏
+    if (paths.size == 1) {
+      singleIv.visibility = View.VISIBLE
+      singleMaskIv.visibility = View.VISIBLE
+      multiImageRecyclerView.visibility = View.GONE
+      singleIv.loadImage(paths.first())
+      singleIv.setOnClickListener {
+        ImagePreviewActivity.launch(itemView.context, paths.first())
+      }
+    } else if (paths.size > 1) {
+      singleIv.visibility = View.GONE
+      singleMaskIv.visibility = View.GONE
+      multiImageRecyclerView.visibility = View.VISIBLE
+      subImageAdapter.submitList(paths.map {
+        SelectedImageState(
+          path = it,
+          isAddButton = false
+        )
+      })
+    } else {
+      singleIv.visibility = View.GONE
+      multiImageRecyclerView.visibility = View.GONE
+    }
+
+    // 完美处理纯图或图文：如果没发字（纯图发送），直接隐藏整个卡片容器，气泡完美消失，只留裸露的原图！
+    if (item.textContent.isNullOrEmpty()) {
+      textCardView.visibility = View.GONE
+    } else {
+      textCardView.visibility = View.VISIBLE
+      contentTv.text = item.textContent
+    }
   }
 }
 

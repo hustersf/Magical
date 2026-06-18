@@ -3,7 +3,6 @@ package com.sofar.feature.ai.edge.chat.impl.detail
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -11,6 +10,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Lifecycle
@@ -27,6 +27,8 @@ import com.sofar.core.media.MediaAction
 import com.sofar.core.ui.BaseUIActivity
 import com.sofar.core.ui.recyclerview.LinearMarginItemDecoration
 import com.sofar.feature.ai.edge.chat.impl.R
+import com.sofar.feature.ai.edge.chat.impl.detail.image.SelectedImageAdapter
+import com.sofar.feature.ai.edge.chat.impl.detail.image.SelectedImageState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -44,6 +46,9 @@ class ChatDetailActivity : BaseUIActivity() {
 
   private lateinit var recyclerView: RecyclerView
   private lateinit var adapter: ChatDetailAdapter
+
+  private lateinit var imageRecyclerView: RecyclerView
+  private lateinit var imageAdapter: SelectedImageAdapter
 
   private val viewModel: ChatDetailViewModel by viewModels()
 
@@ -66,9 +71,9 @@ class ChatDetailActivity : BaseUIActivity() {
     }
   }
 
-  private val mediaLauncher = registerForActivityResult(GetMediaContract()) { uris: List<Uri> ->
-    if (uris.isNotEmpty()) {
-      handleSelectedImages(uris)
+  private val mediaLauncher = registerForActivityResult(GetMediaContract()) { paths: List<String> ->
+    if (paths.isNotEmpty()) {
+      handleSelectedImages(paths)
     }
   }
 
@@ -84,6 +89,12 @@ class ChatDetailActivity : BaseUIActivity() {
   }
 
   fun initView() {
+    initActionViews()
+    initMessageRecyclerView()
+    initSelectedImagesRecyclerView()
+  }
+
+  private fun initActionViews() {
     toolbar = findViewById(R.id.chat_detail_toolbar)
     chatEditText = findViewById(R.id.chat_detail_edit_text)
     cancelBtn = findViewById(R.id.chat_detail_cancel_btn)
@@ -91,7 +102,9 @@ class ChatDetailActivity : BaseUIActivity() {
     talkBtn = findViewById(R.id.chat_detail_talk_btn)
     sendBtn = findViewById(R.id.chat_detail_send_btn)
     stopBtn = findViewById(R.id.chat_detail_stop_btn)
+  }
 
+  private fun initMessageRecyclerView() {
     recyclerView = findViewById(R.id.chat_detail_list)
     val layoutManager = LinearLayoutManager(this).apply {
       stackFromEnd = true
@@ -105,6 +118,29 @@ class ChatDetailActivity : BaseUIActivity() {
         RecyclerView.VERTICAL,
         padding,
         padding
+      )
+    )
+  }
+
+  private fun initSelectedImagesRecyclerView() {
+    imageRecyclerView = findViewById(R.id.chat_detail_image_list)
+    imageRecyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
+    imageAdapter = SelectedImageAdapter(
+      onAddClick = { view ->
+        showMoreMenu(view)
+      },
+      onDeleteClick = { imageState ->
+        val currentImages = viewModel.uiState.value.selectedImages
+        viewModel.updateSelectedImages(currentImages.filterNot { it.path == imageState.path })
+      }
+    )
+    imageRecyclerView.adapter = imageAdapter
+    val imagePadding = resources.getDimension(R.dimen.core_ui_spacing_sm).toInt()
+    imageRecyclerView.addItemDecoration(
+      LinearMarginItemDecoration(
+        RecyclerView.HORIZONTAL,
+        imagePadding,
+        imagePadding
       )
     )
   }
@@ -131,22 +167,15 @@ class ChatDetailActivity : BaseUIActivity() {
       chatEditText.text?.clear()
     }
 
-    moreBtn.setOnClickListener {
-      // TODO: 弹出更多功能面板（照片、文件等）
-      mediaLauncher.launch(MediaAction.PICK_IMAGE)
+    moreBtn.setOnClickListener { view ->
+      showMoreMenu(view)
     }
 
     talkBtn.setOnClickListener {
-      // TODO: 触发对讲/录音功能
-      mediaLauncher.launch(MediaAction.TAKE_PHOTO)
     }
 
     sendBtn.setOnClickListener {
-      val message = chatEditText.text.toString().trim()
-      if (message.isNotEmpty()) {
-        sendMessage(message)
-        chatEditText.text?.clear() // 发送后清空
-      }
+      sendMessage()
     }
 
     stopBtn.setOnClickListener {
@@ -226,6 +255,23 @@ class ChatDetailActivity : BaseUIActivity() {
         talkBtn.isEnabled = true
       }
     }
+
+    // 图片选择UI
+    val realImages = state.selectedImages
+    if (realImages.isNotEmpty()) {
+      imageRecyclerView.visibility = View.VISIBLE
+
+      val displayList = realImages + SelectedImageState(isAddButton = true)
+      imageAdapter.submitList(displayList) {
+        val lastPosition = displayList.size - 1
+        if (lastPosition >= 0) {
+          imageRecyclerView.scrollToPosition(lastPosition)
+        }
+      }
+    } else {
+      imageRecyclerView.visibility = View.GONE
+      imageAdapter.submitList(emptyList())
+    }
   }
 
   private fun handleEffect(effect: ChatDetailEffect) {
@@ -247,24 +293,60 @@ class ChatDetailActivity : BaseUIActivity() {
     }
   }
 
-  private fun sendMessage(text: String) {
-    // 🧠 干净利落：彻底消灭 onTextChunksReceived 回调接口，只管发送，不操心刷新
-    viewModel.performSendMessage(
-      sessionId = currentSessionId,
-      agentId = agentId,
-      inputTextFieldValue = text,
-      sandboxedImagesPath = listOf(), // 预留给 Tab 3
-      sandboxedAudioPath = null       // 预留给 Tab 4
-    )
-  }
+  private fun sendMessage() {
+    // 获取消息
+    val trimmedText = chatEditText.text?.toString()?.trim().orEmpty()
 
-  private fun handleSelectedImages(uris: List<Uri>) {
-    Log.d("MediaLauncher", "收到图片结果，总共选择了 ${uris.size} 张图片")
-    // 循环打印每一个 Uri 的详细路径
-    uris.forEachIndexed { index, uri ->
-      Log.d("MediaLauncher", "第 [${index + 1}] 张图片 Uri: $uri")
+    // 从当前 UiState 中安全提取用户真正选中的本地沙盒图片物理路径列表
+    val selectedPaths = viewModel.uiState.value.selectedImages
+      .filter { !it.isAddButton && !it.path.isNullOrEmpty() }
+      .map { it.path!! }
+
+    // 当“文字不为空”或者“图片列表不为空”时，才允许发送
+    if (trimmedText.isNotEmpty() || selectedPaths.isNotEmpty()) {
+
+      // 将文本快照与图片快照，作为原子参数无缝喂给 ViewModel
+      viewModel.performSendMessage(
+        sessionId = currentSessionId,
+        agentId = agentId,
+        inputTextFieldValue = trimmedText,
+        sandboxedImagesPath = selectedPaths,
+        sandboxedAudioPath = emptyList()            // 预留给 Tab 4 录音
+      )
+
+      // 确认发起发送后，现场清空 Activity 的输入框文本
+      chatEditText.text?.clear()
     }
   }
+
+  private fun handleSelectedImages(paths: List<String>) {
+    Log.d(TAG, "收到图片结果，总共选择了 ${paths.size} 张图片")
+    val oldImages = viewModel.uiState.value.selectedImages
+    val oldPaths = oldImages.mapNotNull { it.path }
+
+    // 多选增量去重
+    val newUniquePaths = paths.filter { it !in oldPaths }
+    val newStates = newUniquePaths.map { SelectedImageState(path = it, isAddButton = false) }
+
+    viewModel.updateSelectedImages(oldImages + newStates)
+  }
+
+  private fun showMoreMenu(anchorView: View) {
+    // 创建原生的快捷气泡菜单，直接锚定在 + 号按钮上方或下方弹出
+    val popup = PopupMenu(this, anchorView)
+    popup.menuInflater.inflate(R.menu.feature_detail_more_menu, popup.menu)
+    popup.setForceShowIcon(true)
+    // 根据 XML 中定义的 ID 分发点击事件
+    popup.setOnMenuItemClickListener { item ->
+      when (item.itemId) {
+        R.id.nav_camera -> mediaLauncher.launch(MediaAction.TAKE_PHOTO)
+        R.id.nav_photo -> mediaLauncher.launch(MediaAction.PICK_IMAGE)
+      }
+      true
+    }
+    popup.show()
+  }
+
   override fun windowInsetsType(): Int {
     return WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime()
   }

@@ -1,6 +1,7 @@
 package com.sofar.feature.ai.edge.chat.impl.detail
 
 import com.sofar.core.ai.edge.database.entity.MessageEntity
+import com.sofar.feature.ai.edge.chat.impl.detail.image.SelectedImageState
 
 data class ChatDetailUiState(
   val sessionTitle: String = "",
@@ -8,5 +9,6 @@ data class ChatDetailUiState(
   val isEngineLoading: Boolean = true,              // 模型正在初始化
   val isModelReady: Boolean = false,                // 模型是否初始化成功
   val isAiResponding: Boolean = false,              // 模型正在吐字中
-  val currentStreamingText: String? = null          // 核心：当前大模型正在内存中高频蹦的字
+  val currentStreamingText: String? = null,         // 核心：当前大模型正在内存中高频蹦的字
+  val selectedImages: List<SelectedImageState> = emptyList()  //选中的本地图片
 )

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content">
+
+  <com.sofar.core.ui.image.RoundImageView
+    android:id="@+id/single_preview_iv"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:adjustViewBounds="true"
+    android:maxHeight="@dimen/feature_chat_detail_single_image_max_height"
+    android:maxWidth="@dimen/feature_chat_detail_single_image_max_width"
+    android:scaleType="centerCrop"
+    android:visibility="gone"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:radius="@dimen/core_ui_corner_radius_md"
+    tools:visibility="visible" />
+
+  <com.sofar.core.ui.image.RoundImageView
+    android:id="@+id/single_image_mask_iv"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:background="@drawable/core_shape_image_mask_cover"
+    android:visibility="gone"
+    app:layout_constraintBottom_toBottomOf="@+id/single_preview_iv"
+    app:layout_constraintEnd_toEndOf="@+id/single_preview_iv"
+    app:layout_constraintStart_toStartOf="@+id/single_preview_iv"
+    app:layout_constraintTop_toTopOf="@+id/single_preview_iv"
+    app:radius="@dimen/core_ui_corner_radius_md" />
+
+  <androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/multi_image_rv"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:visibility="gone"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+  <androidx.constraintlayout.widget.Barrier
+    android:id="@+id/image_bottom_barrier"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:barrierDirection="bottom"
+    app:constraint_referenced_ids="single_preview_iv,multi_image_rv" />
+
+  <com.google.android.material.card.MaterialCardView
+    android:id="@+id/text_card_view"
+    style="@style/CoreUiCardView.Standard"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/core_ui_spacing_xxl"
+    android:layout_marginTop="@dimen/core_ui_spacing_sm"
+    app:cardBackgroundColor="?colorPrimary"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/image_bottom_barrier">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="@dimen/core_ui_spacing_lg">
+
+      <TextView
+        android:id="@+id/content_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="?colorOnPrimary"
+        android:textSize="@dimen/core_ui_text_size_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+  </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

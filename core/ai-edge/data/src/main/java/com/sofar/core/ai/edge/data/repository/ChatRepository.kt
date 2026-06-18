@@ -1,7 +1,7 @@
 package com.sofar.core.ai.edge.data.repository
 
 import android.content.Context
-import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
 import com.google.ai.edge.litertlm.Contents
 import com.google.ai.edge.litertlm.Message
@@ -20,6 +20,7 @@ import com.sofar.core.ai.edge.database.dao.SessionDao
 import com.sofar.core.ai.edge.database.entity.AgentEntity
 import com.sofar.core.ai.edge.database.entity.MessageEntity
 import com.sofar.core.ai.edge.database.entity.SessionEntity
+import com.sofar.core.common.util.ImageCompressor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
@@ -33,6 +34,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.util.UUID
 
 class ChatRepository(
@@ -274,15 +276,25 @@ class ChatRepository(
     sessionId: String,
     model: Model,
     input: String,
-    images: List<Bitmap> = listOf(),
-    audioClips: List<ByteArray> = listOf(),
     inputImagesPath: List<String> = listOf(),
-    inputAudioPath: String? = null
+    inputAudioPath: List<String> = listOf(),
   ): Flow<String> = callbackFlow {
 
     val userMsgId = UUID.randomUUID().toString()
     val modelMessageId = UUID.randomUUID().toString()
     val responseAccumulator = StringBuilder()
+
+    // 解析成模型认识的输入
+    val rawBitmaps = inputImagesPath.mapNotNull { path ->
+      ImageCompressor.compressImageFile(
+        filePath = path,
+        maxEdge = 1024,                // 限制长边 1024px，完美契合端侧模型视觉前处理
+      )
+    }
+    val rawAudioBytes = inputAudioPath.mapNotNull { path ->
+      val file = File(path)
+      if (file.exists()) file.readBytes() else null
+    }
 
     // 背压通道：容量为1，高频蹦字时只留最新完整文本
     val dbUpdateChannel =
@@ -292,7 +304,7 @@ class ChatRepository(
     val initJob = launch {
       val currentMessageContentType = when {
         inputImagesPath.isNotEmpty() -> ChatMessageType.IMAGE
-        inputAudioPath != null -> ChatMessageType.AUDIO
+        inputAudioPath.isNotEmpty() -> ChatMessageType.AUDIO
         else -> ChatMessageType.TEXT
       }
 
@@ -310,6 +322,11 @@ class ChatRepository(
       }
 
       // 插入用户消息
+      val finalFilePaths: List<String>? = when (currentMessageContentType) {
+        ChatMessageType.IMAGE -> inputImagesPath
+        ChatMessageType.AUDIO -> inputAudioPath
+        else -> null
+      }
       messageDao.insertMessage(
         MessageEntity(
           id = userMsgId,
@@ -317,9 +334,7 @@ class ChatRepository(
           role = ChatMessageRole.USER,
           contentType = currentMessageContentType,
           textContent = input.ifEmpty { null },
-          filePath = if (currentMessageContentType == ChatMessageType.IMAGE) inputImagesPath.joinToString(
-            ","
-          ) else inputAudioPath,
+          filePath = finalFilePaths,
           createdAt = System.currentTimeMillis()
         )
       )
@@ -369,8 +384,8 @@ class ChatRepository(
     dataSource.runInference(
       model = model,
       input = input,
-      images = images,
-      audioClips = audioClips,
+      images = rawBitmaps,
+      audioClips = rawAudioBytes,
       resultListener = { partialResult, done, _ ->
         if (!done) {
           // 情况 A：大模型流式吐字中

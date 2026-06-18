@@ -52,7 +52,7 @@ data class MessageEntity(
   @ColumnInfo(name = "text_content")
   val textContent: String?,                   // 文本气泡内容载体 (大模型打字机吐字时高频复写覆盖此字段)
   @ColumnInfo(name = "file_path")
-  val filePath: String?,                      // 崩溃防御核心：指向 Tab 3 拍照图片或 Tab 4 录音文件在手机沙盒中的物理物理路径
+  val filePath: List<String>?,                // 崩溃防御核心：指向 Tab 3 拍照图片或 Tab 4 录音文件在手机沙盒中的物理物理路径
   @ColumnInfo(name = "created_at")
   val createdAt: Long                         // 气泡流时序排序指标：单页面内聊天气泡正序排列依据 (毫秒时间戳)
 )

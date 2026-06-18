@@ -43,6 +43,7 @@ dependencies {
   ksp(libs.hilt.compiler)
   implementation(libs.litertlm)
 
+  implementation(project(":core:common"))
   implementation(project(":core:network"))
   implementation(project(":core:download"))
   api(project(":core:ai-edge:database"))
