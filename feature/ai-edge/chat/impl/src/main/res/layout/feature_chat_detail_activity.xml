@@ -2,9 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:paddingEnd="@dimen/core_ui_spacing_lg"
-  android:paddingStart="@dimen/core_ui_spacing_lg">
+  android:layout_height="match_parent">
 
   <com.google.android.material.appbar.MaterialToolbar
     android:id="@+id/chat_detail_toolbar"
@@ -25,7 +23,7 @@
     android:id="@+id/chat_detail_list"
     android:layout_width="0dp"
     android:layout_height="0dp"
-    android:paddingRight="@dimen/core_ui_spacing_lg"
+    android:paddingEnd="@dimen/core_ui_spacing_lg"
     android:paddingStart="@dimen/core_ui_spacing_lg"
     app:layout_constraintBottom_toTopOf="@+id/chat_detail_input_card"
     app:layout_constraintEnd_toEndOf="parent"
@@ -69,6 +67,21 @@
         app:layout_constraintEnd_toStartOf="@+id/chat_detail_cancel_btn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/chat_detail_image_list" />
+
+      <com.google.android.material.button.MaterialButton
+        android:id="@+id/chat_detail_voice_press_btn"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/feature_chat_voice_press_to_talk"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:visibility="gone"
+        app:cornerRadius="@dimen/core_ui_corner_radius_pill"
+        app:layout_constraintBottom_toBottomOf="@+id/chat_detail_edit_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/chat_detail_edit_text"
+        app:layout_constraintTop_toTopOf="@+id/chat_detail_edit_text"
+        app:strokeColor="?attr/colorOutlineVariant" />
 
       <com.google.android.material.button.MaterialButton
         android:id="@+id/chat_detail_cancel_btn"
@@ -117,5 +130,17 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
   </com.google.android.material.card.MaterialCardView>
+
+  <com.sofar.feature.ai.edge.chat.impl.detail.voice.ChatVoiceOverlayView
+    android:id="@+id/voice_overlay_container"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/feature_chat_voice_overlay_panel_bg"
+    android:elevation="@dimen/core_ui_overlay_elevation"
+    android:padding="@dimen/core_ui_spacing_lg"
+    android:visibility="gone"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,4 +5,5 @@
   <dimen name="feature_chat_detail_image_size">80dp</dimen>
   <dimen name="feature_chat_detail_single_image_max_width">165dp</dimen>
   <dimen name="feature_chat_detail_single_image_max_height">265dp</dimen>
+  <dimen name="feature_chat_voice_cancel_threshold">72dp</dimen>
 </resources>

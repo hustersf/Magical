@@ -8,6 +8,7 @@ import com.sofar.core.ai.edge.data.repository.AgentRepository
 import com.sofar.core.ai.edge.data.repository.ChatRepository
 import com.sofar.core.ai.edge.data.repository.ModelsDataManager
 import com.sofar.feature.ai.edge.chat.impl.detail.image.SelectedImageState
+import com.sofar.feature.ai.edge.chat.impl.detail.voice.VoiceInputUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -224,6 +225,52 @@ class ChatDetailViewModel @Inject constructor(
   fun updateSelectedImages(newImages: List<SelectedImageState>) {
     _uiState.update { currentState ->
       currentState.copy(selectedImages = newImages)
+    }
+  }
+
+  fun onInputTextChanged(text: String) {
+    _uiState.update { it.copy(chatInputText = text) }
+  }
+
+  private fun updateVoiceState(reducer: VoiceInputUiState.() -> VoiceInputUiState) {
+    _uiState.update { it.copy(voiceState = it.voiceState.reducer()) }
+  }
+
+  fun toggleInputMode() {
+    updateVoiceState { copy(isVoiceMode = !isVoiceMode) }
+  }
+
+  fun startVoiceInputUi() {
+    updateVoiceState {
+      copy(
+        isVoiceOverlayVisible = true,
+        isVoiceCanceling = false,
+        voiceRecognizedText = "",
+        voiceRmsDb = 0f
+      )
+    }
+  }
+
+  fun updateVoiceRecognizedText(text: String) {
+    updateVoiceState { copy(voiceRecognizedText = text) }
+  }
+
+  fun updateVoiceRms(rmsDb: Float) {
+    updateVoiceState { copy(voiceRmsDb = rmsDb) }
+  }
+
+  fun updateVoiceCanceling(canceling: Boolean) {
+    updateVoiceState { copy(isVoiceCanceling = canceling) }
+  }
+
+  fun finishVoiceInputUi() {
+    updateVoiceState {
+      copy(
+        isVoiceOverlayVisible = false,
+        isVoiceCanceling = false,
+        voiceRecognizedText = "",
+        voiceRmsDb = 0f
+      )
     }
   }
 

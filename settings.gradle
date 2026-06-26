@@ -61,6 +61,7 @@ include ':core:res'
 include ':core:common'
 include ':core:media'
 include ':core:image'
+include ':core:speech'
 
 include ':core:ai-edge:data'
 include ':core:ai-edge:design'

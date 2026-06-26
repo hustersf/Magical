@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="feature_chat_home_title">对话</string>
-  <string name="feature_chat_input_hint">发消息或按住说话...</string>
+  <string name="feature_chat_input_hint">发消息或按住说话…</string>
   <string name="feature_chat_title_default">✨ 发起新对话</string>
-  <string name="feature_chat_ai_thinking">AI 正在思考...</string>
+  <string name="feature_chat_ai_thinking">AI 正在思考…</string>
   <string name="feature_chat_action_clear_history">清空对话记录</string>
   <string name="feature_chat_action_delete">删除对话</string>
   <string name="feature_chat_menu_camera">拍照</string>
   <string name="feature_chat_menu_photo">相册</string>
+  <string name="feature_chat_voice_listening">正在倾听…</string>
+  <string name="feature_chat_voice_press_to_talk">按住说话</string>
+  <string name="feature_chat_voice_release_to_cancel">松手取消</string>
+  <string name="feature_chat_voice_slide_up_to_cancel">松手发送，上移取消</string>
+  <string name="feature_chat_voice_permission_denied">录音权限被拒绝</string>
+  <string name="feature_chat_voice_unrecognized">未识别到文字</string>
 </resources>

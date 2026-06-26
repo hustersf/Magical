@@ -1,16 +1,22 @@
 package com.sofar.feature.ai.edge.chat.impl.detail
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Lifecycle
@@ -19,17 +25,23 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.sofar.core.ai.edge.data.entity.chat.ChatDetailArgs
+import com.sofar.core.ai.edge.database.entity.MessageEntity
 import com.sofar.core.common.extension.getParcelableCompat
 import com.sofar.core.media.GetMediaContract
 import com.sofar.core.media.MediaAction
+import com.sofar.core.speech.PressToTalkSpeechController
 import com.sofar.core.ui.BaseUIActivity
 import com.sofar.core.ui.recyclerview.LinearMarginItemDecoration
 import com.sofar.feature.ai.edge.chat.impl.R
 import com.sofar.feature.ai.edge.chat.impl.detail.image.SelectedImageAdapter
 import com.sofar.feature.ai.edge.chat.impl.detail.image.SelectedImageState
+import com.sofar.feature.ai.edge.chat.impl.detail.voice.ChatVoiceOverlayView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -40,9 +52,11 @@ class ChatDetailActivity : BaseUIActivity() {
   private lateinit var chatEditText: EditText
   private lateinit var cancelBtn: Button
   private lateinit var moreBtn: Button
-  private lateinit var talkBtn: Button
+  private lateinit var talkBtn: MaterialButton
   private lateinit var sendBtn: Button
   private lateinit var stopBtn: Button
+  private lateinit var voicePressBtn: Button
+  private lateinit var voiceOverlayView: ChatVoiceOverlayView
 
   private lateinit var recyclerView: RecyclerView
   private lateinit var adapter: ChatDetailAdapter
@@ -54,6 +68,20 @@ class ChatDetailActivity : BaseUIActivity() {
 
   private var currentSessionId: String = ""
   private var agentId: String? = null
+
+  private lateinit var voiceController: PressToTalkSpeechController
+
+  private val requestPermissionLauncher = registerForActivityResult(
+    ActivityResultContracts.RequestPermission()
+  ) { isGranted: Boolean ->
+    if (!isGranted) {
+      Toast.makeText(
+        this,
+        getString(R.string.feature_chat_voice_permission_denied),
+        Toast.LENGTH_SHORT
+      ).show()
+    }
+  }
 
   companion object {
     private const val EXTRA_CHAT_DETAIL_ARGS = "extra_chat_detail_args"
@@ -84,6 +112,7 @@ class ChatDetailActivity : BaseUIActivity() {
     currentSessionId = detailArgs?.sessionId ?: UUID.randomUUID().toString()
     agentId = detailArgs?.agentId
     initView()
+    initVoiceController()
     setupListeners()
     initData()
   }
@@ -102,6 +131,8 @@ class ChatDetailActivity : BaseUIActivity() {
     talkBtn = findViewById(R.id.chat_detail_talk_btn)
     sendBtn = findViewById(R.id.chat_detail_send_btn)
     stopBtn = findViewById(R.id.chat_detail_stop_btn)
+    voicePressBtn = findViewById(R.id.chat_detail_voice_press_btn)
+    voiceOverlayView = findViewById(R.id.voice_overlay_container)
   }
 
   private fun initMessageRecyclerView() {
@@ -145,6 +176,55 @@ class ChatDetailActivity : BaseUIActivity() {
     )
   }
 
+  private fun initVoiceController() {
+    voiceController = PressToTalkSpeechController(
+      context = this,
+      coroutineScope = lifecycleScope,
+      config = PressToTalkSpeechController.Config(
+        languageCode = "zh-CN",
+        preferOnDevice = true
+      ),
+      listener = object : PressToTalkSpeechController.Listener {
+        override fun onSessionStarted() {
+          viewModel.startVoiceInputUi()
+        }
+
+        override fun onTextChanged(text: String) {
+          viewModel.updateVoiceRecognizedText(text)
+        }
+
+        override fun onRmsChanged(rmsdB: Float) {
+          viewModel.updateVoiceRms(rmsdB)
+        }
+
+        override fun onCancelingChanged(canceling: Boolean) {
+          viewModel.updateVoiceCanceling(canceling)
+        }
+
+        override fun onRecognitionError(code: Int, hasRecognizedText: Boolean) {
+          Log.d(TAG, "voice recognition error(code=$code, hasRecognizedText=$hasRecognizedText)")
+        }
+
+        override fun onCompleted(text: String) {
+          viewModel.finishVoiceInputUi()
+          if (text.isNotEmpty()) {
+            sendMessage(text)
+          } else {
+            Toast.makeText(
+              this@ChatDetailActivity,
+              getString(R.string.feature_chat_voice_unrecognized),
+              Toast.LENGTH_SHORT
+            ).show()
+          }
+        }
+
+        override fun onCanceled() {
+          viewModel.finishVoiceInputUi()
+        }
+      }
+    )
+  }
+
 
   private fun setupListeners() {
     toolbar.setNavigationOnClickListener {
@@ -153,14 +233,7 @@ class ChatDetailActivity : BaseUIActivity() {
 
     chatEditText.addTextChangedListener { text ->
       if (viewModel.uiState.value.isAiResponding) return@addTextChangedListener
-      val isNotEmpty = !text.isNullOrBlank()
-      if (isNotEmpty) {
-        cancelBtn.visibility = View.VISIBLE
-        sendBtn.visibility = View.VISIBLE
-      } else {
-        cancelBtn.visibility = View.GONE
-        sendBtn.visibility = View.GONE
-      }
+      viewModel.onInputTextChanged(text?.toString() ?: "")
     }
 
     cancelBtn.setOnClickListener {
@@ -172,10 +245,13 @@ class ChatDetailActivity : BaseUIActivity() {
     }
 
     talkBtn.setOnClickListener {
+      viewModel.toggleInputMode()
     }
 
+    setupVoicePressButton()
+
     sendBtn.setOnClickListener {
-      sendMessage()
+      sendMessage(chatEditText.text?.toString())
     }
 
     stopBtn.setOnClickListener {
@@ -183,16 +259,104 @@ class ChatDetailActivity : BaseUIActivity() {
     }
   }
 
+  @SuppressLint("ClickableViewAccessibility")
+  private fun setupVoicePressButton() {
+    var voiceTouchDownY = 0f
+    voicePressBtn.setOnTouchListener { v, event ->
+      when (event.action) {
+        MotionEvent.ACTION_DOWN -> {
+          if (ContextCompat.checkSelfPermission(
+              this,
+              Manifest.permission.RECORD_AUDIO
+            ) == PackageManager.PERMISSION_GRANTED
+          ) {
+            voiceTouchDownY = event.rawY
+            voiceController.start()
+          } else {
+            requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+          }
+          true
+        }
+
+        MotionEvent.ACTION_MOVE -> {
+          updateVoiceCancelState(voiceTouchDownY - event.rawY)
+          true
+        }
+
+        MotionEvent.ACTION_UP -> {
+          if (voiceController.isCanceling) voiceController.cancel() else voiceController.stop()
+          true
+        }
+
+        MotionEvent.ACTION_CANCEL -> {
+          voiceController.cancel()
+          true
+        }
+
+        else -> false
+      }
+    }
+  }
+
+  private fun updateVoiceCancelState(offsetY: Float) {
+    val threshold = resources.getDimension(R.dimen.feature_chat_voice_cancel_threshold)
+    val shouldCancel = offsetY > threshold
+    voiceController.updateCanceling(shouldCancel)
+  }
+
   fun initData() {
     lifecycleScope.launch {
       repeatOnLifecycle(Lifecycle.State.STARTED) {
-        // 启动独立子协程收集 UiState，不阻塞外层主流程
+        //核心设计：拆分流切片配对 distinctUntilChanged 局部拦截，阻断总状态高频更迭引发的无关UI组件频繁刷新
+        // 📡 管道 1：会话标题驱动
         launch {
-          viewModel.uiState.collect { state ->
-            renderUiState(state)
-          }
+          viewModel.uiState
+            .map { it.sessionTitle }
+            .distinctUntilChanged()
+            .collect { sessionTitle ->
+              renderToolbar(sessionTitle)
+            }
         }
-        // 启动独立子协程收集 Effect，两个流同时并行并发收集
+
+        // 📡 管道 2：聊天消息列表驱动（大模型蹦字、音量跳动时自动拦截去重）
+        launch {
+          viewModel.uiState
+            .map { it.messages }
+            .distinctUntilChanged()
+            .collect { messages ->
+              renderMessageList(messages)
+            }
+        }
+
+        // 📡 管道 3：图片多媒体面板驱动
+        launch {
+          viewModel.uiState
+            .map { it.selectedImages }
+            .distinctUntilChanged()
+            .collect { selectedImages ->
+              renderSelectedImages(selectedImages)
+            }
+        }
+
+        // 📡 管道 4：底部栏与语音弹窗驱动（打包核心维度，高频蹦字时不触发底栏重绘）
+        launch {
+          viewModel.uiState
+            .map { state ->
+              listOf(
+                state.voiceState,
+                state.chatInputText,
+                state.isAiResponding,
+                state.isEngineLoading,
+                state.isModelReady
+              )
+            }
+            .distinctUntilChanged()
+            .collect {
+              renderBottomPanelAndLockState(viewModel.uiState.value)
+            }
+        }
+
+        // 📡 副作用管道：并发收集 Toast/Alert 弹窗等一次性事件
         launch {
           viewModel.effectFlow.collect { effect ->
             handleEffect(effect)
@@ -203,65 +367,39 @@ class ChatDetailActivity : BaseUIActivity() {
     viewModel.init(currentSessionId, agentId)
   }
 
-  private fun renderUiState(state: ChatDetailUiState) {
-    // A. 实时同步顶部工具栏标题（大模型在说完第一句后会自动覆写重命名该摘要标题）
-    toolbar.title = state.sessionTitle.ifEmpty {
+
+  /**
+   * 驱动顶部工具栏标题
+   */
+  private fun renderToolbar(sessionTitle: String) {
+    toolbar.title = sessionTitle.ifEmpty {
       getString(R.string.feature_chat_title_default)
     }
+  }
 
-    // B. 数据缝合：将 Room 离线优先推出的最新气泡集合单向提交给你的 ListAdapter
-    adapter.submitList(state.messages) {
-      if (state.messages.isNotEmpty()) {
+  /**
+   * 数据单向提交与列表智能自动回滚
+   */
+  private fun renderMessageList(messages: List<MessageEntity>) {
+    adapter.submitList(messages) {
+      if (messages.isNotEmpty()) {
         // 如果历史记录发生了位置移动，或者尾部顶出了新气泡，列表始终滑至最底端位置
-        val layoutManager =
-          recyclerView.layoutManager as? LinearLayoutManager ?: return@submitList
-        val targetPosition = state.messages.size - 1
+        val layoutManager = recyclerView.layoutManager as? LinearLayoutManager ?: return@submitList
+        val targetPosition = messages.size - 1
         layoutManager.scrollToPositionWithOffset(targetPosition, Int.MIN_VALUE)
       }
     }
+  }
 
-    val hasText = !chatEditText.text.isNullOrBlank()
-
-    // C. 控制界面组件置灰锁与思考态：大模型初次加载图或进入首字计算期时，将对应的动作组件加锁
-    when {
-      // 状态一：底层 C++ 引擎正在读二进制文件、跑神经网络图编译（冷启动/刚进房间/切大模型）
-      state.isEngineLoading -> {
-        sendBtn.isEnabled = false
-        talkBtn.isEnabled = false
-        stopBtn.isEnabled = false
-      }
-
-      // 状态二：模型未初始化成功
-      !state.isModelReady -> {
-        sendBtn.isEnabled = false
-        talkBtn.isEnabled = false
-        stopBtn.visibility = View.GONE
-        sendBtn.visibility = if (hasText) View.VISIBLE else View.GONE
-      }
-
-      // 状态三：大模型早已 Ready，且目前正在流式输出一句话（高频蹦字生成期）
-      state.isAiResponding -> {
-        talkBtn.isEnabled = false
-        sendBtn.visibility = View.GONE
-        stopBtn.visibility = View.VISIBLE
-        stopBtn.isEnabled = true
-      }
-
-      // 状态四：寂静期、日常常态（AI 没在说话，引擎随时听候调遣）
-      else -> {
-        stopBtn.visibility = View.GONE
-        sendBtn.visibility = if (hasText) View.VISIBLE else View.GONE
-        sendBtn.isEnabled = true
-        talkBtn.isEnabled = true
-      }
-    }
-
-    // 图片选择UI
-    val realImages = state.selectedImages
-    if (realImages.isNotEmpty()) {
+  /**
+   * 驱动多媒体图片选择器的数据缝合与列表滚动
+   */
+  private fun renderSelectedImages(selectedImages: List<SelectedImageState>) {
+    if (selectedImages.isNotEmpty()) {
       imageRecyclerView.visibility = View.VISIBLE
 
-      val displayList = realImages + SelectedImageState(isAddButton = true)
+      // 缝合数据：自动追加末尾的“+”号按钮
+      val displayList = selectedImages + SelectedImageState(isAddButton = true)
       imageAdapter.submitList(displayList) {
         val lastPosition = displayList.size - 1
         if (lastPosition >= 0) {
@@ -272,6 +410,58 @@ class ChatDetailActivity : BaseUIActivity() {
       imageRecyclerView.visibility = View.GONE
       imageAdapter.submitList(emptyList())
     }
+  }
+
+  /**
+   * 驱动底部控制栏排版、UI组件可见性与状态
+   */
+  private fun renderBottomPanelAndLockState(state: ChatDetailUiState) {
+    val voiceState = state.voiceState
+    val isVoiceMode = voiceState.isVoiceMode
+    val hasText = state.chatInputText.isNotBlank()
+    val isResponding = state.isAiResponding
+    val isEngineLoading = state.isEngineLoading
+    val isModelReady = state.isModelReady
+
+    voiceOverlayView.render(voiceState)
+
+    // ------------------------------------------
+    // UI组件显隐控制
+    // ------------------------------------------
+    if (isVoiceMode) {
+      talkBtn.setIconResource(R.drawable.core_ic_edit_note)
+      chatEditText.visibility = View.INVISIBLE
+      voicePressBtn.visibility = View.VISIBLE
+
+      // 语音模式下，文本模式专用的控制按键强制隐藏
+      cancelBtn.visibility = View.GONE
+      sendBtn.visibility = View.GONE
+    } else {
+      talkBtn.setIconResource(R.drawable.core_ic_circle_talk)
+      chatEditText.visibility = View.VISIBLE
+      voicePressBtn.visibility = View.GONE
+
+      // 发送/清除按钮的显隐：AI 在说话时强行隐藏；AI 寂静常态下，完全由输入框是否有字单向驱动
+      val showInputActions = hasText && !isResponding
+      val inputBtnVisibility = if (showInputActions) View.VISIBLE else View.GONE
+      cancelBtn.visibility = inputBtnVisibility
+      sendBtn.visibility = inputBtnVisibility
+    }
+    // 停止响应按钮的显隐：文本模式下，AI 在流式吐字时展示，常态下隐藏
+    stopBtn.visibility = if (isResponding) View.VISIBLE else View.GONE
+
+    // ------------------------------------------
+    // UI组件状态控制
+    // ------------------------------------------
+    // 切换输入模式按钮：只要底层 C++ 引擎在加载，或者 AI 正在说话，就彻底变灰
+    talkBtn.isEnabled = !isEngineLoading && !isResponding
+    // 按住说话按钮：只有当模型初始化成功，且 AI 没有在流式输出时，才激活响应
+    voicePressBtn.isEnabled = isModelReady && !isResponding
+    voicePressBtn.alpha = if (voicePressBtn.isEnabled) 1f else 0.5f
+    // 发送文字按钮：只有当模型初始化成功，且 AI 没有在流式输出时，才激活响应
+    sendBtn.isEnabled = isModelReady && !isResponding
+    // 停止回答按钮：只有当大模型处于流式思考吐字响应期时，才激活点击响应
+    stopBtn.isEnabled = isResponding
   }
 
   private fun handleEffect(effect: ChatDetailEffect) {
@@ -293,9 +483,8 @@ class ChatDetailActivity : BaseUIActivity() {
     }
   }
 
-  private fun sendMessage() {
-    // 获取消息
-    val trimmedText = chatEditText.text?.toString()?.trim().orEmpty()
+  private fun sendMessage(text: String?) {
+    val trimmedText = text?.trim().orEmpty()
 
     // 从当前 UiState 中安全提取用户真正选中的本地沙盒图片物理路径列表
     val selectedPaths = viewModel.uiState.value.selectedImages

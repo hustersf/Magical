@@ -47,4 +47,5 @@ dependencies {
   implementation(project(":core:image"))
   implementation(project(":core:ai-edge:data"))
   implementation(project(":core:ai-edge:design"))
+  implementation(project(":core:speech"))
 }

@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="feature_chat_home_title">Chats</string>
-  <string name="feature_chat_input_hint">Type a message or hold to talk...</string>
+  <string name="feature_chat_input_hint">Type a message or hold to talk…</string>
   <string name="feature_chat_title_default">✨ New Chat</string>
-  <string name="feature_chat_ai_thinking">AI is thinking...</string>
+  <string name="feature_chat_ai_thinking">AI is thinking…</string>
   <string name="feature_chat_action_clear_history">Clear Chat History</string>
   <string name="feature_chat_action_delete">Delete Chat</string>
   <string name="feature_chat_menu_camera">Camera</string>
   <string name="feature_chat_menu_photo">Gallery</string>
+  <string name="feature_chat_voice_listening">Listening…</string>
+  <string name="feature_chat_voice_press_to_talk">Hold to Talk</string>
+  <string name="feature_chat_voice_release_to_cancel">Release to cancel</string>
+  <string name="feature_chat_voice_slide_up_to_cancel">Release to send, slide up to cancel</string>
+  <string name="feature_chat_voice_permission_denied">Permission denied</string>
+  <string name="feature_chat_voice_unrecognized">Voice not recognized</string>
 </resources>
