@@ -246,7 +246,7 @@ class ChatDetailViewModel @Inject constructor(
         isVoiceOverlayVisible = true,
         isVoiceCanceling = false,
         voiceRecognizedText = "",
-        voiceRmsDb = 0f
+        voiceRmsDB = 0f
       )
     }
   }
@@ -256,7 +256,7 @@ class ChatDetailViewModel @Inject constructor(
   }
 
   fun updateVoiceRms(rmsDb: Float) {
-    updateVoiceState { copy(voiceRmsDb = rmsDb) }
+    updateVoiceState { copy(voiceRmsDB = rmsDb) }
   }
 
   fun updateVoiceCanceling(canceling: Boolean) {
@@ -269,7 +269,7 @@ class ChatDetailViewModel @Inject constructor(
         isVoiceOverlayVisible = false,
         isVoiceCanceling = false,
         voiceRecognizedText = "",
-        voiceRmsDb = 0f
+        voiceRmsDB = 0f
       )
     }
   }

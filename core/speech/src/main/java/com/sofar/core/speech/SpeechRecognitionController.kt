@@ -2,42 +2,47 @@ package com.sofar.core.speech
 
 import android.content.Context
 import android.util.Log
+import com.sofar.core.speech.internal.contract.SpeechRecognitionConfig
+import com.sofar.core.speech.internal.contract.SpeechRecognitionEngine
+import com.sofar.core.speech.internal.contract.SpeechRecognitionEvent
+import com.sofar.core.speech.internal.engine.SpeechRecognitionEngineFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class PressToTalkSpeechController(
+class SpeechRecognitionController(
   context: Context,
   private val coroutineScope: CoroutineScope,
   private val listener: Listener,
   private val config: Config = Config(),
 ) {
-
-  private val speechHelper = SpeechToTextHelper(context.applicationContext)
+  private val recognitionEngine: SpeechRecognitionEngine =
+    SpeechRecognitionEngineFactory(context.applicationContext).create(config.engineType)
 
   data class Config(
     val languageCode: String? = null,
-    val preferOnDevice: Boolean = false,
+    val preferOffline: Boolean = true,
+    val engineType: SpeechEngineType = SpeechEngineType.Android,
+    val sampleRate: Int = 16_000,
+    val modelId: String? = null,
     val restartDelayMillis: Long = DEFAULT_RESTART_DELAY_MILLIS,
     val finalizeDelayMillis: Long = DEFAULT_FINALIZE_DELAY_MILLIS,
   )
 
   interface Listener {
     fun onSessionStarted() = Unit
-    fun onTextChanged(text: String) = Unit
-    fun onRmsChanged(rmsdB: Float) = Unit
-    fun onCancelingChanged(canceling: Boolean) = Unit
-    fun onRecognitionError(code: Int, hasRecognizedText: Boolean) = Unit
-    fun onCompleted(text: String) = Unit
-    fun onCanceled() = Unit
+    fun onRecognizedTextChanged(text: String) = Unit
+    fun onAudioLevelChanged(rmsDB: Float) = Unit
+    fun onSpeechError(code: Int, hasRecognizedText: Boolean) = Unit
+    fun onSessionCompleted(text: String) = Unit
+    fun onSessionCanceled() = Unit
   }
 
-  private var speechJob: Job? = null
-  private var finalizeJob: Job? = null
-  private val recognizedSegments = mutableListOf<String>()
+  private var recognitionLoopJob: Job? = null
+  private var completionDelayJob: Job? = null
+  private var recognizedSegments = mutableListOf<String>()
   private var pendingPartialText: String = ""
-  private var preferOnDeviceInCurrentSession: Boolean = config.preferOnDevice
 
   var isRecording: Boolean = false
     private set
@@ -45,71 +50,86 @@ class PressToTalkSpeechController(
   var isSessionActive: Boolean = false
     private set
 
-  var isCanceling: Boolean = false
-    private set
-
   fun start() {
+    if (isSessionActive) {
+      Log.d(TAG, "start ignored: session already active")
+      return
+    }
     Log.d(TAG, "start")
     recognizedSegments.clear()
     pendingPartialText = ""
-    preferOnDeviceInCurrentSession = config.preferOnDevice
     isRecording = true
     isSessionActive = true
-    isCanceling = false
-    finalizeJob?.cancel()
+    completionDelayJob?.cancel()
     listener.onSessionStarted()
-    listener.onTextChanged(buildText())
+    listener.onRecognizedTextChanged(buildText())
     startSpeechRecognitionLoop()
   }
 
-  fun updateCanceling(canceling: Boolean) {
-    if (isCanceling == canceling) return
-    isCanceling = canceling
-    Log.d(TAG, "updateCanceling(canceling=$canceling)")
-    listener.onCancelingChanged(canceling)
-  }
-
   fun stop() {
+    if (!isSessionActive) {
+      Log.d(TAG, "stop ignored: no active session")
+      return
+    }
     Log.d(TAG, "stop(isRecording=$isRecording, isSessionActive=$isSessionActive)")
     isRecording = false
-    speechHelper.stopListening()
-    finalizeJob?.cancel()
-    finalizeJob = coroutineScope.launch {
+    recognitionEngine.stop()
+    completionDelayJob?.cancel()
+    completionDelayJob = coroutineScope.launch {
       delay(config.finalizeDelayMillis)
       completeIfActive()
     }
   }
 
   fun cancel() {
-    Log.d(TAG, "cancel")
-    speechHelper.cancelListening()
-    speechJob?.cancel()
-    finalizeJob?.cancel()
+    val hadActiveSession = isSessionActive
+    Log.d(TAG, "cancel(hadActiveSession=$hadActiveSession)")
+    recognitionEngine.cancel()
+    clearSession()
+    if (hadActiveSession) {
+      listener.onSessionCanceled()
+    }
+  }
+
+  fun release() {
+    Log.d(TAG, "release")
+    recognitionEngine.cancel()
+    clearSession()
+    recognitionEngine.release()
+  }
+
+  private fun clearSession() {
+    recognitionLoopJob?.cancel()
+    completionDelayJob?.cancel()
     resetSessionState()
-    listener.onCanceled()
   }
 
   private fun startSpeechRecognitionLoop() {
-    Log.d(TAG, "startSpeechRecognitionLoop(preferOnDevice=$preferOnDeviceInCurrentSession)")
-    speechJob?.cancel()
-    speechJob = coroutineScope.launch {
+    recognitionLoopJob?.cancel()
+    recognitionLoopJob = coroutineScope.launch {
       var shouldContinueListening = false
       var hasFinalResultInCurrentRecognition = false
-      speechHelper.startListening(
-        languageCode = config.languageCode,
-        preferOnDevice = preferOnDeviceInCurrentSession,
+      recognitionEngine.start(
+        SpeechRecognitionConfig(
+          languageCode = config.languageCode,
+          sampleRate = config.sampleRate,
+          preferOffline = config.preferOffline,
+          enablePartialResult = true,
+          modelId = config.modelId,
+        )
       ).collect { result ->
         when (result) {
-          is SpeechResult.Ready -> {
-            listener.onTextChanged(buildText())
+          SpeechRecognitionEvent.Ready,
+          SpeechRecognitionEvent.Started -> {
+            listener.onRecognizedTextChanged(buildText())
           }
 
-          is SpeechResult.Text -> {
+          is SpeechRecognitionEvent.Text -> {
             if (result.isFinal) {
               appendFinalText(result.text)
               pendingPartialText = ""
               hasFinalResultInCurrentRecognition = true
-              listener.onTextChanged(buildText())
+              listener.onRecognizedTextChanged(buildText())
               if (isRecording) {
                 shouldContinueListening = true
               } else {
@@ -117,30 +137,23 @@ class PressToTalkSpeechController(
               }
             } else if (!hasFinalResultInCurrentRecognition) {
               pendingPartialText = result.text.trim()
-              listener.onTextChanged(buildText())
+              listener.onRecognizedTextChanged(buildText())
             }
           }
 
-          is SpeechResult.RmsChanged -> {
-            listener.onRmsChanged(result.rmsdB)
+          is SpeechRecognitionEvent.Volume -> {
+            listener.onAudioLevelChanged(result.rmsDB)
           }
 
-          is SpeechResult.Error -> {
-            if (preferOnDeviceInCurrentSession && result.isOnDeviceLanguageError()) {
-              Log.w(
-                TAG,
-                "On-device language unavailable, fallback to default recognizer. code=${result.code}"
-              )
-              preferOnDeviceInCurrentSession = false
-            }
-            shouldContinueListening = isRecording && isSessionActive
-            listener.onRecognitionError(result.code, hasRecognizedText())
+          is SpeechRecognitionEvent.Error -> {
+            shouldContinueListening = isRecording && isSessionActive && result.error.recoverable
+            listener.onSpeechError(result.error.code, hasRecognizedText())
             if (!shouldContinueListening && isSessionActive && !hasRecognizedText()) {
               completeIfActive()
             }
           }
 
-          is SpeechResult.End -> {
+          SpeechRecognitionEvent.End -> {
             // End of speech, waiting for final result or error.
           }
         }
@@ -148,7 +161,7 @@ class PressToTalkSpeechController(
 
       if (shouldContinueListening && isRecording && isSessionActive) {
         delay(config.restartDelayMillis)
-        speechJob = null
+        recognitionLoopJob = null
         startSpeechRecognitionLoop()
       }
     }
@@ -160,23 +173,23 @@ class PressToTalkSpeechController(
     val finalText = recognizedSegments.joinToString(separator = SEPARATOR)
     Log.d(TAG, "completeIfActive(text='$finalText', segments=${recognizedSegments.size})")
     resetSessionState()
-    listener.onCompleted(finalText)
+    listener.onSessionCompleted(finalText)
   }
 
   private fun resetSessionState() {
     isRecording = false
     isSessionActive = false
-    isCanceling = false
     pendingPartialText = ""
     recognizedSegments.clear()
-    finalizeJob?.cancel()
+    completionDelayJob?.cancel()
+    recognitionLoopJob = null
   }
+
 
   private fun appendFinalText(text: String) {
     val normalizedText = text.trim()
     if (normalizedText.isNotEmpty()) {
       recognizedSegments += normalizedText
-      Log.d(TAG, "appendFinalText(text='$normalizedText')")
     }
   }
 
@@ -195,16 +208,10 @@ class PressToTalkSpeechController(
     return recognizedSegments.isNotEmpty() || pendingPartialText.isNotBlank()
   }
 
-  private fun SpeechResult.Error.isOnDeviceLanguageError(): Boolean {
-    return code == SPEECH_ERROR_LANGUAGE_NOT_SUPPORTED || code == SPEECH_ERROR_LANGUAGE_UNAVAILABLE
-  }
-
   private companion object {
-    private const val TAG = "PressToTalkSpeechController"
+    private const val TAG = "SpeechRecognitionController"
     private const val DEFAULT_RESTART_DELAY_MILLIS = 180L
     private const val DEFAULT_FINALIZE_DELAY_MILLIS = 900L
-    private const val SPEECH_ERROR_LANGUAGE_NOT_SUPPORTED = 12
-    private const val SPEECH_ERROR_LANGUAGE_UNAVAILABLE = 13
     private const val SEPARATOR = "  ·  "
   }
 }

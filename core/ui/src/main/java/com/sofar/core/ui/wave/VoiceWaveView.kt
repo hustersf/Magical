@@ -31,8 +31,8 @@ class VoiceWaveView @JvmOverloads constructor(
 
   private var level: Float = MIN_LEVEL
 
-  fun setLevel(rmsdB: Float) {
-    val target = ((rmsdB - MIN_RMS_DB) / (MAX_RMS_DB - MIN_RMS_DB)).coerceIn(MIN_LEVEL, MAX_LEVEL)
+  fun setLevel(rmsDB: Float) {
+    val target = ((rmsDB - MIN_RMS_DB) / (MAX_RMS_DB - MIN_RMS_DB)).coerceIn(MIN_LEVEL, MAX_LEVEL)
     level = level * SMOOTHING_FACTOR + target * (1f - SMOOTHING_FACTOR)
     invalidate()
   }

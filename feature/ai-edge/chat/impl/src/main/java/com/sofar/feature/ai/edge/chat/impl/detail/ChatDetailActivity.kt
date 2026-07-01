@@ -32,7 +32,7 @@ import com.sofar.core.ai.edge.database.entity.MessageEntity
 import com.sofar.core.common.extension.getParcelableCompat
 import com.sofar.core.media.GetMediaContract
 import com.sofar.core.media.MediaAction
-import com.sofar.core.speech.PressToTalkSpeechController
+import com.sofar.core.speech.SpeechRecognitionController
 import com.sofar.core.ui.BaseUIActivity
 import com.sofar.core.ui.recyclerview.LinearMarginItemDecoration
 import com.sofar.feature.ai.edge.chat.impl.R
@@ -69,7 +69,7 @@ class ChatDetailActivity : BaseUIActivity() {
   private var currentSessionId: String = ""
   private var agentId: String? = null
 
-  private lateinit var voiceController: PressToTalkSpeechController
+  private lateinit var speechController: SpeechRecognitionController
 
   private val requestPermissionLauncher = registerForActivityResult(
     ActivityResultContracts.RequestPermission()
@@ -112,7 +112,7 @@ class ChatDetailActivity : BaseUIActivity() {
     currentSessionId = detailArgs?.sessionId ?: UUID.randomUUID().toString()
     agentId = detailArgs?.agentId
     initView()
-    initVoiceController()
+    initSpeechController()
     setupListeners()
     initData()
   }
@@ -176,36 +176,32 @@ class ChatDetailActivity : BaseUIActivity() {
     )
   }
 
-  private fun initVoiceController() {
-    voiceController = PressToTalkSpeechController(
+  private fun initSpeechController() {
+    speechController = SpeechRecognitionController(
       context = this,
       coroutineScope = lifecycleScope,
-      config = PressToTalkSpeechController.Config(
+      config = SpeechRecognitionController.Config(
         languageCode = "zh-CN",
-        preferOnDevice = true
+        preferOffline = true
       ),
-      listener = object : PressToTalkSpeechController.Listener {
+      listener = object : SpeechRecognitionController.Listener {
         override fun onSessionStarted() {
           viewModel.startVoiceInputUi()
         }
 
-        override fun onTextChanged(text: String) {
+        override fun onRecognizedTextChanged(text: String) {
           viewModel.updateVoiceRecognizedText(text)
         }
 
-        override fun onRmsChanged(rmsdB: Float) {
-          viewModel.updateVoiceRms(rmsdB)
+        override fun onAudioLevelChanged(rmsDB: Float) {
+          viewModel.updateVoiceRms(rmsDB)
         }
 
-        override fun onCancelingChanged(canceling: Boolean) {
-          viewModel.updateVoiceCanceling(canceling)
-        }
-
-        override fun onRecognitionError(code: Int, hasRecognizedText: Boolean) {
+        override fun onSpeechError(code: Int, hasRecognizedText: Boolean) {
           Log.d(TAG, "voice recognition error(code=$code, hasRecognizedText=$hasRecognizedText)")
         }
 
-        override fun onCompleted(text: String) {
+        override fun onSessionCompleted(text: String) {
           viewModel.finishVoiceInputUi()
           if (text.isNotEmpty()) {
             sendMessage(text)
@@ -218,7 +214,7 @@ class ChatDetailActivity : BaseUIActivity() {
           }
         }
 
-        override fun onCanceled() {
+        override fun onSessionCanceled() {
           viewModel.finishVoiceInputUi()
         }
       }
@@ -262,7 +258,7 @@ class ChatDetailActivity : BaseUIActivity() {
   @SuppressLint("ClickableViewAccessibility")
   private fun setupVoicePressButton() {
     var voiceTouchDownY = 0f
-    voicePressBtn.setOnTouchListener { v, event ->
+    voicePressBtn.setOnTouchListener { _, event ->
       when (event.action) {
         MotionEvent.ACTION_DOWN -> {
           if (ContextCompat.checkSelfPermission(
@@ -271,7 +267,7 @@ class ChatDetailActivity : BaseUIActivity() {
             ) == PackageManager.PERMISSION_GRANTED
           ) {
             voiceTouchDownY = event.rawY
-            voiceController.start()
+            speechController.start()
           } else {
             requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
           }
@@ -284,12 +280,12 @@ class ChatDetailActivity : BaseUIActivity() {
         }
 
         MotionEvent.ACTION_UP -> {
-          if (voiceController.isCanceling) voiceController.cancel() else voiceController.stop()
+          if (viewModel.uiState.value.voiceState.isVoiceCanceling) speechController.cancel() else speechController.stop()
           true
         }
 
         MotionEvent.ACTION_CANCEL -> {
-          voiceController.cancel()
+          speechController.cancel()
           true
         }
 
@@ -301,14 +297,14 @@ class ChatDetailActivity : BaseUIActivity() {
   private fun updateVoiceCancelState(offsetY: Float) {
     val threshold = resources.getDimension(R.dimen.feature_chat_voice_cancel_threshold)
     val shouldCancel = offsetY > threshold
-    voiceController.updateCanceling(shouldCancel)
+    viewModel.updateVoiceCanceling(shouldCancel)
   }
 
   fun initData() {
     lifecycleScope.launch {
       repeatOnLifecycle(Lifecycle.State.STARTED) {
         //核心设计：拆分流切片配对 distinctUntilChanged 局部拦截，阻断总状态高频更迭引发的无关UI组件频繁刷新
-        // 📡 管道 1：会话标题驱动
+        //  管道 1：会话标题驱动
         launch {
           viewModel.uiState
             .map { it.sessionTitle }
@@ -318,7 +314,7 @@ class ChatDetailActivity : BaseUIActivity() {
             }
         }
 
-        // 📡 管道 2：聊天消息列表驱动（大模型蹦字、音量跳动时自动拦截去重）
+        //  管道 2：聊天消息列表驱动（大模型蹦字、音量跳动时自动拦截去重）
         launch {
           viewModel.uiState
             .map { it.messages }
@@ -328,7 +324,7 @@ class ChatDetailActivity : BaseUIActivity() {
             }
         }
 
-        // 📡 管道 3：图片多媒体面板驱动
+        //  管道 3：图片多媒体面板驱动
         launch {
           viewModel.uiState
             .map { it.selectedImages }
@@ -338,7 +334,7 @@ class ChatDetailActivity : BaseUIActivity() {
             }
         }
 
-        // 📡 管道 4：底部栏与语音弹窗驱动（打包核心维度，高频蹦字时不触发底栏重绘）
+        //  管道 4：底部栏与语音弹窗驱动（打包核心维度，高频蹦字时不触发底栏重绘）
         launch {
           viewModel.uiState
             .map { state ->
@@ -356,7 +352,7 @@ class ChatDetailActivity : BaseUIActivity() {
             }
         }
 
-        // 📡 副作用管道：并发收集 Toast/Alert 弹窗等一次性事件
+        //  副作用管道：并发收集 Toast/Alert 弹窗等一次性事件
         launch {
           viewModel.effectFlow.collect { effect ->
             handleEffect(effect)
@@ -534,6 +530,13 @@ class ChatDetailActivity : BaseUIActivity() {
       true
     }
     popup.show()
+  }
+
+  override fun onDestroy() {
+    if (::speechController.isInitialized) {
+      speechController.release()
+    }
+    super.onDestroy()
   }
 
   override fun windowInsetsType(): Int {

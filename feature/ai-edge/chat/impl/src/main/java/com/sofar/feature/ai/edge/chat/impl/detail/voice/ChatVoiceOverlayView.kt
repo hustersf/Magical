@@ -67,7 +67,7 @@ class ChatVoiceOverlayView @JvmOverloads constructor(
         secondaryColor = resolveThemeColor(com.google.android.material.R.attr.colorSecondary)
       )
     }
-    waveView.setLevel(state.voiceRmsDb)
+    waveView.setLevel(state.voiceRmsDB)
   }
 
   private fun resolveThemeColor(attr: Int): Int {
