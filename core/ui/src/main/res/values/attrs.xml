@@ -7,4 +7,11 @@
     <!-- 统一的圆角半径 -->
     <attr name="radius" format="dimension" />
   </declare-styleable>
+
+  <declare-styleable name="SegmentedProgressBar">
+    <!-- 片段之间的间隔大小 -->
+    <attr name="pb_segmentGap" format="dimension" />
+    <!-- 默认未填充时的底色 -->
+    <attr name="pb_colorEmpty" format="color|reference" />
+  </declare-styleable>
 </resources>
