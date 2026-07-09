@@ -11,4 +11,6 @@ internal object SherpaNativeLoader {
   init {
     System.loadLibrary("sherpa-onnx-jni")
   }
+
+  fun ensureLoaded() = Unit
 }

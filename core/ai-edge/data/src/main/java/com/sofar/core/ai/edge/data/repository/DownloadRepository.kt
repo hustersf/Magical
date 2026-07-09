@@ -30,11 +30,11 @@ class DownloadRepository {
         targetFile = targetFile,
         totalBytes = model.sizeInBytes,
         tmpFile = tmpFile
-      ) { downloaded, rate, remainingMs ->
+      ) { downloaded, resolvedTotalBytes, rate, remainingMs ->
 
         val progressStatus = ModelDownloadStatus(
           statusType = ModelDownloadStatusType.IN_PROGRESS,
-          totalBytes = model.sizeInBytes,
+          totalBytes = resolvedTotalBytes,
           receivedBytes = downloaded,
           bytesPerSecond = rate,
           remainingMs = remainingMs

@@ -41,24 +41,41 @@ data class OfflineFireRedAsrCtcModelConfig(
   var model: String = "",
 )
 
-data class OfflineFireRedAsrModelConfig(
-  var encoder: String = "",
-  var decoder: String = "",
+data class OfflineFunAsrNanoModelConfig(
+  var encoderAdaptor: String = "",
+  var llm: String = "",
+  var embedding: String = "",
+  var tokenizer: String = "",
+  var systemPrompt: String = "You are a helpful assistant.",
+  var userPrompt: String = "语音转写：",
+  var maxNewTokens: Int = 512,
+  var temperature: Float = 1e-6f,
+  var topP: Float = 0.8f,
+  var seed: Int = 42,
+  var language: String = "",
+  var itn: Boolean = true,
+  var hotwords: String = "",
 )
 
-data class OfflineSenseVoiceModelConfig(
-  var model: String = "",
-  var language: String = "",
-  var useInverseTextNormalization: Boolean = true,
-  var qnnConfig: QnnConfig = QnnConfig(),
+data class OfflineQwen3AsrModelConfig(
+  var convFrontend: String = "",
+  var encoder: String = "",
+  var decoder: String = "",
+  var tokenizer: String = "",
+  var maxTotalLen: Int = 512,
+  var maxNewTokens: Int = 128,
+  var temperature: Float = 1e-6f,
+  var topP: Float = 0.8f,
+  var seed: Int = 42,
+  var hotwords: String = "",
 )
 
 data class OfflineWhisperModelConfig(
   var encoder: String = "",
   var decoder: String = "",
-  var language: String = "en",
-  var task: String = "transcribe",
-  var tailPaddings: Int = 1000,
+  var language: String = "en", // Used with multilingual model
+  var task: String = "transcribe", // transcribe or translate
+  var tailPaddings: Int = 1000, // Padding added at the end of the samples
   var enableTokenTimestamps: Boolean = false,
   var enableSegmentTimestamps: Boolean = false,
 )
@@ -79,16 +96,15 @@ data class OfflineCohereTranscribeModelConfig(
   var useItn: Boolean = true,
 )
 
-/**
- * Moonshine:
- *
- * v1:
- * preprocessor / encoder /
- * uncachedDecoder / cachedDecoder
- *
- * v2:
- * encoder / mergedDecoder
- */
+data class OfflineFireRedAsrModelConfig(
+  var encoder: String = "",
+  var decoder: String = "",
+)
+
+// For moonshine v1, you need four models.
+// For moonshine v2, you need two models.
+// - v1: preprocessor, encoder, uncachedDecoder, cachedDecoder
+// - v2: encoder, mergedDecoder
 data class OfflineMoonshineModelConfig(
   var preprocessor: String = "",
   var encoder: String = "",
@@ -97,35 +113,37 @@ data class OfflineMoonshineModelConfig(
   var mergedDecoder: String = "",
 )
 
-data class OfflineModelConfig(
+data class OfflineSenseVoiceModelConfig(
+  var model: String = "",
+  var language: String = "",
+  var useInverseTextNormalization: Boolean = true,
+  var qnnConfig: QnnConfig = QnnConfig(),
+)
 
-  // 模型
+data class OfflineModelConfig(
   var transducer: OfflineTransducerModelConfig = OfflineTransducerModelConfig(),
   var paraformer: OfflineParaformerModelConfig = OfflineParaformerModelConfig(),
   var whisper: OfflineWhisperModelConfig = OfflineWhisperModelConfig(),
-  var senseVoice: OfflineSenseVoiceModelConfig = OfflineSenseVoiceModelConfig(),
   var fireRedAsr: OfflineFireRedAsrModelConfig = OfflineFireRedAsrModelConfig(),
-  var fireRedAsrCtc: OfflineFireRedAsrCtcModelConfig = OfflineFireRedAsrCtcModelConfig(),
+  var moonshine: OfflineMoonshineModelConfig = OfflineMoonshineModelConfig(),
   var nemo: OfflineNemoEncDecCtcModelConfig = OfflineNemoEncDecCtcModelConfig(),
+  var senseVoice: OfflineSenseVoiceModelConfig = OfflineSenseVoiceModelConfig(),
   var dolphin: OfflineDolphinModelConfig = OfflineDolphinModelConfig(),
   var zipformerCtc: OfflineZipformerCtcModelConfig = OfflineZipformerCtcModelConfig(),
   var wenetCtc: OfflineWenetCtcModelConfig = OfflineWenetCtcModelConfig(),
   var omnilingual: OfflineOmnilingualAsrCtcModelConfig = OfflineOmnilingualAsrCtcModelConfig(),
   var medasr: OfflineMedAsrCtcModelConfig = OfflineMedAsrCtcModelConfig(),
-  var moonshine: OfflineMoonshineModelConfig = OfflineMoonshineModelConfig(),
+  var funasrNano: OfflineFunAsrNanoModelConfig = OfflineFunAsrNanoModelConfig(),
+  var qwen3Asr: OfflineQwen3AsrModelConfig = OfflineQwen3AsrModelConfig(),
+  var fireRedAsrCtc: OfflineFireRedAsrCtcModelConfig = OfflineFireRedAsrCtcModelConfig(),
   var canary: OfflineCanaryModelConfig = OfflineCanaryModelConfig(),
-  var cohereTranscribe: OfflineCohereTranscribeModelConfig =
-    OfflineCohereTranscribeModelConfig(),
-
-  // 通用配置
+  var cohereTranscribe: OfflineCohereTranscribeModelConfig = OfflineCohereTranscribeModelConfig(),
   var teleSpeech: String = "",
+  var numThreads: Int = 1,
+  var debug: Boolean = false,
+  var provider: String = "cpu",
+  var modelType: String = "",
   var tokens: String = "",
   var modelingUnit: String = "",
   var bpeVocab: String = "",
-
-  var provider: String = "cpu",
-  var modelType: String = "",
-
-  var numThreads: Int = 1,
-  var debug: Boolean = false,
 )

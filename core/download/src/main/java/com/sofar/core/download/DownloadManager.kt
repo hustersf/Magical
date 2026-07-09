@@ -12,6 +12,7 @@ class DownloadManager(private val accessToken: String? = null) {
   companion object {
     private const val TAG = "DownloadManager"
     private const val DEFAULT_BUFFER_SIZE = 8192
+    private const val UNKNOWN_TOTAL_BYTES = -1L
   }
 
   // 全局正在下载的任务及其网速映射表
@@ -28,9 +29,9 @@ class DownloadManager(private val accessToken: String? = null) {
   fun download(
     fileUrl: String,
     targetFile: File,
-    totalBytes: Long,
+    totalBytes: Long = UNKNOWN_TOTAL_BYTES,
     tmpFile: File? = null,
-    onProgress: (downloaded: Long, rate: Long, remainingMs: Long) -> Unit
+    onProgress: (downloaded: Long, totalBytes: Long, rate: Long, remainingMs: Long) -> Unit
   ) {
     activeTasksSpeedMap[fileUrl] = 0L
 
@@ -81,6 +82,15 @@ class DownloadManager(private val accessToken: String? = null) {
       throw IOException("HTTP error code: ${connection.responseCode}")
     }
 
+    val resolvedTotalBytes = resolveTotalBytes(
+      connection = connection,
+      responseCode = connection.responseCode,
+      outputFileBytes = outputFileBytes,
+      requestedTotalBytes = totalBytes
+    )
+
+    Log.d(TAG, "resolvedTotalBytes: $resolvedTotalBytes")
+
     try {
       // 流读写与测速逻辑
       connection.inputStream.use { input ->
@@ -106,16 +116,20 @@ class DownloadManager(private val accessToken: String? = null) {
                 )
                 deltaBytes = 0L
 
-                val remainingMs = if (bytesPerMs > 0f && totalBytes > 0L) {
-                  ((totalBytes - downloadedBytes) / bytesPerMs).toLong()
+                val remainingMs = if (bytesPerMs > 0f && resolvedTotalBytes > 0L) {
+                  ((resolvedTotalBytes - downloadedBytes).coerceAtLeast(0L) / bytesPerMs).toLong()
                 } else 0L
 
                 val currentSpeedBytesPerSec = (bytesPerMs * 1000).toLong()
                 activeTasksSpeedMap[fileUrl] = currentSpeedBytesPerSec
 
-                onProgress(downloadedBytes, currentSpeedBytesPerSec, remainingMs)
+                onProgress(
+                  downloadedBytes,
+                  resolvedTotalBytes,
+                  currentSpeedBytesPerSec,
+                  remainingMs
+                )
               }
-              Log.d(TAG, "downloadedBytes: $downloadedBytes")
               lastSetProgressTs = curTs
             }
           }
@@ -149,5 +163,42 @@ class DownloadManager(private val accessToken: String? = null) {
     }
     latencyBuffer.add(deltaTime)
     return sizeBuffer.sum().toFloat() / latencyBuffer.sum()
+  }
+
+  private fun resolveTotalBytes(
+    connection: HttpURLConnection,
+    responseCode: Int,
+    outputFileBytes: Long,
+    requestedTotalBytes: Long
+  ): Long {
+    if (requestedTotalBytes > 0L) {
+      return requestedTotalBytes
+    }
+
+    val contentLength = connection.getHeaderFieldLong("Content-Length", UNKNOWN_TOTAL_BYTES)
+    if (responseCode == HttpURLConnection.HTTP_PARTIAL) {
+      val contentRange = connection.getHeaderField("Content-Range")
+      val totalFromContentRange = parseTotalBytesFromContentRange(contentRange)
+      if (totalFromContentRange > 0L) {
+        return totalFromContentRange
+      }
+
+      if (contentLength > 0L) {
+        return outputFileBytes + contentLength
+      }
+    } else if (contentLength > 0L) {
+      return contentLength
+    }
+
+    return UNKNOWN_TOTAL_BYTES
+  }
+
+  private fun parseTotalBytesFromContentRange(contentRange: String?): Long {
+    if (contentRange.isNullOrBlank()) {
+      return UNKNOWN_TOTAL_BYTES
+    }
+
+    val totalPart = contentRange.substringAfterLast('/', missingDelimiterValue = "")
+    return totalPart.toLongOrNull()?.takeIf { it > 0L } ?: UNKNOWN_TOTAL_BYTES
   }
 }
