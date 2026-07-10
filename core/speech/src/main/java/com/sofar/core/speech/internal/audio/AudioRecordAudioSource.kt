@@ -69,9 +69,11 @@ internal class AudioRecordAudioSource(
           val samples = FloatArray(readSize)
           var sumSquare = 0.0
           for (index in 0 until readSize) {
-            val sample = sampleBuffer[index] / PCM_16_MAX_VALUE
-            samples[index] = sample
-            sumSquare += sample * sample
+            val shortSample = sampleBuffer[index].toDouble()
+            val sample = shortSample / PCM_16_MAX_VALUE
+            samples[index] = sample.toFloat()
+            // 使用原始 short 值计算 RMS（不归一化），以匹配 Android 系统公式
+            sumSquare += shortSample * shortSample
           }
           trySend(
             AudioFrame(
@@ -119,7 +121,14 @@ internal class AudioRecordAudioSource(
   private fun calculateRmsDb(sumSquare: Double, size: Int): Float {
     if (size <= 0 || sumSquare <= 0.0) return MIN_RMS_DB
     val rms = sqrt(sumSquare / size)
-    return (20.0 * log10(rms.coerceAtLeast(1.0e-9))).toFloat()
+    // Android 系统官方 RMS dB 计算公式（相对于 100 的参考电平）
+    // 【核心公式】 20 * log10(rms / 100.0)
+    // rms = 100   -> 20*log10(1) = 0 dB（中等音量基准）
+    // rms = 1000  -> 20*log10(10) = 20 dB（大声说话）
+    // rms = 10    -> 20*log10(0.1) = -20 dB（很小声音）
+    // rms = 1     -> 20*log10(0.01) = -40 dB（几乎无声）
+    // rms = 0.1   -> 20*log10(0.001) = -60 dB（背景噪音/无声）
+    return (20.0 * log10((rms / 100.0).coerceAtLeast(0.00001))).toFloat()
   }
 
   private companion object {

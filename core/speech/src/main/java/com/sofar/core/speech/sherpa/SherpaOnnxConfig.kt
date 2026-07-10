@@ -11,6 +11,11 @@ internal data class SherpaOnnxConfig(
   val rule1MinTrailingSilence: Float = 2.4f,
   val rule2MinTrailingSilence: Float = 1.2f,
   val rule3MinUtteranceLength: Float = 20.0f,
+  val vadModelPath: String = "silero_vad.onnx",
+  val vadThreshold: Float = 0.5f,
+  val vadMinSilenceDuration: Float = 0.25f,
+  val vadMinSpeechDuration: Float = 0.25f,
+  val vadMaxSpeechDuration: Float = 5.0f,
 )
 
 internal data class SherpaOnnxModelConfig(
@@ -30,6 +35,7 @@ internal data class SherpaOnnxModelConfig(
           addRequired(decoder, "decoder")
           addRequired(joiner, "joiner")
         }
+        SherpaOnnxModelType.SenseVoice,
         SherpaOnnxModelType.Paraformer,
         SherpaOnnxModelType.Zipformer2Ctc,
         SherpaOnnxModelType.Ctc -> {
@@ -49,6 +55,7 @@ internal data class SherpaOnnxModelConfig(
 }
 
 internal enum class SherpaOnnxModelType {
+  SenseVoice,
   Transducer,
   Paraformer,
   Zipformer2Ctc,

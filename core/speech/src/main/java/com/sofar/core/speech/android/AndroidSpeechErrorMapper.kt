@@ -1,11 +1,11 @@
 package com.sofar.core.speech.android
 
 import android.speech.SpeechRecognizer
-import com.sofar.core.speech.internal.contract.SpeechRecognitionError
+import com.sofar.core.speech.internal.contract.SpeechRecognitionEngineError
 
 internal object AndroidSpeechErrorMapper {
-  fun map(error: Int): SpeechRecognitionError {
-    return SpeechRecognitionError(
+  fun map(error: Int): SpeechRecognitionEngineError {
+    return SpeechRecognitionEngineError(
       code = error,
       message = errorName(error),
       recoverable = error != SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS,

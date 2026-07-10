@@ -9,15 +9,10 @@ internal data class SpeechModel(
   val id: String,
   val name: String,
   val languageCode: String,
-  val source: SpeechModelSource,
+  val localDir: String,
   val sherpaConfig: SherpaOnnxModelConfig,
 )
 
-internal sealed class SpeechModelSource {
-  data class Assets(val assetDir: String) : SpeechModelSource()
-  data class LocalFile(val dir: String) : SpeechModelSource()
-  data class Downloaded(val dir: String) : SpeechModelSource()
-}
 
 internal data class ModelValidationResult(
   val isValid: Boolean,

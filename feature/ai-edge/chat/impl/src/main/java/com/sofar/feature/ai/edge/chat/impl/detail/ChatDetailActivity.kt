@@ -32,7 +32,9 @@ import com.sofar.core.ai.edge.database.entity.MessageEntity
 import com.sofar.core.common.extension.getParcelableCompat
 import com.sofar.core.media.GetMediaContract
 import com.sofar.core.media.MediaAction
-import com.sofar.core.speech.SpeechRecognitionController
+import com.sofar.core.speech.SpeechRecognitionClient
+import com.sofar.core.speech.SpeechRecognitionEvent
+import com.sofar.core.speech.SpeechRecognitionRequest
 import com.sofar.core.ui.BaseUIActivity
 import com.sofar.core.ui.recyclerview.LinearMarginItemDecoration
 import com.sofar.feature.ai.edge.chat.impl.R
@@ -69,7 +71,7 @@ class ChatDetailActivity : BaseUIActivity() {
   private var currentSessionId: String = ""
   private var agentId: String? = null
 
-  private lateinit var speechController: SpeechRecognitionController
+  private lateinit var speechRecognitionClient: SpeechRecognitionClient
 
   private val requestPermissionLauncher = registerForActivityResult(
     ActivityResultContracts.RequestPermission()
@@ -112,7 +114,7 @@ class ChatDetailActivity : BaseUIActivity() {
     currentSessionId = detailArgs?.sessionId ?: UUID.randomUUID().toString()
     agentId = detailArgs?.agentId
     initView()
-    initSpeechController()
+    initSpeechRecognitionClient()
     setupListeners()
     initData()
   }
@@ -176,49 +178,16 @@ class ChatDetailActivity : BaseUIActivity() {
     )
   }
 
-  private fun initSpeechController() {
-    speechController = SpeechRecognitionController(
+  private fun initSpeechRecognitionClient() {
+    speechRecognitionClient = SpeechRecognitionClient(
       context = this,
       coroutineScope = lifecycleScope,
-      config = SpeechRecognitionController.Config(
+      request = SpeechRecognitionRequest(
         languageCode = "zh-CN",
         preferOffline = true
       ),
-      listener = object : SpeechRecognitionController.Listener {
-        override fun onSessionStarted() {
-          viewModel.startVoiceInputUi()
-        }
-
-        override fun onRecognizedTextChanged(text: String) {
-          viewModel.updateVoiceRecognizedText(text)
-        }
-
-        override fun onAudioLevelChanged(rmsDB: Float) {
-          viewModel.updateVoiceRms(rmsDB)
-        }
-
-        override fun onSpeechError(code: Int, hasRecognizedText: Boolean) {
-          Log.d(TAG, "voice recognition error(code=$code, hasRecognizedText=$hasRecognizedText)")
-        }
-
-        override fun onSessionCompleted(text: String) {
-          viewModel.finishVoiceInputUi()
-          if (text.isNotEmpty()) {
-            sendMessage(text)
-          } else {
-            Toast.makeText(
-              this@ChatDetailActivity,
-              getString(R.string.feature_chat_voice_unrecognized),
-              Toast.LENGTH_SHORT
-            ).show()
-          }
-        }
-
-        override fun onSessionCanceled() {
-          viewModel.finishVoiceInputUi()
-        }
-      }
     )
+    speechRecognitionClient.prepare()
   }
 
 
@@ -267,7 +236,7 @@ class ChatDetailActivity : BaseUIActivity() {
             ) == PackageManager.PERMISSION_GRANTED
           ) {
             voiceTouchDownY = event.rawY
-            speechController.start()
+            speechRecognitionClient.start()
           } else {
             requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
           }
@@ -280,12 +249,12 @@ class ChatDetailActivity : BaseUIActivity() {
         }
 
         MotionEvent.ACTION_UP -> {
-          if (viewModel.uiState.value.voiceState.isVoiceCanceling) speechController.cancel() else speechController.stop()
+          if (viewModel.uiState.value.voiceState.isVoiceCanceling) speechRecognitionClient.cancel() else speechRecognitionClient.stop()
           true
         }
 
         MotionEvent.ACTION_CANCEL -> {
-          speechController.cancel()
+          speechRecognitionClient.cancel()
           true
         }
 
@@ -300,9 +269,69 @@ class ChatDetailActivity : BaseUIActivity() {
     viewModel.updateVoiceCanceling(shouldCancel)
   }
 
+  private fun handleSpeechRecognitionEvent(event: SpeechRecognitionEvent) {
+    when (event) {
+      SpeechRecognitionEvent.Checking -> {
+
+      }
+
+      is SpeechRecognitionEvent.Downloading -> {
+
+      }
+
+      SpeechRecognitionEvent.Unzipping -> {
+
+      }
+
+      SpeechRecognitionEvent.EngineReady -> {
+
+      }
+
+      SpeechRecognitionEvent.Started -> {
+        viewModel.startVoiceInputUi()
+      }
+
+      is SpeechRecognitionEvent.TranscriptChanged -> {
+        viewModel.updateVoiceRecognizedText(event.transcript.text)
+      }
+
+      is SpeechRecognitionEvent.AudioLevelChanged -> {
+        viewModel.updateVoiceRms(event.rmsDB)
+      }
+
+      is SpeechRecognitionEvent.Error -> {
+        Log.d(TAG, "voice recognition error(code=${event.error.code}, hasRecognizedText=${event.hasRecognizedText})")
+      }
+
+      is SpeechRecognitionEvent.Completed -> {
+        viewModel.finishVoiceInputUi()
+        val text = event.transcript.text
+        if (text.isNotEmpty()) {
+          sendMessage(text)
+        } else {
+          Toast.makeText(
+            this,
+            getString(R.string.feature_chat_voice_unrecognized),
+            Toast.LENGTH_SHORT
+          ).show()
+        }
+      }
+
+      SpeechRecognitionEvent.Canceled -> {
+        viewModel.finishVoiceInputUi()
+      }
+    }
+  }
+
   fun initData() {
     lifecycleScope.launch {
       repeatOnLifecycle(Lifecycle.State.STARTED) {
+        launch {
+          speechRecognitionClient.events.collect { event ->
+            handleSpeechRecognitionEvent(event)
+          }
+        }
+
         //核心设计：拆分流切片配对 distinctUntilChanged 局部拦截，阻断总状态高频更迭引发的无关UI组件频繁刷新
         //  管道 1：会话标题驱动
         launch {
@@ -533,8 +562,8 @@ class ChatDetailActivity : BaseUIActivity() {
   }
 
   override fun onDestroy() {
-    if (::speechController.isInitialized) {
-      speechController.release()
+    if (::speechRecognitionClient.isInitialized) {
+      speechRecognitionClient.release()
     }
     super.onDestroy()
   }
