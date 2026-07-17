@@ -14,4 +14,7 @@
   <string name="feature_chat_voice_slide_up_to_cancel">Release to send, slide up to cancel</string>
   <string name="feature_chat_voice_permission_denied">Permission denied</string>
   <string name="feature_chat_voice_unrecognized">Voice not recognized</string>
+  <string name="feature_chat_speech_model_download_progress">Downloading %1$d%%</string>
+  <string name="feature_chat_speech_model_unzipping">Extracting…</string>
+  <string name="feature_chat_voice_preparing">Preparing voice engine, please wait…</string>
 </resources>

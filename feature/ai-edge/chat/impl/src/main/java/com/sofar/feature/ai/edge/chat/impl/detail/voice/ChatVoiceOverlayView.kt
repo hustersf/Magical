@@ -52,8 +52,10 @@ class ChatVoiceOverlayView @JvmOverloads constructor(
         R.string.feature_chat_voice_slide_up_to_cancel
       }
     )
-    overlayText.text = state.voiceRecognizedText.ifEmpty {
-      context.getString(R.string.feature_chat_voice_listening)
+    overlayText.text = when {
+      !state.isVoiceEngineUsable -> context.getString(R.string.feature_chat_voice_preparing)
+      state.voiceRecognizedText.isNotEmpty() -> state.voiceRecognizedText
+      else -> context.getString(R.string.feature_chat_voice_listening)
     }
 
     if (state.isVoiceCanceling) {
@@ -67,7 +69,7 @@ class ChatVoiceOverlayView @JvmOverloads constructor(
         secondaryColor = resolveThemeColor(com.google.android.material.R.attr.colorSecondary)
       )
     }
-    waveView.setLevel(state.voiceRmsDB)
+    waveView.setLevel(if (state.isVoiceEngineUsable) state.voiceRmsDB else 0f)
   }
 
   private fun resolveThemeColor(attr: Int): Int {

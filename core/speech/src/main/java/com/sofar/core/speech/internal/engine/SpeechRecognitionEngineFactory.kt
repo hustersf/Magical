@@ -11,15 +11,12 @@ import com.sofar.core.speech.internal.contract.SpeechRecognitionEngineModelEvent
 import com.sofar.core.speech.internal.contract.SpeechRecognitionEngineSessionMode
 import com.sofar.core.speech.internal.model.DefaultSpeechModelProvider
 import com.sofar.core.speech.sherpa.SherpaOnnxSpeechRecognitionEngine
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.merge
 
 internal class SpeechRecognitionEngineFactory(
   private val context: Context,
-  private val coroutineScope: CoroutineScope,
 ) {
   fun create(type: SpeechEngineType): SpeechRecognitionEngine {
     return when (type) {
@@ -40,7 +37,6 @@ internal class SpeechRecognitionEngineFactory(
         model = modelProvider.model,
       ),
       modelProvider = modelProvider,
-      coroutineScope = coroutineScope,
     )
   }
 }
@@ -54,56 +50,54 @@ internal class AutoSpeechRecognitionEngine(
     get() {
       val primaryCapabilities = primary?.capabilities
       val fallbackCapabilities = fallback.capabilities
-      val sessionMode = if (primaryCapabilities?.sessionMode == SpeechRecognitionEngineSessionMode.Continuous &&
-        fallbackCapabilities.sessionMode == SpeechRecognitionEngineSessionMode.Continuous
-      ) {
-        SpeechRecognitionEngineSessionMode.Continuous
-      } else {
-        SpeechRecognitionEngineSessionMode.SingleUtterance
-      }
+      val sessionMode =
+        if (primaryCapabilities?.sessionMode == SpeechRecognitionEngineSessionMode.Continuous &&
+          fallbackCapabilities.sessionMode == SpeechRecognitionEngineSessionMode.Continuous
+        ) {
+          SpeechRecognitionEngineSessionMode.Continuous
+        } else {
+          SpeechRecognitionEngineSessionMode.SingleUtterance
+        }
       return SpeechRecognitionEngineCapabilities(
         sessionMode = sessionMode,
-        supportsPartialResult = primaryCapabilities?.supportsPartialResult ?: fallbackCapabilities.supportsPartialResult,
+        supportsPartialResult = primaryCapabilities?.supportsPartialResult
+          ?: fallbackCapabilities.supportsPartialResult,
         supportsVolume = primaryCapabilities?.supportsVolume ?: fallbackCapabilities.supportsVolume,
-        supportsOffline = primaryCapabilities?.supportsOffline ?: fallbackCapabilities.supportsOffline,
-        supportsLanguageSwitching = primaryCapabilities?.supportsLanguageSwitching ?: fallbackCapabilities.supportsLanguageSwitching,
+        supportsOffline = primaryCapabilities?.supportsOffline
+          ?: fallbackCapabilities.supportsOffline,
+        supportsLanguageSwitching = primaryCapabilities?.supportsLanguageSwitching
+          ?: fallbackCapabilities.supportsLanguageSwitching,
       )
     }
 
   override fun prepare(): Flow<SpeechRecognitionEngineModelEvent> {
-    val primaryFlow = primary?.prepare()
-    val fallbackFlow = fallback.prepare()
-
-    // 💡 如果 primary 存在，把两个 Flow 编织在一起同时并发启动并向上传递
-    return if (primaryFlow != null) {
-      merge(primaryFlow, fallbackFlow)
-    } else {
-      fallbackFlow
-    }
+    // 只转发 primary（SherpaOnnx）的准备事件；Android 引擎无需下载，始终可用作兜底
+    return primary?.prepare() ?: fallback.prepare()
   }
 
-  override fun start(config: SpeechRecognitionEngineConfig): Flow<SpeechRecognitionEngineEvent> = flow {
-    val primaryEngine = primary
-    if (primaryEngine == null) {
-      fallback.start(config).collect { emit(it) }
-      return@flow
-    }
-
-    var shouldFallback = false
-    primaryEngine.start(config)
-      .catch { shouldFallback = true }
-      .collect { event ->
-        if (event is SpeechRecognitionEngineEvent.Error && !event.error.recoverable) {
-          shouldFallback = true
-        } else {
-          emit(event)
-        }
+  override fun start(config: SpeechRecognitionEngineConfig): Flow<SpeechRecognitionEngineEvent> =
+    flow {
+      val primaryEngine = primary
+      if (primaryEngine == null) {
+        fallback.start(config).collect { emit(it) }
+        return@flow
       }
 
-    if (shouldFallback) {
-      fallback.start(config).collect { emit(it) }
+      var shouldFallback = false
+      primaryEngine.start(config)
+        .catch { shouldFallback = true }
+        .collect { event ->
+          if (event is SpeechRecognitionEngineEvent.Error && !event.error.recoverable) {
+            shouldFallback = true
+          } else {
+            emit(event)
+          }
+        }
+
+      if (shouldFallback) {
+        fallback.start(config).collect { emit(it) }
+      }
     }
-  }
 
   override fun stop() {
     primary?.stop()

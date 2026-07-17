@@ -3,6 +3,7 @@ package com.sofar.core.speech.internal.model
 import android.content.Context
 import com.sofar.core.download.DownloadManager
 import com.sofar.core.download.ZipUtil
+import com.sofar.core.speech.internal.contract.SpeechRecognitionEngineModelEvent
 import com.sofar.core.speech.sherpa.SherpaOnnxModelConfig
 import com.sofar.core.speech.sherpa.SherpaOnnxModelType
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +14,17 @@ import java.io.File
 
 internal interface SpeechModelProvider {
   val model: SpeechModel
-  suspend fun ensureReady(): SpeechModel
+
+  /**
+   * 确保模型可用（线程安全，内部 Mutex 防止并发下载）。
+   *
+   * @param onEvent 生命周期事件回调，从 IO 线程或下载回调线程调用，
+   *                使用 [kotlinx.coroutines.channels.ProducerScope.trySend] 等线程安全方法接收。
+   */
+  suspend fun ensureReady(
+    onEvent: (SpeechRecognitionEngineModelEvent) -> Unit = {},
+  ): SpeechModel
+
   fun isModelReady(): Boolean
 }
 
@@ -47,40 +58,63 @@ internal class DefaultSpeechModelProvider(
     ),
   )
 
-  override suspend fun ensureReady(): SpeechModel = mutex.withLock {
-    withContext(Dispatchers.IO) {
-      if (isModelReady()) return@withContext model
+  // 确保模型可用（幂等 + 线程安全）：
+  // Checking → [Downloading → Unzipping] → Ready
+  // Mutex 防止并发重复下载，已就绪则快速返回
+  override suspend fun ensureReady(
+    onEvent: (SpeechRecognitionEngineModelEvent) -> Unit,
+  ): SpeechModel {
+    // 快速路径：模型文件已存在，无需持锁
+    onEvent(SpeechRecognitionEngineModelEvent.Checking)
+    if (isModelReady()) {
+      onEvent(SpeechRecognitionEngineModelEvent.Ready)
+      return model
+    }
 
-      modelBaseDir.mkdirs()
-      if (!isArchiveReady()) {
-        tmpArchiveFile.parentFile?.mkdirs()
-        downloadManager.download(
-          fileUrl = MODEL_ARCHIVE_URL,
-          targetFile = archiveFile,
-          tmpFile = tmpArchiveFile,
-        ) { _, _, _, _ -> }
-      }
+    // 慢速路径：需要下载/解压，用 Mutex 防止并发重复操作
+    mutex.withLock {
+      withContext(Dispatchers.IO) {
+        // 可能等锁期间已被另一个协程完成了下载
+        if (isModelReady()) return@withContext
 
-      if (!isModelReady()) {
-        modelDir.deleteRecursively()
-        readyMarkerFile.delete()
-        modelDir.mkdirs()
-        runCatching {
-          ZipUtil.unzip(zipFile = archiveFile, deleteSource = true)
+        modelBaseDir.mkdirs()
+        if (!isArchiveReady()) {
+          tmpArchiveFile.parentFile?.mkdirs()
+          downloadManager.download(
+            fileUrl = MODEL_ARCHIVE_URL,
+            targetFile = archiveFile,
+            tmpFile = tmpArchiveFile,
+          ) { downloaded, total, _, _ ->
+            val progress = if (total > 0) {
+              ((downloaded.toFloat() / total) * 100).toInt().coerceIn(0, 100)
+            } else 0
+            onEvent(SpeechRecognitionEngineModelEvent.Downloading(progress))
+          }
         }
-          .onFailure {
+
+        if (!isModelReady()) {
+          onEvent(SpeechRecognitionEngineModelEvent.Unzipping)
+          modelDir.deleteRecursively()
+          readyMarkerFile.delete()
+          modelDir.mkdirs()
+          runCatching {
+            ZipUtil.unzip(zipFile = archiveFile, deleteSource = true)
+          }.onFailure {
             archiveFile.delete()
             tmpArchiveFile.delete()
             throw it
           }
-      }
+        }
 
-      check(isModelReady()) {
-        "Downloaded speech model is incomplete. Expected files: ${requiredFiles().joinToString()}"
+        check(isModelReady()) {
+          "Downloaded speech model is incomplete. Expected files: ${requiredFiles().joinToString()}"
+        }
+        readyMarkerFile.writeText(MODEL_ARCHIVE_URL)
       }
-      readyMarkerFile.writeText(MODEL_ARCHIVE_URL)
-      model
     }
+
+    onEvent(SpeechRecognitionEngineModelEvent.Ready)
+    return model
   }
 
   private fun isArchiveReady(): Boolean {

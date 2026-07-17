@@ -9,11 +9,8 @@ import com.sofar.core.speech.internal.contract.SpeechRecognitionEngineEvent
 import com.sofar.core.speech.internal.contract.SpeechRecognitionEngineModelEvent
 import com.sofar.core.speech.internal.model.SpeechModelProvider
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.channelFlow
 
 /**
  * Decorates an engine with transparent local model preparation.
@@ -24,39 +21,60 @@ import kotlinx.coroutines.launch
 internal class ModelPreparingSpeechRecognitionEngine(
   private val delegate: SpeechRecognitionEngine,
   private val modelProvider: SpeechModelProvider,
-  coroutineScope: CoroutineScope,
 ) : SpeechRecognitionEngine {
 
   override val capabilities: SpeechRecognitionEngineCapabilities
     get() = delegate.capabilities
 
-  private val prefetchJob: Job = coroutineScope.launch {
-    runCatching { modelProvider.ensureReady() }
-      .onFailure { Log.w(TAG, "prefetch speech model failed", it) }
-  }
-
-  override fun prepare(): Flow<SpeechRecognitionEngineModelEvent> = flow {
+  // 两阶段准备：
+  // 阶段1（透出过程事件）: modelProvider.ensureReady() → Checking/Downloading/Unzipping
+  // 阶段2（委托）: delegate.prepare() → Ready (含 JNI 初始化)
+  override fun prepare(): Flow<SpeechRecognitionEngineModelEvent> = channelFlow {
     try {
-      prefetchJob.join()
-      if (modelProvider.isModelReady()) {
-        emit(SpeechRecognitionEngineModelEvent.Ready)
-        return@flow
+      var modelReady = false
+      // 阶段1：下载/校验模型，过程事件直接透出（Checking → Downloading → Unzipping）
+      modelProvider.ensureReady { event ->
+        when (event) {
+          SpeechRecognitionEngineModelEvent.Ready -> {
+            modelReady = true
+          }
+
+          else -> {
+            trySend(event)
+          }
+        }
       }
-      modelProvider.ensureReady()
-      emit(SpeechRecognitionEngineModelEvent.Ready)
+
+      if (!modelReady) {
+        trySend(
+          SpeechRecognitionEngineModelEvent.Error(
+            prepareModelError(IllegalStateException("Model provider completed without Ready event")),
+          ),
+        )
+        return@channelFlow
+      }
+
+      // 阶段2：引擎预热（Sherpa recognizer/vad 初始化），最终 Ready 由 delegate 发出
+      delegate.prepare().collect { event -> trySend(event) }
     } catch (cancellation: CancellationException) {
       throw cancellation
     } catch (throwable: Throwable) {
       Log.w(TAG, "prepare speech model failed", throwable)
-      emit(SpeechRecognitionEngineModelEvent.Error(prepareModelError(throwable)))
-      return@flow
+      trySend(SpeechRecognitionEngineModelEvent.Error(prepareModelError(throwable)))
     }
   }
 
-  override fun start(config: SpeechRecognitionEngineConfig): Flow<SpeechRecognitionEngineEvent> = flow {
-    delegate.start(config).collect { emit(it) }
-  }
+  // 透传委托：不独立处理，直接转发至原引擎
+  override fun start(config: SpeechRecognitionEngineConfig): Flow<SpeechRecognitionEngineEvent> =
+    channelFlow {
+      try {
+        delegate.start(config).collect { trySend(it) }
+      } catch (cancellation: CancellationException) {
+        throw cancellation
+      }
+    }
 
+  // 透传委托：stop/cancel/release
   override fun stop() {
     delegate.stop()
   }

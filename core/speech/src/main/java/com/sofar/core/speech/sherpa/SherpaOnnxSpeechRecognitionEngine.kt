@@ -16,26 +16,28 @@ import com.k2fsa.sherpa.onnx.SileroVadModelConfig
 import com.k2fsa.sherpa.onnx.TenVadModelConfig
 import com.k2fsa.sherpa.onnx.Vad
 import com.k2fsa.sherpa.onnx.VadModelConfig
-import com.sofar.core.speech.internal.contract.SpeechRecognitionEngineConfig
-import com.sofar.core.speech.internal.contract.SpeechRecognitionEngine
-import com.sofar.core.speech.internal.contract.SpeechRecognitionEngineCapabilities
-import com.sofar.core.speech.internal.contract.SpeechRecognitionEngineError
-import com.sofar.core.speech.internal.contract.SpeechRecognitionEngineEvent
-import com.sofar.core.speech.internal.contract.SpeechRecognitionEngineSessionMode
 import com.sofar.core.speech.internal.audio.AudioRecordAudioSource
 import com.sofar.core.speech.internal.audio.AudioRecordConfig
 import com.sofar.core.speech.internal.audio.AudioSource
+import com.sofar.core.speech.internal.contract.SpeechRecognitionEngine
+import com.sofar.core.speech.internal.contract.SpeechRecognitionEngineCapabilities
+import com.sofar.core.speech.internal.contract.SpeechRecognitionEngineConfig
+import com.sofar.core.speech.internal.contract.SpeechRecognitionEngineError
+import com.sofar.core.speech.internal.contract.SpeechRecognitionEngineEvent
+import com.sofar.core.speech.internal.contract.SpeechRecognitionEngineModelEvent
+import com.sofar.core.speech.internal.contract.SpeechRecognitionEngineSessionMode
 import com.sofar.core.speech.internal.model.SpeechModel
 import com.sofar.core.speech.internal.model.SpeechModelPathResolver
 import com.sofar.core.speech.internal.model.SpeechModelValidator
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import java.util.concurrent.Executors
 
 internal class SherpaOnnxSpeechRecognitionEngine(
   context: Context,
@@ -59,12 +61,68 @@ internal class SherpaOnnxSpeechRecognitionEngine(
     supportsLanguageSwitching = false,
   )
 
-  private var currentAudioSource: AudioSource? = null
-  private var currentRecognizer: OfflineRecognizer? = null
-  private var currentVad: Vad? = null
-  @Volatile private var canceled: Boolean = false
+  // 单线程执行所有操作，消除 start() 内部的竞态条件。
+  private val singleThreadDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
+  // stop()/cancel()/release() 从外部线程调用，需要 @Volatile 保证跨线程可见性。
+  // 单线程保证 start() 内部的写入顺序，@Volatile 保证外部线程读取时看到最新值。
+  @Volatile private var currentAudioSource: AudioSource? = null
+  @Volatile private var canceled: Boolean = false
+  // LRU 缓存：限制原生资源数量，避免多采样率场景无限增长。
+  // preparedResourcesBySampleRate 由单线程写入、由 release()（外部线程）清空，需要锁保护。
+  private val preparedResourcesBySampleRate: MutableMap<Int, EngineResources> = linkedMapOf()
+  private val resourcesLock = Any()
+  // 上一次 start() 的 producer Job，仅在单线程上访问，无需 @Volatile。
+  // 新 start() 通过 join() 等待上一次清理完成，避免 stop→start 时序窗口导致 ERROR_BUSY。
+  private var previousStartJob: Job? = null
+
+  // 验证模型 → 创建识别器和 VAD（单线程）
+  override fun prepare(): Flow<SpeechRecognitionEngineModelEvent> = flow {
+    // 每次 prepare 视为新一轮请求，先清掉历史 cancel 标记。
+    canceled = false
+
+    val validation = modelValidator.validate(model)
+    if (!validation.isValid) {
+      emit(SpeechRecognitionEngineModelEvent.Error(error(ERROR_INVALID_MODEL, validation.message.orEmpty())))
+      return@flow
+    }
+
+    // Preparing 阶段检查 canceled 标志。多次 cancel 时，prepare() 应尽早返回，避免状态污染。
+    if (canceled) {
+      return@flow
+    }
+
+    val preparation = prepareResources(sampleRate = DEFAULT_SAMPLE_RATE)
+
+    // prepare() 完成后再次检查 canceled，如果被取消则不发出 Ready，让 Orchestrator 处理取消。
+    if (canceled) {
+      return@flow
+    }
+
+    when (preparation) {
+      is ResourcePreparationResult.Success -> emit(SpeechRecognitionEngineModelEvent.Ready)
+      is ResourcePreparationResult.Failure -> emit(SpeechRecognitionEngineModelEvent.Error(preparation.error))
+    }
+  }.flowOn(singleThreadDispatcher)
+
+  // 启动连续识别：
+  // 1. join() 等待上次 start 清理完成 → 2. AudioSource → 3. Vad+识别循环 → 4. 部分/最终文本及音量
   override fun start(config: SpeechRecognitionEngineConfig): Flow<SpeechRecognitionEngineEvent> = callbackFlow {
+    // 等待上一次 start() 的 producer Job 完全结束（包括 finally 清理）。
+    //
+    // 问题根因：Dispatchers.Main.immediate 使新 start() 立即执行，
+    // 新 producer 提交到 singleThreadDispatcher 时，旧 producer 的取消信号尚未到达
+    // （cancel 传播跨越 Main→flowOn 是异步的），导致队列顺序变成：
+    //   [Task2: 新 producer] → [Task1: 旧 cancel]
+    // Task2 先执行，看到 currentAudioSource != null → ERROR_BUSY。
+    //
+    // 修复：新 producer 通过 join() 等待旧 Job 结束。join() 是挂起函数，
+    // 在单线程上 join() 会让出线程，让旧 producer 的 cleanup 先执行，
+    // finally { releaseCurrentAudioSource() } 完成后 join() 才返回。
+    val jobToAwait = previousStartJob
+    previousStartJob = currentCoroutineContext()[Job]
+    jobToAwait?.join()
+
     val validation = modelValidator.validate(model)
     if (!validation.isValid) {
       trySend(SpeechRecognitionEngineEvent.Error(error(ERROR_INVALID_MODEL, validation.message.orEmpty())))
@@ -72,39 +130,67 @@ internal class SherpaOnnxSpeechRecognitionEngine(
       return@callbackFlow
     }
 
+    // 新一轮 start，重置取消标志。
     canceled = false
-    val audioSource = audioSourceFactory(config)
-    val modelDir = modelPathResolver.resolveModelDir(model)
-    val recognizer = runCatching {
-      createOfflineRecognizer(model.sherpaConfig, config.sampleRate, modelDir)
-    }.getOrElse { throwable ->
-      trySend(SpeechRecognitionEngineEvent.Error(error(ERROR_CREATE_RECOGNIZER, "Create sherpa-onnx recognizer failed", throwable)))
+
+    if (currentAudioSource != null) {
+      // double-check：join() 之后仍然非 null，说明有真实的并发 start()，拒绝。
+      trySend(
+        SpeechRecognitionEngineEvent.Error(
+          error(ERROR_BUSY, "Recognition already running", recoverable = false),
+        ),
+      )
       close()
       return@callbackFlow
     }
 
-    val vad = runCatching {
-      createVad(config.sampleRate, modelDir)
-    }.getOrElse { throwable ->
-      recognizer.release()
-      trySend(SpeechRecognitionEngineEvent.Error(error(ERROR_CREATE_VAD, "Create sherpa-onnx VAD failed", throwable)))
-      close()
-      return@callbackFlow
-    }
+    try {
+      // 创建 AudioSource，赋值，使 cancel() 能立即生效
+      val audioSource = audioSourceFactory(config)
+      currentAudioSource = audioSource
 
-    currentAudioSource = audioSource
-    currentRecognizer = recognizer
-    currentVad = vad
-    trySend(SpeechRecognitionEngineEvent.Ready)
+      // 准备资源（识别器和 VAD）
+      val preparedResources = prepareResources(sampleRate = config.sampleRate)
+      val resources = when (preparedResources) {
+        is ResourcePreparationResult.Success -> preparedResources.resources
+        is ResourcePreparationResult.Failure -> {
+          trySend(SpeechRecognitionEngineEvent.Error(preparedResources.error))
+          releaseCurrentAudioSource()
+          close()
+          return@callbackFlow
+        }
+      }
 
-    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    val activeSpeechBuffer = FloatSampleBuffer()
-    var lastPartialText = ""
-    var lastPartialDecodeMillis = 0L
-    var startedSent = false
-    scope.launch {
+      if (canceled) {
+        releaseCurrentAudioSource()
+        close()
+        return@callbackFlow
+      }
+
+      val recognizer = resources.recognizer
+      val vad = resources.vad
+      vad.reset()
+      vad.clear()
+
+      if (canceled) {
+        releaseCurrentAudioSource()
+        close()
+        return@callbackFlow
+      }
+
+      trySend(SpeechRecognitionEngineEvent.Ready)
+
+      // 在单线程上下文中直接执行识别循环
+      val activeSpeechBuffer = FloatSampleBuffer()
+      var lastPartialText = ""
+      var lastPartialDecodeMillis = 0L
+      var startedSent = false
+
       runCatching {
         audioSource.start().collect { frame ->
+          if (canceled) {
+            return@collect
+          }
           if (!startedSent) {
             startedSent = true
             trySend(SpeechRecognitionEngineEvent.Started)
@@ -152,36 +238,112 @@ internal class SherpaOnnxSpeechRecognitionEngine(
           trySend(SpeechRecognitionEngineEvent.Error(error(ERROR_RUNTIME, "sherpa-onnx recognition failed", throwable)))
         }
       }
+
       trySend(SpeechRecognitionEngineEvent.End)
       close()
+    } catch (cancellation: CancellationException) {
+      Log.w(TAG, "start canceled", cancellation)
+      releaseCurrentAudioSource()
+      throw cancellation
+    } catch (throwable: Throwable) {
+      Log.w(TAG, "start failed", throwable)
+      releaseCurrentAudioSource()
+      if (!canceled) {
+        trySend(SpeechRecognitionEngineEvent.Error(error(ERROR_RUNTIME, "sherpa-onnx start failed", throwable)))
+      }
+      close()
+    } finally {
+      releaseCurrentAudioSource()
     }
+  }.flowOn(singleThreadDispatcher)
 
-    awaitClose {
-      scope.cancel()
-      releaseCurrent()
-    }
-  }
-
+  // 优雅停止：仅停止 AudioSource，不标记 canceled，保留尾帧 flush 机会。
   override fun stop() {
     currentAudioSource?.stop()
   }
 
+  // 立即中断：设置 canceled 标志 + 停止音频采集。
+  // 注意：Cancel 仅释放 Session，Engine 及其已准备资源需要保留，不能清缓存。
   override fun cancel() {
     canceled = true
     currentAudioSource?.stop()
   }
 
+  // 释放所有资源：清空音频源和缓存资源（LRU）
   override fun release() {
+    canceled = true
     releaseCurrent()
   }
 
+  // 清理当前音频源和所有预准备资源
   private fun releaseCurrent() {
+    releaseCurrentAudioSource()
+    releasePreparedResources()
+  }
+
+  // 释放当前音频源引用
+  private fun releaseCurrentAudioSource() {
     currentAudioSource?.release()
     currentAudioSource = null
-    currentRecognizer?.release()
-    currentRecognizer = null
-    currentVad?.release()
-    currentVad = null
+  }
+
+  // 清空所有采样率的 LRU 缓存（识别器+VAD）
+  private fun releasePreparedResources() {
+    val resources = synchronized(resourcesLock) {
+      preparedResourcesBySampleRate.values.toList().also { preparedResourcesBySampleRate.clear() }
+    }
+    resources.forEach(::releaseResources)
+  }
+
+  // 准备采样率对应的识别器+VAD（支持多采样率，LRU 缓存大小≤2，超出自动清除最旧）
+  private fun prepareResources(sampleRate: Int): ResourcePreparationResult {
+    // 在单线程中直接访问缓存，无需同步
+    val cached = synchronized(resourcesLock) { preparedResourcesBySampleRate[sampleRate] }
+    if (cached != null) return ResourcePreparationResult.Success(cached)
+
+    val modelDir = modelPathResolver.resolveModelDir(model)
+    val recognizer = runCatching {
+      createOfflineRecognizer(model.sherpaConfig, sampleRate, modelDir)
+    }.getOrElse { throwable ->
+      return ResourcePreparationResult.Failure(
+        error(ERROR_CREATE_RECOGNIZER, "Create sherpa-onnx recognizer failed", throwable),
+      )
+    }
+
+    val vad = runCatching {
+      createVad(sampleRate, modelDir)
+    }.getOrElse { throwable ->
+      recognizer.release()
+      return ResourcePreparationResult.Failure(
+        error(ERROR_CREATE_VAD, "Create sherpa-onnx VAD failed", throwable),
+      )
+    }
+
+    val created = EngineResources(recognizer = recognizer, vad = vad)
+    var evicted: EngineResources? = null
+
+    synchronized(resourcesLock) {
+      preparedResourcesBySampleRate[sampleRate] ?: created.also {
+        if (preparedResourcesBySampleRate.size >= MAX_PREPARED_RESOURCE_CACHE_SIZE) {
+          val eldestKey = preparedResourcesBySampleRate.keys.firstOrNull()
+          if (eldestKey != null) {
+            evicted = preparedResourcesBySampleRate.remove(eldestKey)
+          }
+        }
+        preparedResourcesBySampleRate[sampleRate] = it
+      }
+    }
+
+    evicted?.let(::releaseResources)
+    return ResourcePreparationResult.Success(
+      synchronized(resourcesLock) { preparedResourcesBySampleRate[sampleRate] } ?: created
+    )
+  }
+
+  // 释放单个资源对：识别器和 Vad
+  private fun releaseResources(resources: EngineResources) {
+    resources.recognizer.release()
+    resources.vad.release()
   }
 
   private fun createOfflineRecognizer(
@@ -323,12 +485,25 @@ internal class SherpaOnnxSpeechRecognitionEngine(
 
   private companion object {
     private const val TAG = "SherpaOnnxSpeechRecognitionEngine"
+    private const val DEFAULT_SAMPLE_RATE = 16_000
     private const val ERROR_INVALID_MODEL = 10_002
     private const val ERROR_CREATE_RECOGNIZER = 10_003
     private const val ERROR_CREATE_VAD = 10_004
     private const val ERROR_RUNTIME = 10_005
+    private const val ERROR_BUSY = 10_006
     private const val PARTIAL_DECODE_INTERVAL_MILLIS = 320L
+    private const val MAX_PREPARED_RESOURCE_CACHE_SIZE = 2
   }
+}
+
+private data class EngineResources(
+  val recognizer: OfflineRecognizer,
+  val vad: Vad,
+)
+
+private sealed class ResourcePreparationResult {
+  data class Success(val resources: EngineResources) : ResourcePreparationResult()
+  data class Failure(val error: SpeechRecognitionEngineError) : ResourcePreparationResult()
 }
 
 private class FloatSampleBuffer(

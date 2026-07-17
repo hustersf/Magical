@@ -41,6 +41,7 @@ import com.sofar.feature.ai.edge.chat.impl.R
 import com.sofar.feature.ai.edge.chat.impl.detail.image.SelectedImageAdapter
 import com.sofar.feature.ai.edge.chat.impl.detail.image.SelectedImageState
 import com.sofar.feature.ai.edge.chat.impl.detail.voice.ChatVoiceOverlayView
+import com.sofar.feature.ai.edge.chat.impl.detail.voice.VoiceInputUiState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -73,6 +74,8 @@ class ChatDetailActivity : BaseUIActivity() {
 
   private lateinit var speechRecognitionClient: SpeechRecognitionClient
 
+  /** 语音按钮的原始文字，首次进入语音模式时捕获，下载结束后恢复 */
+  private var voicePressDefaultText: String? = null
   private val requestPermissionLauncher = registerForActivityResult(
     ActivityResultContracts.RequestPermission()
   ) { isGranted: Boolean ->
@@ -236,6 +239,7 @@ class ChatDetailActivity : BaseUIActivity() {
             ) == PackageManager.PERMISSION_GRANTED
           ) {
             voiceTouchDownY = event.rawY
+            viewModel.showVoiceInputPendingUi()
             speechRecognitionClient.start()
           } else {
             requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
@@ -272,23 +276,23 @@ class ChatDetailActivity : BaseUIActivity() {
   private fun handleSpeechRecognitionEvent(event: SpeechRecognitionEvent) {
     when (event) {
       SpeechRecognitionEvent.Checking -> {
-
+        viewModel.onSpeechEngineChecking()
       }
 
       is SpeechRecognitionEvent.Downloading -> {
-
+        viewModel.onSpeechEngineDownloading(event.progress)
       }
 
       SpeechRecognitionEvent.Unzipping -> {
-
+        viewModel.onSpeechEngineUnzipping()
       }
 
       SpeechRecognitionEvent.EngineReady -> {
-
+        viewModel.onSpeechEngineReady()
       }
 
       SpeechRecognitionEvent.Started -> {
-        viewModel.startVoiceInputUi()
+        viewModel.markVoiceInputUsable()
       }
 
       is SpeechRecognitionEvent.TranscriptChanged -> {
@@ -300,7 +304,8 @@ class ChatDetailActivity : BaseUIActivity() {
       }
 
       is SpeechRecognitionEvent.Error -> {
-        Log.d(TAG, "voice recognition error(code=${event.error.code}, hasRecognizedText=${event.hasRecognizedText})")
+        Log.d(TAG, "voice recognition error(code=${event.error.code}")
+        viewModel.finishVoiceInputUi()
       }
 
       is SpeechRecognitionEvent.Completed -> {
@@ -372,7 +377,7 @@ class ChatDetailActivity : BaseUIActivity() {
                 state.chatInputText,
                 state.isAiResponding,
                 state.isEngineLoading,
-                state.isModelReady
+                state.isModelReady,
               )
             }
             .distinctUntilChanged()
@@ -480,13 +485,34 @@ class ChatDetailActivity : BaseUIActivity() {
     // ------------------------------------------
     // 切换输入模式按钮：只要底层 C++ 引擎在加载，或者 AI 正在说话，就彻底变灰
     talkBtn.isEnabled = !isEngineLoading && !isResponding
-    // 按住说话按钮：只有当模型初始化成功，且 AI 没有在流式输出时，才激活响应
+    // 按住说话按钮：只有 LLM 模型成功、且 AI 没有在流式输出时，才激活响应
     voicePressBtn.isEnabled = isModelReady && !isResponding
     voicePressBtn.alpha = if (voicePressBtn.isEnabled) 1f else 0.5f
     // 发送文字按钮：只有当模型初始化成功，且 AI 没有在流式输出时，才激活响应
     sendBtn.isEnabled = isModelReady && !isResponding
     // 停止回答按钮：只有当大模型处于流式思考吐字响应期时，才激活点击响应
     stopBtn.isEnabled = isResponding
+
+    // ------------------------------------------
+    // 语音按钮文字：展示 SherpaOnnx 模型下载/解压进度
+    // ------------------------------------------
+    if (isVoiceMode) {
+      // 首次进入语音模式时捕获原始按钮文字，以便下载结束后还原
+      if (voicePressDefaultText == null && voicePressBtn.text.isNotEmpty()) {
+        voicePressDefaultText = voicePressBtn.text.toString()
+      }
+      val downloadProgress = state.voiceState.speechModelDownloadProgress
+      voicePressBtn.text = when (downloadProgress) {
+        VoiceInputUiState.SPEECH_MODEL_PROGRESS_CHECKING -> getString(R.string.feature_chat_voice_preparing)
+        VoiceInputUiState.SPEECH_MODEL_PROGRESS_UNZIPPING -> getString(R.string.feature_chat_speech_model_unzipping)
+        in 0..100 -> getString(
+          R.string.feature_chat_speech_model_download_progress,
+          downloadProgress
+        )
+
+        else -> voicePressDefaultText ?: voicePressBtn.text
+      }
+    }
   }
 
   private fun handleEffect(effect: ChatDetailEffect) {

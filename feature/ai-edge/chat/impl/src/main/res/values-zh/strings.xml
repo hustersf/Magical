@@ -14,4 +14,7 @@
   <string name="feature_chat_voice_slide_up_to_cancel">松手发送，上移取消</string>
   <string name="feature_chat_voice_permission_denied">录音权限被拒绝</string>
   <string name="feature_chat_voice_unrecognized">未识别到文字</string>
+  <string name="feature_chat_speech_model_download_progress">下载中 %1$d%%</string>
+  <string name="feature_chat_speech_model_unzipping">正在解压…</string>
+  <string name="feature_chat_voice_preparing">语音引擎准备中，请稍候…</string>
 </resources>

@@ -33,7 +33,9 @@ internal sealed class RecognitionSessionEvent {
   data object Started : RecognitionSessionEvent()
   data class TextChanged(val transcript: RecognitionTranscript) : RecognitionSessionEvent()
   data class AudioLevelChanged(val rmsDB: Float) : RecognitionSessionEvent()
-  data class Error(val error: SpeechRecognitionEngineError, val hasRecognizedText: Boolean) : RecognitionSessionEvent()
+  data class Error(val error: SpeechRecognitionEngineError, val hasRecognizedText: Boolean) :
+    RecognitionSessionEvent()
+
   data class Completed(val transcript: RecognitionTranscript) : RecognitionSessionEvent()
   data object Canceled : RecognitionSessionEvent()
 }
@@ -59,6 +61,7 @@ internal class SpeechRecognitionSession(
   val isSessionActive: Boolean
     get() = state == SpeechRecognitionSessionState.Listening || state == SpeechRecognitionSessionState.Completing
 
+  // 启动新一轮识别：重置聚合器 → Listening → 开启识别循环
   fun start(): Boolean {
     if (isSessionActive) {
       Log.d(TAG, "start ignored: session already active(state=$state)")
@@ -69,11 +72,11 @@ internal class SpeechRecognitionSession(
     transcriptAggregator.reset()
     state = SpeechRecognitionSessionState.Listening
     eventSink(RecognitionSessionEvent.Started)
-    eventSink(RecognitionSessionEvent.TextChanged(transcriptAggregator.transcript))
     recognitionJob = coroutineScope.launch { runRecognitionLoop() }
     return true
   }
 
+  // 优雅停止：Listening → Completing → 等待 finalizeDelay 后 complete
   fun stop(): Boolean {
     if (!isSessionActive) {
       Log.d(TAG, "stop ignored: no active session(state=$state)")
@@ -91,16 +94,19 @@ internal class SpeechRecognitionSession(
     return true
   }
 
+  // 立即取消：关闭引擎音频 + 取消 Job + 发送 Canceled 事件
   fun cancel(): Boolean {
     return cancelInternal(notify = true)
   }
 
+  // 释放会话资源（标记为 Released，不发送取消事件）
   fun release() {
     cancelInternal(notify = false)
-    engine.release()
     state = SpeechRecognitionSessionState.Released
   }
 
+  // 识别主循环：collectRecognitionOnce → 根据 policy 决定是否 restart → delay → 重复
+  // policy 决定在识别最终结果或错误后是否重启下一轮
   private suspend fun runRecognitionLoop() {
     try {
       while (state == SpeechRecognitionSessionState.Listening) {
@@ -112,9 +118,13 @@ internal class SpeechRecognitionSession(
       throw cancellation
     } catch (throwable: Throwable) {
       Log.w(TAG, "recognition session failed", throwable)
+    } finally {
+      recognitionJob = null
     }
   }
 
+  // 执行一轮识别：engine.start() → 处理事件 → 询问 policy 是否重启 → 返回 shouldRestart
+  // 阶段：Ready → Started → Text(s) → [Volume] → Error/End
   private suspend fun collectRecognitionOnce(): Boolean {
     var shouldRestart = false
     var hasFinalResultInCurrentRecognition = false
@@ -148,14 +158,22 @@ internal class SpeechRecognitionSession(
 
         is SpeechRecognitionEngineEvent.Error -> {
           shouldRestart = policy.shouldRetryAfterError(event.error, createPolicyContext())
-          eventSink(RecognitionSessionEvent.Error(event.error, transcriptAggregator.transcript.hasText))
+          eventSink(
+            RecognitionSessionEvent.Error(
+              event.error,
+              transcriptAggregator.transcript.hasText
+            )
+          )
           if (!shouldRestart && isSessionActive && !transcriptAggregator.transcript.hasText) {
             completeIfActive()
           }
         }
 
         SpeechRecognitionEngineEvent.End -> {
-          // Engine-level end; policy decides after the flow returns whether another attempt is needed.
+          // stop() 后若引擎已自然结束，则直接完成，避免额外等待 finalizeDelay。
+          if (state == SpeechRecognitionSessionState.Completing) {
+            completeIfActive()
+          }
         }
       }
     }
@@ -163,6 +181,7 @@ internal class SpeechRecognitionSession(
     return shouldRestart
   }
 
+  // 结束识别：完成聚合器 → Completed → 发送 Completed 事件
   private fun completeIfActive() {
     if (!isSessionActive) return
     val completedTranscript = transcriptAggregator.complete()

@@ -240,15 +240,20 @@ class ChatDetailViewModel @Inject constructor(
     updateVoiceState { copy(isVoiceMode = !isVoiceMode) }
   }
 
-  fun startVoiceInputUi() {
+  fun showVoiceInputPendingUi() {
     updateVoiceState {
       copy(
         isVoiceOverlayVisible = true,
+        isVoiceEngineUsable = false,
         isVoiceCanceling = false,
         voiceRecognizedText = "",
         voiceRmsDB = 0f
       )
     }
+  }
+
+  fun markVoiceInputUsable() {
+    updateVoiceState { copy(isVoiceEngineUsable = true) }
   }
 
   fun updateVoiceRecognizedText(text: String) {
@@ -267,9 +272,38 @@ class ChatDetailViewModel @Inject constructor(
     updateVoiceState {
       copy(
         isVoiceOverlayVisible = false,
+        isVoiceEngineUsable = false,
         isVoiceCanceling = false,
         voiceRecognizedText = "",
         voiceRmsDB = 0f
+      )
+    }
+  }
+
+  // ---- 语音识别引擎（SherpaOnnx）准备状态 ----
+
+  fun onSpeechEngineChecking() {
+    updateVoiceState {
+      copy(
+        speechModelDownloadProgress = VoiceInputUiState.SPEECH_MODEL_PROGRESS_CHECKING,
+        speechEngineReady = false,
+      )
+    }
+  }
+
+  fun onSpeechEngineDownloading(progress: Int) {
+    updateVoiceState { copy(speechModelDownloadProgress = progress) }
+  }
+
+  fun onSpeechEngineUnzipping() {
+    updateVoiceState { copy(speechModelDownloadProgress = VoiceInputUiState.SPEECH_MODEL_PROGRESS_UNZIPPING) }
+  }
+
+  fun onSpeechEngineReady() {
+    updateVoiceState {
+      copy(
+        speechModelDownloadProgress = VoiceInputUiState.SPEECH_MODEL_PROGRESS_IDLE,
+        speechEngineReady = true,
       )
     }
   }

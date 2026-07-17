@@ -1,17 +1,15 @@
 package com.sofar.core.speech
 
 import android.content.Context
-import android.util.Log
+import com.sofar.core.speech.internal.architecture.NoOpTelemetryHook
+import com.sofar.core.speech.internal.architecture.RecognitionOrchestrator
+import com.sofar.core.speech.internal.architecture.RecognitionUseCase
 import com.sofar.core.speech.internal.contract.SpeechRecognitionEngineConfig
-import com.sofar.core.speech.internal.contract.SpeechRecognitionEngine
+import com.sofar.core.speech.internal.contract.SpeechRecognitionEngineError
 import com.sofar.core.speech.internal.contract.SpeechRecognitionEngineModelEvent
-import com.sofar.core.speech.internal.engine.SpeechRecognitionEngineFactory
-import com.sofar.core.speech.internal.policy.RecognitionSessionPolicyFactory
 import com.sofar.core.speech.internal.session.RecognitionSessionEvent
 import com.sofar.core.speech.internal.session.RecognitionSessionOptions
-import com.sofar.core.speech.internal.session.SpeechRecognitionSession
 import com.sofar.core.speech.internal.transcript.RecognitionTranscript
-import com.sofar.core.speech.internal.transcript.RecognitionTranscriptAggregator
 import com.sofar.core.speech.internal.transcript.TranscriptOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,182 +17,107 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
+/**
+ * 语音识别客户端：公开 API 门面。
+ *
+ * **职责**：
+ * - 提供简洁的 prepare/start/stop/cancel/release API
+ * - 将用户调用委托给 RecognitionOrchestrator
+ * - 转换 Flow<内部事件> 为 Flow<公开事件>
+ *
+ * **设计原则**：
+ * - 无状态（状态全在 Orchestrator）
+ * - 无工厂、无 flags、无历史包袱
+ * - 每个方法对应一个 UseCase
+ */
 class SpeechRecognitionClient(
   context: Context,
   private val coroutineScope: CoroutineScope,
-  private val request: SpeechRecognitionRequest = SpeechRecognitionRequest(),
-  private val options: SpeechRecognitionOptions = SpeechRecognitionOptions(),
+  request: SpeechRecognitionRequest = SpeechRecognitionRequest(),
+  options: SpeechRecognitionOptions = SpeechRecognitionOptions(),
 ) {
-  private val appContext = context.applicationContext
-  private val engineFactory = SpeechRecognitionEngineFactory(
-    context = appContext,
+  private val orchestrator = RecognitionOrchestrator(
+    context = context.applicationContext,
     coroutineScope = coroutineScope,
+    sessionOptions = RecognitionSessionOptions(
+      restartDelayMillis = options.restartDelayMillis,
+      finalizeDelayMillis = options.finalizeDelayMillis,
+    ),
+    transcriptOptions = TranscriptOptions(
+      segmentSeparator = options.segmentSeparator,
+      deduplicateFinalText = options.deduplicateFinalText,
+    ),
+    telemetry = NoOpTelemetryHook(),
+  )
+
+  private val config = SpeechRecognitionEngineConfig(
+    engineType = request.engineType,
+    languageCode = request.languageCode,
+    sampleRate = request.sampleRate,
+    preferOffline = request.preferOffline,
+    enablePartialResult = request.enablePartialResult,
   )
 
   private val _events = MutableSharedFlow<SpeechRecognitionEvent>(extraBufferCapacity = EVENT_BUFFER_CAPACITY)
   val events: SharedFlow<SpeechRecognitionEvent> = _events.asSharedFlow()
 
-  private var activeEngine: SpeechRecognitionEngine? = null
-  private var recognitionSession: SpeechRecognitionSession? = null
-  private var released: Boolean = false
-  private var prepared: Boolean = false
-  private var shouldStartAfterPrepared: Boolean = false
-
-  val isRecording: Boolean
-    get() = recognitionSession?.isRecording == true
-
-  val isSessionActive: Boolean
-    get() = recognitionSession?.isSessionActive == true
-
-  fun prepare() {
-    val engine = engineFactory.create(request.engineType)
-    activeEngine = engine
+  init {
     coroutineScope.launch {
-      engine.prepare().collect { event ->
-        when (event) {
-          SpeechRecognitionEngineModelEvent.Checking -> {
-
-          }
-
-          is SpeechRecognitionEngineModelEvent.Downloading -> {
-
-          }
-
-          SpeechRecognitionEngineModelEvent.Unzipping -> {
-
-          }
-
-          SpeechRecognitionEngineModelEvent.Ready -> {
-            prepared = true
-            if (shouldStartAfterPrepared) {
-              shouldStartAfterPrepared = false
-              start()
-            }
-          }
-
-          is SpeechRecognitionEngineModelEvent.Error -> {
-            shouldStartAfterPrepared = false
-          }
-        }
+      orchestrator.events.collect { event ->
+        convertAndEmitEvent(event)
       }
     }
   }
 
+  // 触发模型下载 + 引擎初始化（幂等，后台非阻塞）
+  fun prepare() {
+    orchestrator.execute(RecognitionUseCase.PrepareEngine(config))
+  }
+
+  // 启动识别：若未准备则自动 prepare，完成后开始录音
   fun start() {
-    if (released) {
-      Log.w(TAG, "start ignored: client already released")
-      return
-    }
-    if (isSessionActive) {
-      Log.d(TAG, "start ignored: session already active")
-      return
-    }
-    if (!prepared) {
-      Log.d(TAG, "start: client not ready, auto preparing...")
-      shouldStartAfterPrepared = true
-      prepare()
-      return
-    }
-    val engine = activeEngine ?: engineFactory.create(request.engineType)
-    Log.d(TAG, "start(request=$request)")
-    recognitionSession = createSession(engine, request).also { it.start() }
+    orchestrator.execute(RecognitionUseCase.StartRecognition(config))
   }
 
+  // 优雅停止：等待当前识别完成
   fun stop() {
-    Log.d(TAG, "stop")
-    recognitionSession?.stop()
+    orchestrator.execute(RecognitionUseCase.StopRecognition())
   }
 
+  // 立即中断：丢弃当前识别结果
   fun cancel() {
-    Log.d(TAG, "cancel")
-    recognitionSession?.cancel()
+    orchestrator.execute(RecognitionUseCase.CancelRecognition())
   }
 
+  // 释放所有原生资源
   fun release() {
-    Log.d(TAG, "release")
-    val session = recognitionSession
-    if (session != null) {
-      session.release()
-    } else {
-      activeEngine?.release()
-    }
-    activeEngine = null
-    recognitionSession = null
-    released = true
+    orchestrator.execute(RecognitionUseCase.Release())
   }
 
-  private fun createSession(
-    engine: SpeechRecognitionEngine,
-    request: SpeechRecognitionRequest,
-  ): SpeechRecognitionSession {
-    return SpeechRecognitionSession(
-      engine = engine,
-      request = SpeechRecognitionEngineConfig(
-        languageCode = request.languageCode,
-        sampleRate = request.sampleRate,
-        preferOffline = request.preferOffline,
-        enablePartialResult = request.enablePartialResult && engine.capabilities.supportsPartialResult,
-      ),
-      policy = RecognitionSessionPolicyFactory.create(engine.capabilities),
-      options = RecognitionSessionOptions(
-        restartDelayMillis = options.restartDelayMillis,
-        finalizeDelayMillis = options.finalizeDelayMillis,
-      ),
-      transcriptAggregator = RecognitionTranscriptAggregator(
-        TranscriptOptions(
-          segmentSeparator = options.segmentSeparator,
-          deduplicateFinalText = options.deduplicateFinalText,
-        ),
-      ),
-      coroutineScope = coroutineScope,
-      eventSink = ::handleSessionEvent,
-    )
+  private fun convertAndEmitEvent(event: Any) {
+    val publicEvent = mapPublicEvent(event) ?: return
+    _events.tryEmit(publicEvent)
   }
 
-  private fun handleSessionEvent(event: RecognitionSessionEvent) {
-    when (event) {
-      RecognitionSessionEvent.Started -> {
-        emitEvent(SpeechRecognitionEvent.Started)
-      }
-
+  private fun mapPublicEvent(event: Any): SpeechRecognitionEvent? {
+    return when (event) {
+      is SpeechRecognitionEngineModelEvent.Checking -> SpeechRecognitionEvent.Checking
+      is SpeechRecognitionEngineModelEvent.Downloading -> SpeechRecognitionEvent.Downloading(event.progress)
+      is SpeechRecognitionEngineModelEvent.Unzipping -> SpeechRecognitionEvent.Unzipping
+      is SpeechRecognitionEngineModelEvent.Ready -> SpeechRecognitionEvent.EngineReady
+      is SpeechRecognitionEngineModelEvent.Error -> SpeechRecognitionEvent.Error(event.error.toPublicError())
+      is RecognitionSessionEvent.Started -> SpeechRecognitionEvent.Started
       is RecognitionSessionEvent.TextChanged -> {
-        val publicTranscript = event.transcript.toPublicTranscript()
-        emitEvent(SpeechRecognitionEvent.TranscriptChanged(publicTranscript))
+        SpeechRecognitionEvent.TranscriptChanged(event.transcript.toPublicTranscript())
       }
-
-      is RecognitionSessionEvent.AudioLevelChanged -> {
-        emitEvent(SpeechRecognitionEvent.AudioLevelChanged(event.rmsDB))
-      }
-
-      is RecognitionSessionEvent.Error -> {
-        val publicError = SpeechRecognitionError(
-          code = event.error.code,
-          message = event.error.message,
-          recoverable = event.error.recoverable,
-          cause = event.error.cause,
-        )
-        emitEvent(SpeechRecognitionEvent.Error(publicError, event.hasRecognizedText))
-      }
-
+      is RecognitionSessionEvent.AudioLevelChanged -> SpeechRecognitionEvent.AudioLevelChanged(event.rmsDB)
       is RecognitionSessionEvent.Completed -> {
-        val publicTranscript = event.transcript.toPublicTranscript()
-        activeEngine?.release()
-        activeEngine = null
-        recognitionSession = null
-        emitEvent(SpeechRecognitionEvent.Completed(publicTranscript))
+        SpeechRecognitionEvent.Completed(event.transcript.toPublicTranscript())
       }
-
-      RecognitionSessionEvent.Canceled -> {
-        activeEngine?.release()
-        activeEngine = null
-        recognitionSession = null
-        emitEvent(SpeechRecognitionEvent.Canceled)
-      }
+      is RecognitionSessionEvent.Canceled -> SpeechRecognitionEvent.Canceled
+      is RecognitionSessionEvent.Error -> SpeechRecognitionEvent.Error(event.error.toPublicError())
+      else -> null
     }
-  }
-
-  private fun emitEvent(event: SpeechRecognitionEvent) {
-    _events.tryEmit(event)
   }
 
   private fun RecognitionTranscript.toPublicTranscript(): SpeechRecognitionTranscript {
@@ -205,8 +128,16 @@ class SpeechRecognitionClient(
     )
   }
 
+  private fun SpeechRecognitionEngineError.toPublicError(): SpeechRecognitionError {
+    return SpeechRecognitionError(
+      code = code,
+      message = message,
+      recoverable = recoverable,
+      cause = cause,
+    )
+  }
+
   private companion object {
-    private const val TAG = "SpeechRecognitionClient"
     private const val EVENT_BUFFER_CAPACITY = 64
   }
 }
@@ -230,10 +161,7 @@ data class SpeechRecognitionTranscript(
   val text: String,
   val finalSegments: List<String>,
   val partialText: String,
-) {
-  val hasText: Boolean
-    get() = text.isNotBlank()
-}
+)
 
 
 sealed class SpeechRecognitionEvent {
@@ -247,7 +175,7 @@ sealed class SpeechRecognitionEvent {
   data object Started : SpeechRecognitionEvent()
   data class TranscriptChanged(val transcript: SpeechRecognitionTranscript) : SpeechRecognitionEvent()
   data class AudioLevelChanged(val rmsDB: Float) : SpeechRecognitionEvent()
-  data class Error(val error: SpeechRecognitionError, val hasRecognizedText: Boolean) : SpeechRecognitionEvent()
+  data class Error(val error: SpeechRecognitionError) : SpeechRecognitionEvent()
   data class Completed(val transcript: SpeechRecognitionTranscript) : SpeechRecognitionEvent()
   data object Canceled : SpeechRecognitionEvent()
 }

@@ -1,5 +1,6 @@
 package com.sofar.core.speech.internal.contract
 
+import com.sofar.core.speech.SpeechEngineType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -9,6 +10,7 @@ import kotlinx.coroutines.flow.flow
  * Internal recognition config shared by engine implementations.
  */
 internal data class SpeechRecognitionEngineConfig(
+  val engineType: SpeechEngineType = SpeechEngineType.SherpaOnnx,
   val languageCode: String? = null,
   val sampleRate: Int = 16_000,
   val preferOffline: Boolean = true,

@@ -29,6 +29,7 @@ internal class RecognitionTranscriptAggregator(
   private val finalSegments = mutableListOf<String>()
   private var partialText: String = ""
 
+  // 当前聚合状态的快照（分段由 separator 连接，部分文本追加在末尾）
   val transcript: RecognitionTranscript
     get() = RecognitionTranscript(
       finalSegments = finalSegments.toList(),
@@ -36,17 +37,20 @@ internal class RecognitionTranscriptAggregator(
       separator = options.segmentSeparator,
     )
 
+  // 清空分段和部分文本
   fun reset(): RecognitionTranscript {
     finalSegments.clear()
     partialText = ""
     return transcript
   }
 
+  // 更新部分文本（实时显示中间结果）
   fun onPartial(text: String): RecognitionTranscript {
     partialText = text.trim()
     return transcript
   }
 
+  // 追加最终文本段（去重由 options.deduplicateFinalText 控制）
   fun onFinal(text: String): RecognitionTranscript {
     val normalizedText = text.trim()
     if (normalizedText.isNotEmpty() && shouldAppendFinalText(normalizedText)) {
@@ -56,6 +60,7 @@ internal class RecognitionTranscriptAggregator(
     return transcript
   }
 
+  // 最后一次聚合：部分文本转为最终段
   fun complete(): RecognitionTranscript {
     onFinal(partialText)
     return transcript
