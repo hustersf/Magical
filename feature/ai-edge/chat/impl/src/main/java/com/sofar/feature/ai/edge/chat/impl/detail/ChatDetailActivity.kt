@@ -239,7 +239,6 @@ class ChatDetailActivity : BaseUIActivity() {
             ) == PackageManager.PERMISSION_GRANTED
           ) {
             voiceTouchDownY = event.rawY
-            viewModel.showVoiceInputPendingUi()
             speechRecognitionClient.start()
           } else {
             requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
@@ -292,7 +291,7 @@ class ChatDetailActivity : BaseUIActivity() {
       }
 
       SpeechRecognitionEvent.Started -> {
-        viewModel.markVoiceInputUsable()
+        viewModel.showVoiceInputUi()
       }
 
       is SpeechRecognitionEvent.TranscriptChanged -> {
@@ -325,6 +324,8 @@ class ChatDetailActivity : BaseUIActivity() {
       SpeechRecognitionEvent.Canceled -> {
         viewModel.finishVoiceInputUi()
       }
+
+      else -> {}
     }
   }
 
@@ -486,7 +487,7 @@ class ChatDetailActivity : BaseUIActivity() {
     // 切换输入模式按钮：只要底层 C++ 引擎在加载，或者 AI 正在说话，就彻底变灰
     talkBtn.isEnabled = !isEngineLoading && !isResponding
     // 按住说话按钮：只有 LLM 模型成功、且 AI 没有在流式输出时，才激活响应
-    voicePressBtn.isEnabled = isModelReady && !isResponding
+    voicePressBtn.isEnabled = isModelReady && !isResponding && voiceState.speechEngineReady
     voicePressBtn.alpha = if (voicePressBtn.isEnabled) 1f else 0.5f
     // 发送文字按钮：只有当模型初始化成功，且 AI 没有在流式输出时，才激活响应
     sendBtn.isEnabled = isModelReady && !isResponding

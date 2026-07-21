@@ -30,13 +30,16 @@ import com.sofar.core.speech.internal.model.SpeechModel
 import com.sofar.core.speech.internal.model.SpeechModelPathResolver
 import com.sofar.core.speech.internal.model.SpeechModelValidator
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 
 internal class SherpaOnnxSpeechRecognitionEngine(
@@ -53,252 +56,292 @@ internal class SherpaOnnxSpeechRecognitionEngine(
   },
 ) : SpeechRecognitionEngine {
 
-  override val capabilities: SpeechRecognitionEngineCapabilities = SpeechRecognitionEngineCapabilities(
-    sessionMode = SpeechRecognitionEngineSessionMode.Continuous,
-    supportsPartialResult = true,
-    supportsVolume = true,
-    supportsOffline = true,
-    supportsLanguageSwitching = false,
-  )
+  /**
+   * 线程模型：识别流程与资源缓存统一在单线程执行。
+   * Threading model: recognition flow and resource cache are confined to one single thread.
+   */
 
-  // 单线程执行所有操作，消除 start() 内部的竞态条件。
+  override val capabilities: SpeechRecognitionEngineCapabilities =
+    SpeechRecognitionEngineCapabilities(
+      sessionMode = SpeechRecognitionEngineSessionMode.Continuous,
+      supportsPartialResult = true,
+      supportsVolume = true,
+      supportsOffline = true,
+      supportsLanguageSwitching = false,
+    )
+
+  // 引擎内部状态机专用执行线程。
+  // Dedicated single thread for engine state and recognition flow.
   private val singleThreadDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+  private val engineScope = CoroutineScope(singleThreadDispatcher + SupervisorJob())
 
-  // stop()/cancel()/release() 从外部线程调用，需要 @Volatile 保证跨线程可见性。
-  // 单线程保证 start() 内部的写入顺序，@Volatile 保证外部线程读取时看到最新值。
-  @Volatile private var currentAudioSource: AudioSource? = null
-  @Volatile private var canceled: Boolean = false
-  // LRU 缓存：限制原生资源数量，避免多采样率场景无限增长。
-  // preparedResourcesBySampleRate 由单线程写入、由 release()（外部线程）清空，需要锁保护。
+  // 会话状态仅在引擎单线程内读写，避免跨线程共享可变状态。
+  // Session states are confined to the engine single thread.
+  private var currentAudioSource: AudioSource? = null
+  private var canceled: Boolean = false
+
+  // 采样率维度的资源缓存（仅单线程访问）。
+  // Sample-rate keyed resource cache (single-thread only).
   private val preparedResourcesBySampleRate: MutableMap<Int, EngineResources> = linkedMapOf()
-  private val resourcesLock = Any()
-  // 上一次 start() 的 producer Job，仅在单线程上访问，无需 @Volatile。
-  // 新 start() 通过 join() 等待上一次清理完成，避免 stop→start 时序窗口导致 ERROR_BUSY。
+
+  // 上一次 start 流程的 Job，用于串行切换会话。
+  // Previous start job used to serialize session handover.
   private var previousStartJob: Job? = null
 
-  // 验证模型 → 创建识别器和 VAD（单线程）
+  // 预热模型与基础资源。
+  // Prepares model assets and runtime resources.
   override fun prepare(): Flow<SpeechRecognitionEngineModelEvent> = flow {
-    // 每次 prepare 视为新一轮请求，先清掉历史 cancel 标记。
     canceled = false
 
     val validation = modelValidator.validate(model)
     if (!validation.isValid) {
-      emit(SpeechRecognitionEngineModelEvent.Error(error(ERROR_INVALID_MODEL, validation.message.orEmpty())))
+      emit(
+        SpeechRecognitionEngineModelEvent.Error(
+          error(
+            ERROR_INVALID_MODEL,
+            validation.message.orEmpty()
+          )
+        )
+      )
       return@flow
     }
 
-    // Preparing 阶段检查 canceled 标志。多次 cancel 时，prepare() 应尽早返回，避免状态污染。
     if (canceled) {
       return@flow
     }
 
     val preparation = prepareResources(sampleRate = DEFAULT_SAMPLE_RATE)
 
-    // prepare() 完成后再次检查 canceled，如果被取消则不发出 Ready，让 Orchestrator 处理取消。
     if (canceled) {
       return@flow
     }
 
     when (preparation) {
       is ResourcePreparationResult.Success -> emit(SpeechRecognitionEngineModelEvent.Ready)
-      is ResourcePreparationResult.Failure -> emit(SpeechRecognitionEngineModelEvent.Error(preparation.error))
+      is ResourcePreparationResult.Failure -> emit(
+        SpeechRecognitionEngineModelEvent.Error(
+          preparation.error
+        )
+      )
     }
   }.flowOn(singleThreadDispatcher)
 
-  // 启动连续识别：
-  // 1. join() 等待上次 start 清理完成 → 2. AudioSource → 3. Vad+识别循环 → 4. 部分/最终文本及音量
-  override fun start(config: SpeechRecognitionEngineConfig): Flow<SpeechRecognitionEngineEvent> = callbackFlow {
-    // 等待上一次 start() 的 producer Job 完全结束（包括 finally 清理）。
-    //
-    // 问题根因：Dispatchers.Main.immediate 使新 start() 立即执行，
-    // 新 producer 提交到 singleThreadDispatcher 时，旧 producer 的取消信号尚未到达
-    // （cancel 传播跨越 Main→flowOn 是异步的），导致队列顺序变成：
-    //   [Task2: 新 producer] → [Task1: 旧 cancel]
-    // Task2 先执行，看到 currentAudioSource != null → ERROR_BUSY。
-    //
-    // 修复：新 producer 通过 join() 等待旧 Job 结束。join() 是挂起函数，
-    // 在单线程上 join() 会让出线程，让旧 producer 的 cleanup 先执行，
-    // finally { releaseCurrentAudioSource() } 完成后 join() 才返回。
-    val jobToAwait = previousStartJob
-    previousStartJob = currentCoroutineContext()[Job]
-    jobToAwait?.join()
+  // 启动连续识别会话。
+  // Starts a continuous recognition session.
+  override fun start(config: SpeechRecognitionEngineConfig): Flow<SpeechRecognitionEngineEvent> =
+    callbackFlow {
+      // 串行等待旧会话完全结束，避免会话切换窗口内的并发冲突。
+      // Waits previous session cleanup before starting a new one.
+      val jobToAwait = previousStartJob
+      previousStartJob = currentCoroutineContext()[Job]
+      jobToAwait?.join()
 
-    val validation = modelValidator.validate(model)
-    if (!validation.isValid) {
-      trySend(SpeechRecognitionEngineEvent.Error(error(ERROR_INVALID_MODEL, validation.message.orEmpty())))
-      close()
-      return@callbackFlow
-    }
+      val validation = modelValidator.validate(model)
+      if (!validation.isValid) {
+        trySend(
+          SpeechRecognitionEngineEvent.Error(
+            error(
+              ERROR_INVALID_MODEL,
+              validation.message.orEmpty()
+            )
+          )
+        )
+        close()
+        return@callbackFlow
+      }
 
-    // 新一轮 start，重置取消标志。
-    canceled = false
+      canceled = false
 
-    if (currentAudioSource != null) {
-      // double-check：join() 之后仍然非 null，说明有真实的并发 start()，拒绝。
-      trySend(
-        SpeechRecognitionEngineEvent.Error(
-          error(ERROR_BUSY, "Recognition already running", recoverable = false),
-        ),
-      )
-      close()
-      return@callbackFlow
-    }
+      if (currentAudioSource != null) {
+        trySend(
+          SpeechRecognitionEngineEvent.Error(
+            error(ERROR_BUSY, "Recognition already running", recoverable = false),
+          ),
+        )
+        close()
+        return@callbackFlow
+      }
 
-    try {
-      // 创建 AudioSource，赋值，使 cancel() 能立即生效
-      val audioSource = audioSourceFactory(config)
-      currentAudioSource = audioSource
+      try {
+        val audioSource = audioSourceFactory(config)
+        currentAudioSource = audioSource
 
-      // 准备资源（识别器和 VAD）
-      val preparedResources = prepareResources(sampleRate = config.sampleRate)
-      val resources = when (preparedResources) {
-        is ResourcePreparationResult.Success -> preparedResources.resources
-        is ResourcePreparationResult.Failure -> {
-          trySend(SpeechRecognitionEngineEvent.Error(preparedResources.error))
-          releaseCurrentAudioSource()
+        val preparedResources = prepareResources(sampleRate = config.sampleRate)
+        val resources = when (preparedResources) {
+          is ResourcePreparationResult.Success -> preparedResources.resources
+          is ResourcePreparationResult.Failure -> {
+            trySend(SpeechRecognitionEngineEvent.Error(preparedResources.error))
+            close()
+            return@callbackFlow
+          }
+        }
+
+        if (canceled) {
           close()
           return@callbackFlow
         }
-      }
 
-      if (canceled) {
-        releaseCurrentAudioSource()
-        close()
-        return@callbackFlow
-      }
+        val recognizer = resources.recognizer
+        val vad = resources.vad
+        vad.reset()
+        vad.clear()
 
-      val recognizer = resources.recognizer
-      val vad = resources.vad
-      vad.reset()
-      vad.clear()
+        if (canceled) {
+          close()
+          return@callbackFlow
+        }
 
-      if (canceled) {
-        releaseCurrentAudioSource()
-        close()
-        return@callbackFlow
-      }
+        trySend(SpeechRecognitionEngineEvent.Ready)
 
-      trySend(SpeechRecognitionEngineEvent.Ready)
+        val activeSpeechBuffer = FloatSampleBuffer()
+        var lastPartialText = ""
+        var lastPartialDecodeMillis = 0L
+        var startedSent = false
 
-      // 在单线程上下文中直接执行识别循环
-      val activeSpeechBuffer = FloatSampleBuffer()
-      var lastPartialText = ""
-      var lastPartialDecodeMillis = 0L
-      var startedSent = false
+        runCatching {
+          audioSource.start().collect { frame ->
+            if (canceled) {
+              return@collect
+            }
+            if (!startedSent) {
+              startedSent = true
+              trySend(SpeechRecognitionEngineEvent.Started)
+            }
+            trySend(SpeechRecognitionEngineEvent.Volume(frame.rmsDb))
+            vad.acceptWaveform(frame.samples)
 
-      runCatching {
-        audioSource.start().collect { frame ->
-          if (canceled) {
-            return@collect
-          }
-          if (!startedSent) {
-            startedSent = true
-            trySend(SpeechRecognitionEngineEvent.Started)
-          }
-          trySend(SpeechRecognitionEngineEvent.Volume(frame.rmsDb))
-          vad.acceptWaveform(frame.samples)
+            if (vad.isSpeechDetected()) {
+              activeSpeechBuffer.append(frame.samples)
+            }
 
-          if (vad.isSpeechDetected()) {
-            activeSpeechBuffer.append(frame.samples)
-          }
-
-          if (config.enablePartialResult && activeSpeechBuffer.isNotEmpty()) {
-            val shouldDecodePartial =
-              frame.timestampMillis - lastPartialDecodeMillis >= PARTIAL_DECODE_INTERVAL_MILLIS
-            if (shouldDecodePartial) {
-              val partialText = decodeSamples(recognizer, frame.sampleRate, activeSpeechBuffer.toFloatArray())
-              if (partialText.isNotEmpty() && partialText != lastPartialText) {
-                lastPartialText = partialText
-                trySend(SpeechRecognitionEngineEvent.Text(partialText, isFinal = false))
+            if (config.enablePartialResult && activeSpeechBuffer.isNotEmpty()) {
+              val shouldDecodePartial =
+                frame.timestampMillis - lastPartialDecodeMillis >= PARTIAL_DECODE_INTERVAL_MILLIS
+              if (shouldDecodePartial) {
+                val partialText =
+                  decodeSamples(recognizer, frame.sampleRate, activeSpeechBuffer.toFloatArray())
+                if (partialText.isNotEmpty() && partialText != lastPartialText) {
+                  lastPartialText = partialText
+                  trySend(SpeechRecognitionEngineEvent.Text(partialText, isFinal = false))
+                }
+                lastPartialDecodeMillis = frame.timestampMillis
               }
-              lastPartialDecodeMillis = frame.timestampMillis
+            }
+
+            drainVadSegments(vad) { segmentSamples ->
+              val finalText = decodeSamples(recognizer, frame.sampleRate, segmentSamples)
+              if (finalText.isNotEmpty()) {
+                trySend(SpeechRecognitionEngineEvent.Text(finalText, isFinal = true))
+              }
+              activeSpeechBuffer.clear()
+              lastPartialText = ""
             }
           }
 
+          vad.flush()
           drainVadSegments(vad) { segmentSamples ->
-            val finalText = decodeSamples(recognizer, frame.sampleRate, segmentSamples)
+            val finalText = decodeSamples(recognizer, config.sampleRate, segmentSamples)
             if (finalText.isNotEmpty()) {
               trySend(SpeechRecognitionEngineEvent.Text(finalText, isFinal = true))
             }
-            activeSpeechBuffer.clear()
-            lastPartialText = ""
+          }
+        }.onFailure { throwable ->
+          if (!canceled) {
+            Log.w(TAG, "sherpa-onnx recognition failed", throwable)
+            trySend(
+              SpeechRecognitionEngineEvent.Error(
+                error(
+                  ERROR_RUNTIME,
+                  "sherpa-onnx recognition failed",
+                  throwable
+                )
+              )
+            )
           }
         }
 
-        vad.flush()
-        drainVadSegments(vad) { segmentSamples ->
-          val finalText = decodeSamples(recognizer, config.sampleRate, segmentSamples)
-          if (finalText.isNotEmpty()) {
-            trySend(SpeechRecognitionEngineEvent.Text(finalText, isFinal = true))
-          }
-        }
-      }.onFailure { throwable ->
+        trySend(SpeechRecognitionEngineEvent.End)
+        close()
+      } catch (cancellation: CancellationException) {
+        Log.w(TAG, "start canceled", cancellation)
+        throw cancellation
+      } catch (throwable: Throwable) {
+        Log.w(TAG, "start failed", throwable)
         if (!canceled) {
-          Log.w(TAG, "sherpa-onnx recognition failed", throwable)
-          trySend(SpeechRecognitionEngineEvent.Error(error(ERROR_RUNTIME, "sherpa-onnx recognition failed", throwable)))
+          trySend(
+            SpeechRecognitionEngineEvent.Error(
+              error(
+                ERROR_RUNTIME,
+                "sherpa-onnx start failed",
+                throwable
+              )
+            )
+          )
         }
+        close()
+      } finally {
+        releaseCurrentAudioSource()
       }
+    }.flowOn(singleThreadDispatcher)
 
-      trySend(SpeechRecognitionEngineEvent.End)
-      close()
-    } catch (cancellation: CancellationException) {
-      Log.w(TAG, "start canceled", cancellation)
-      releaseCurrentAudioSource()
-      throw cancellation
-    } catch (throwable: Throwable) {
-      Log.w(TAG, "start failed", throwable)
-      releaseCurrentAudioSource()
-      if (!canceled) {
-        trySend(SpeechRecognitionEngineEvent.Error(error(ERROR_RUNTIME, "sherpa-onnx start failed", throwable)))
-      }
-      close()
-    } finally {
-      releaseCurrentAudioSource()
-    }
-  }.flowOn(singleThreadDispatcher)
-
-  // 优雅停止：仅停止 AudioSource，不标记 canceled，保留尾帧 flush 机会。
+  // 请求会话收尾，不清空缓存资源。
+  // Requests graceful session stop without clearing prepared resources.
   override fun stop() {
-    currentAudioSource?.stop()
+    submitControlCommand {
+      currentAudioSource?.stop()
+    }
   }
 
-  // 立即中断：设置 canceled 标志 + 停止音频采集。
-  // 注意：Cancel 仅释放 Session，Engine 及其已准备资源需要保留，不能清缓存。
+  // 立即中断当前会话，保留引擎缓存。
+  // Cancels current session immediately while preserving prepared cache.
   override fun cancel() {
-    canceled = true
-    currentAudioSource?.stop()
+    submitControlCommand {
+      canceled = true
+      currentAudioSource?.stop()
+    }
   }
 
-  // 释放所有资源：清空音频源和缓存资源（LRU）
+  // 在引擎线程异步释放当前会话与缓存资源。
+  // Releases session and cached resources asynchronously on engine thread.
   override fun release() {
-    canceled = true
-    releaseCurrent()
+    submitControlCommand {
+      canceled = true
+      releaseCurrent()
+    }
   }
 
-  // 清理当前音频源和所有预准备资源
+  private fun submitControlCommand(block: () -> Unit) {
+    engineScope.launch {
+      block()
+    }
+  }
+
+  // 清理会话与缓存。
+  // Clears active session and cached resources.
   private fun releaseCurrent() {
     releaseCurrentAudioSource()
     releasePreparedResources()
   }
 
-  // 释放当前音频源引用
+  // 释放当前音频源。
+  // Releases active audio source.
   private fun releaseCurrentAudioSource() {
     currentAudioSource?.release()
     currentAudioSource = null
   }
 
-  // 清空所有采样率的 LRU 缓存（识别器+VAD）
+  // 释放并清空采样率缓存。
+  // Releases and clears sample-rate cache.
   private fun releasePreparedResources() {
-    val resources = synchronized(resourcesLock) {
-      preparedResourcesBySampleRate.values.toList().also { preparedResourcesBySampleRate.clear() }
-    }
+    val resources = preparedResourcesBySampleRate.values.toList()
+    preparedResourcesBySampleRate.clear()
     resources.forEach(::releaseResources)
   }
 
-  // 准备采样率对应的识别器+VAD（支持多采样率，LRU 缓存大小≤2，超出自动清除最旧）
+  // 获取或构建指定采样率资源，缓存大小受 LRU 上限控制。
+  // Gets or creates resources for sample rate with bounded LRU cache.
   private fun prepareResources(sampleRate: Int): ResourcePreparationResult {
-    // 在单线程中直接访问缓存，无需同步
-    val cached = synchronized(resourcesLock) { preparedResourcesBySampleRate[sampleRate] }
+    val cached = preparedResourcesBySampleRate[sampleRate]
     if (cached != null) return ResourcePreparationResult.Success(cached)
 
     val modelDir = modelPathResolver.resolveModelDir(model)
@@ -322,25 +365,22 @@ internal class SherpaOnnxSpeechRecognitionEngine(
     val created = EngineResources(recognizer = recognizer, vad = vad)
     var evicted: EngineResources? = null
 
-    synchronized(resourcesLock) {
-      preparedResourcesBySampleRate[sampleRate] ?: created.also {
-        if (preparedResourcesBySampleRate.size >= MAX_PREPARED_RESOURCE_CACHE_SIZE) {
-          val eldestKey = preparedResourcesBySampleRate.keys.firstOrNull()
-          if (eldestKey != null) {
-            evicted = preparedResourcesBySampleRate.remove(eldestKey)
-          }
+    val cachedOrCreated = preparedResourcesBySampleRate[sampleRate] ?: created.also {
+      if (preparedResourcesBySampleRate.size >= MAX_PREPARED_RESOURCE_CACHE_SIZE) {
+        val eldestKey = preparedResourcesBySampleRate.keys.firstOrNull()
+        if (eldestKey != null) {
+          evicted = preparedResourcesBySampleRate.remove(eldestKey)
         }
-        preparedResourcesBySampleRate[sampleRate] = it
       }
+      preparedResourcesBySampleRate[sampleRate] = it
     }
 
     evicted?.let(::releaseResources)
-    return ResourcePreparationResult.Success(
-      synchronized(resourcesLock) { preparedResourcesBySampleRate[sampleRate] } ?: created
-    )
+    return ResourcePreparationResult.Success(cachedOrCreated)
   }
 
-  // 释放单个资源对：识别器和 Vad
+  // 释放识别器与 VAD 资源。
+  // Releases recognizer and VAD resources.
   private fun releaseResources(resources: EngineResources) {
     resources.recognizer.release()
     resources.vad.release()
@@ -480,7 +520,12 @@ internal class SherpaOnnxSpeechRecognitionEngine(
     cause: Throwable? = null,
     recoverable: Boolean = false,
   ): SpeechRecognitionEngineError {
-    return SpeechRecognitionEngineError(code = code, message = message, cause = cause, recoverable = recoverable)
+    return SpeechRecognitionEngineError(
+      code = code,
+      message = message,
+      cause = cause,
+      recoverable = recoverable
+    )
   }
 
   private companion object {

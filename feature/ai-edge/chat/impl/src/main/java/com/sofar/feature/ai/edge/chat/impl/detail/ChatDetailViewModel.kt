@@ -240,20 +240,15 @@ class ChatDetailViewModel @Inject constructor(
     updateVoiceState { copy(isVoiceMode = !isVoiceMode) }
   }
 
-  fun showVoiceInputPendingUi() {
+  fun showVoiceInputUi() {
     updateVoiceState {
       copy(
         isVoiceOverlayVisible = true,
-        isVoiceEngineUsable = false,
         isVoiceCanceling = false,
         voiceRecognizedText = "",
         voiceRmsDB = 0f
       )
     }
-  }
-
-  fun markVoiceInputUsable() {
-    updateVoiceState { copy(isVoiceEngineUsable = true) }
   }
 
   fun updateVoiceRecognizedText(text: String) {
@@ -272,7 +267,6 @@ class ChatDetailViewModel @Inject constructor(
     updateVoiceState {
       copy(
         isVoiceOverlayVisible = false,
-        isVoiceEngineUsable = false,
         isVoiceCanceling = false,
         voiceRecognizedText = "",
         voiceRmsDB = 0f

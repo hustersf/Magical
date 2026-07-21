@@ -12,9 +12,9 @@ import com.sofar.core.speech.internal.session.RecognitionSessionOptions
 import com.sofar.core.speech.internal.transcript.RecognitionTranscript
 import com.sofar.core.speech.internal.transcript.TranscriptOptions
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 /**
@@ -58,8 +58,8 @@ class SpeechRecognitionClient(
     enablePartialResult = request.enablePartialResult,
   )
 
-  private val _events = MutableSharedFlow<SpeechRecognitionEvent>(extraBufferCapacity = EVENT_BUFFER_CAPACITY)
-  val events: SharedFlow<SpeechRecognitionEvent> = _events.asSharedFlow()
+  private val _events = MutableStateFlow<SpeechRecognitionEvent>(SpeechRecognitionEvent.Idle)
+  val events: StateFlow<SpeechRecognitionEvent> = _events.asStateFlow()
 
   init {
     coroutineScope.launch {
@@ -110,10 +110,12 @@ class SpeechRecognitionClient(
       is RecognitionSessionEvent.TextChanged -> {
         SpeechRecognitionEvent.TranscriptChanged(event.transcript.toPublicTranscript())
       }
+
       is RecognitionSessionEvent.AudioLevelChanged -> SpeechRecognitionEvent.AudioLevelChanged(event.rmsDB)
       is RecognitionSessionEvent.Completed -> {
         SpeechRecognitionEvent.Completed(event.transcript.toPublicTranscript())
       }
+
       is RecognitionSessionEvent.Canceled -> SpeechRecognitionEvent.Canceled
       is RecognitionSessionEvent.Error -> SpeechRecognitionEvent.Error(event.error.toPublicError())
       else -> null
@@ -166,6 +168,7 @@ data class SpeechRecognitionTranscript(
 
 sealed class SpeechRecognitionEvent {
   // 供统一交互使用的模型部署状态
+  data object Idle : SpeechRecognitionEvent()                           // 初始态
   data object Checking : SpeechRecognitionEvent()                       // 正在检查模型是否存在
   data class Downloading(val progress: Int) : SpeechRecognitionEvent()  // 正在下载模型，带有 0-100 进度
   data object Unzipping : SpeechRecognitionEvent()                      // 下载完毕，正在解压 SenseVoice 资源
@@ -173,7 +176,9 @@ sealed class SpeechRecognitionEvent {
 
   // 原有录音/识别状态
   data object Started : SpeechRecognitionEvent()
-  data class TranscriptChanged(val transcript: SpeechRecognitionTranscript) : SpeechRecognitionEvent()
+  data class TranscriptChanged(val transcript: SpeechRecognitionTranscript) :
+    SpeechRecognitionEvent()
+
   data class AudioLevelChanged(val rmsDB: Float) : SpeechRecognitionEvent()
   data class Error(val error: SpeechRecognitionError) : SpeechRecognitionEvent()
   data class Completed(val transcript: SpeechRecognitionTranscript) : SpeechRecognitionEvent()

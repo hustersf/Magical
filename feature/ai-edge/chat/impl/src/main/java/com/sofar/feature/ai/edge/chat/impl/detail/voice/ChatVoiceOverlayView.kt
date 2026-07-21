@@ -53,7 +53,6 @@ class ChatVoiceOverlayView @JvmOverloads constructor(
       }
     )
     overlayText.text = when {
-      !state.isVoiceEngineUsable -> context.getString(R.string.feature_chat_voice_preparing)
       state.voiceRecognizedText.isNotEmpty() -> state.voiceRecognizedText
       else -> context.getString(R.string.feature_chat_voice_listening)
     }
@@ -69,7 +68,7 @@ class ChatVoiceOverlayView @JvmOverloads constructor(
         secondaryColor = resolveThemeColor(com.google.android.material.R.attr.colorSecondary)
       )
     }
-    waveView.setLevel(if (state.isVoiceEngineUsable) state.voiceRmsDB else 0f)
+    waveView.setLevel(state.voiceRmsDB)
   }
 
   private fun resolveThemeColor(attr: Int): Int {
