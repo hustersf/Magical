@@ -1,204 +1,177 @@
 package com.sofar.core.download
 
-import android.util.Log
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.URL
 import java.util.concurrent.ConcurrentHashMap
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
-class DownloadManager(private val accessToken: String? = null) {
-  companion object {
-    private const val TAG = "DownloadManager"
-    private const val DEFAULT_BUFFER_SIZE = 8192
-    private const val UNKNOWN_TOTAL_BYTES = -1L
-  }
+/**
+ * 下载协调器
+ * - 同 key 任务 single-flight（只下载一次）
+ * - 新调用方复用进行中的任务并共享进度
+ */
+class DownloadManager(
+  private val accessToken: String? = null,
+) {
+  private val downloadClient: DownloadClient by lazy { DownloadClient(accessToken) }
 
-  // 全局正在下载的任务及其网速映射表
-  private val activeTasksSpeedMap = ConcurrentHashMap<String, Long>()
-
-  // 获取所有并发下载的总网速
+  /**
+   * 获取所有并发下载任务的总网速。
+   *
+   * @return 网速总和（字节/秒），无下载任务时为 0
+   */
   fun getGlobalDownloadSpeed(): Long {
-    return activeTasksSpeedMap.values.sum()
+    return tasks.values.sumOf { taskEntry ->
+      // 从最新状态的进度中获取网速，避免维护冗余字段
+      (taskEntry.stateFlow.replayCache.lastOrNull() as? DownloadTaskState.Downloading)?.progress?.speedBytesPerSec
+        ?: 0L
+    }
   }
 
   /**
-   * 下载方法：涵盖断点续传、测速、重命名
+   * 非阻塞任务入口：same-flight 防重复，返回状态流供细粒度订阅。
+   *
+   * 同一 key 的任务只发起一次下载，所有调用方实时订阅 Waiting/Downloading/Succeeded/Failed 状态。
+   * 需要手动处理所有状态变化（包括开始、进度、完成）。
+   *
+   * 场景差异对比：
+   * - 简单场景（等完成就用文件）→ 用 await()
+   * - 复杂场景（需要实时响应所有状态）→ 用 enqueueOrJoin()
+   *   如：下载管理 UI 需要显示 "检查中/下载中/完成" 三个阶段
+   *
+   * @param request 下载请求
+   * @return 状态流（包含所有四种状态）
    */
-  fun download(
-    fileUrl: String,
-    targetFile: File,
-    totalBytes: Long = UNKNOWN_TOTAL_BYTES,
-    tmpFile: File? = null,
-    onProgress: (downloaded: Long, totalBytes: Long, rate: Long, remainingMs: Long) -> Unit
-  ) {
-    activeTasksSpeedMap[fileUrl] = 0L
+  fun enqueueOrJoin(request: DownloadRequest): Flow<DownloadTaskState> {
+    val taskKey = request.taskKey()
+    // computeIfAbsent：如果 key 不存在，调用 lambda 创建新值并存入
+    val taskEntry = tasks.computeIfAbsent(taskKey) {
+      createTaskEntry(taskKey = taskKey, request = request)
+    }
+    return taskEntry.stateFlow.asSharedFlow()
+  }
 
-    val finalWriteFile = tmpFile ?: targetFile
-    val url = URL(fileUrl)
-    val connection = url.openConnection() as HttpURLConnection
-
-    accessToken?.let { connection.setRequestProperty("Authorization", "Bearer $it") }
-
-    // 局部化变量，确保多任务并发数据隔离
-    var downloadedBytes = 0L
-    val bytesReadSizeBuffer = mutableListOf<Long>()
-    val bytesReadLatencyBuffer = mutableListOf<Long>()
-
-    // 断点续传准备
-    val outputFileBytes = finalWriteFile.length()
-    if (outputFileBytes > 0) {
-      Log.d(
-        TAG,
-        "File '${finalWriteFile.name}' partial size: ${outputFileBytes}. Trying to resume download"
-      )
-      connection.setRequestProperty("Range", "bytes=${outputFileBytes}-")
-      connection.setRequestProperty("Accept-Encoding", "identity")
+  /**
+   * 挂起等待下载完成：简化入口，自动复用进行中任务，防重复下载。
+   *
+   * 如果同 key 任务已在运行，直接加入并共享进度，不重新发起下载。页面销毁不影响后台任务，
+   * 回页后继续监听同一任务。
+   *
+   * 使用场景：
+   * - 语音/AI 模型下载与页面生命周期隔离复用
+   * - 多模块并发请求同一资源只下载一次
+   * - 前台/后台切换时智能续接
+   *
+   * @param request 下载请求
+   * @param onProgress 进度回调（仅在下载中触发，Downloading 状态）
+   * @return 完成后返回目标文件
+   * @throws IOException 下载失败
+   *
+   * @see enqueueOrJoin 如需手动处理所有状态变化
+   */
+  suspend fun await(
+    request: DownloadRequest,
+    onProgress: (DownloadProgress) -> Unit = {},
+  ): File {
+    val terminalState = enqueueOrJoin(request).onEach { state ->
+      if (state is DownloadTaskState.Downloading) {
+        onProgress(state.progress)
+      }
+    }.first { state ->
+      state is DownloadTaskState.Succeeded || state is DownloadTaskState.Failed
     }
 
-    connection.connect()
-    Log.d(TAG, "response code: ${connection.responseCode}")
-
-    // 校验响应与偏移计算
-    if (connection.responseCode == HttpURLConnection.HTTP_PARTIAL) {
-      val contentRange = connection.getHeaderField("Content-Range")
-      if (contentRange != null) {
-        val rangeParts = contentRange.substringAfter("bytes ").split("/")
-        val byteRange = rangeParts[0].split("-")
-        val startByte = byteRange[0].toLong()
-
-        // 直接赋值对齐断点
-        downloadedBytes = startByte
+    return when (terminalState) {
+      is DownloadTaskState.Succeeded -> terminalState.targetFile
+      is DownloadTaskState.Failed -> {
+        val cause = terminalState.throwable
+        throw (cause as? IOException) ?: IOException(cause.message ?: "download failed", cause)
       }
-    } else if (connection.responseCode == HttpURLConnection.HTTP_OK) {
-      // 不支持续传则清理旧文件
-      if (finalWriteFile.exists()) {
-        finalWriteFile.delete()
-      }
-      downloadedBytes = 0L
-    } else {
-      activeTasksSpeedMap.remove(fileUrl)
-      throw IOException("HTTP error code: ${connection.responseCode}")
+
+      else -> throw IllegalStateException("unexpected terminal state: $terminalState")
     }
+  }
 
-    val resolvedTotalBytes = resolveTotalBytes(
-      connection = connection,
-      responseCode = connection.responseCode,
-      outputFileBytes = outputFileBytes,
-      requestedTotalBytes = totalBytes
-    )
+  private fun createTaskEntry(taskKey: String, request: DownloadRequest): TaskEntry {
+    val stateFlow = MutableSharedFlow<DownloadTaskState>(replay = 1, extraBufferCapacity = 16)
+    val taskEntry = TaskEntry(stateFlow = stateFlow)
+    stateFlow.tryEmit(DownloadTaskState.Waiting)
 
-    Log.d(TAG, "resolvedTotalBytes: $resolvedTotalBytes")
-
-    try {
-      // 流读写与测速逻辑
-      connection.inputStream.use { input ->
-        FileOutputStream(finalWriteFile, true).use { output ->
-          val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-          var bytesRead: Int
-          var lastSetProgressTs: Long = 0
-          var deltaBytes = 0L
-
-          while (input.read(buffer).also { bytesRead = it } != -1) {
-            output.write(buffer, 0, bytesRead)
-            downloadedBytes += bytesRead
-            deltaBytes += bytesRead
-
-            val curTs = System.currentTimeMillis()
-            if (curTs - lastSetProgressTs > 200) {
-              if (lastSetProgressTs != 0L) {
-                val bytesPerMs = calculateSpeed(
-                  deltaBytes,
-                  curTs - lastSetProgressTs,
-                  bytesReadSizeBuffer,
-                  bytesReadLatencyBuffer
-                )
-                deltaBytes = 0L
-
-                val remainingMs = if (bytesPerMs > 0f && resolvedTotalBytes > 0L) {
-                  ((resolvedTotalBytes - downloadedBytes).coerceAtLeast(0L) / bytesPerMs).toLong()
-                } else 0L
-
-                val currentSpeedBytesPerSec = (bytesPerMs * 1000).toLong()
-                activeTasksSpeedMap[fileUrl] = currentSpeedBytesPerSec
-
-                onProgress(
-                  downloadedBytes,
-                  resolvedTotalBytes,
-                  currentSpeedBytesPerSec,
-                  remainingMs
-                )
-              }
-              lastSetProgressTs = curTs
-            }
-          }
+    taskScope.launch {
+      try {
+        downloadClient.download(
+          fileUrl = request.fileUrl,
+          targetFile = request.targetFile,
+          totalBytes = request.totalBytes,
+          tmpFile = request.tmpFile,
+        ) { downloaded, resolvedTotalBytes, speedBytesPerSec, remainingMs ->
+          stateFlow.tryEmit(
+            DownloadTaskState.Downloading(
+              progress = DownloadProgress(
+                downloadedBytes = downloaded,
+                totalBytes = resolvedTotalBytes,
+                speedBytesPerSec = speedBytesPerSec,
+                remainingMs = remainingMs,
+              ),
+            ),
+          )
         }
-      }
 
-      // 重命名
-      if (finalWriteFile != targetFile) {
-        if (targetFile.exists()) targetFile.delete()
-        if (!finalWriteFile.renameTo(targetFile)) throw IOException("Rename failed")
-        Log.d(TAG, "Download done")
+        stateFlow.tryEmit(DownloadTaskState.Succeeded(request.targetFile))
+      } catch (throwable: Throwable) {
+        stateFlow.tryEmit(DownloadTaskState.Failed(throwable))
+      } finally {
+        tasks.remove(taskKey)
       }
-    } finally {
-      activeTasksSpeedMap.remove(fileUrl)
+    }
+
+    return taskEntry
+  }
+
+  data class DownloadRequest(
+    val fileUrl: String,
+    val targetFile: File,
+    val totalBytes: Long = UNKNOWN_TOTAL_BYTES,
+    val tmpFile: File? = null,
+  ) {
+    fun taskKey(): String {
+      val tmpPath = tmpFile?.absolutePath.orEmpty()
+      return "$fileUrl|${targetFile.absolutePath}|$tmpPath"
     }
   }
 
-  // 测速算法平滑处理
-  private fun calculateSpeed(
-    deltaBytes: Long,
-    deltaTime: Long,
-    sizeBuffer: MutableList<Long>,
-    latencyBuffer: MutableList<Long>
-  ): Float {
-    if (sizeBuffer.size == 5) {
-      sizeBuffer.removeAt(0)
-    }
-    sizeBuffer.add(deltaBytes)
-    if (latencyBuffer.size == 5) {
-      latencyBuffer.removeAt(0)
-    }
-    latencyBuffer.add(deltaTime)
-    return sizeBuffer.sum().toFloat() / latencyBuffer.sum()
+  data class DownloadProgress(
+    val downloadedBytes: Long,
+    val totalBytes: Long,
+    val speedBytesPerSec: Long,
+    val remainingMs: Long,
+  )
+
+  sealed class DownloadTaskState {
+    data object Waiting : DownloadTaskState()
+
+    // 包含进度信息，避免与 DownloadProgress 重复定义
+    data class Downloading(val progress: DownloadProgress) : DownloadTaskState()
+
+    data class Succeeded(val targetFile: File) : DownloadTaskState()
+    data class Failed(val throwable: Throwable) : DownloadTaskState()
   }
 
-  private fun resolveTotalBytes(
-    connection: HttpURLConnection,
-    responseCode: Int,
-    outputFileBytes: Long,
-    requestedTotalBytes: Long
-  ): Long {
-    if (requestedTotalBytes > 0L) {
-      return requestedTotalBytes
-    }
+  private data class TaskEntry(
+    val stateFlow: MutableSharedFlow<DownloadTaskState>,
+  )
 
-    val contentLength = connection.getHeaderFieldLong("Content-Length", UNKNOWN_TOTAL_BYTES)
-    if (responseCode == HttpURLConnection.HTTP_PARTIAL) {
-      val contentRange = connection.getHeaderField("Content-Range")
-      val totalFromContentRange = parseTotalBytesFromContentRange(contentRange)
-      if (totalFromContentRange > 0L) {
-        return totalFromContentRange
-      }
-
-      if (contentLength > 0L) {
-        return outputFileBytes + contentLength
-      }
-    } else if (contentLength > 0L) {
-      return contentLength
-    }
-
-    return UNKNOWN_TOTAL_BYTES
-  }
-
-  private fun parseTotalBytesFromContentRange(contentRange: String?): Long {
-    if (contentRange.isNullOrBlank()) {
-      return UNKNOWN_TOTAL_BYTES
-    }
-
-    val totalPart = contentRange.substringAfterLast('/', missingDelimiterValue = "")
-    return totalPart.toLongOrNull()?.takeIf { it > 0L } ?: UNKNOWN_TOTAL_BYTES
+  private companion object {
+    private const val UNKNOWN_TOTAL_BYTES = -1L
+    private val tasks = ConcurrentHashMap<String, TaskEntry>()
+    private val taskScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
   }
 }

@@ -25,21 +25,21 @@ class DownloadRepository {
     tmpFile.parentFile?.mkdirs()
 
     try {
-      downloadManager.download(
-        fileUrl = model.url,
-        targetFile = targetFile,
-        totalBytes = model.sizeInBytes,
-        tmpFile = tmpFile
-      ) { downloaded, resolvedTotalBytes, rate, remainingMs ->
-
+      downloadManager.await(
+        request = DownloadManager.DownloadRequest(
+          fileUrl = model.url,
+          targetFile = targetFile,
+          totalBytes = model.sizeInBytes,
+          tmpFile = tmpFile,
+        ),
+      ) { progress ->
         val progressStatus = ModelDownloadStatus(
           statusType = ModelDownloadStatusType.IN_PROGRESS,
-          totalBytes = resolvedTotalBytes,
-          receivedBytes = downloaded,
-          bytesPerSecond = rate,
-          remainingMs = remainingMs
+          totalBytes = progress.totalBytes,
+          receivedBytes = progress.downloadedBytes,
+          bytesPerSecond = progress.speedBytesPerSec,
+          remainingMs = progress.remainingMs,
         )
-
         trySend(progressStatus)
       }
 
@@ -56,19 +56,18 @@ class DownloadRepository {
       // 最终通关发射
       send(ModelDownloadStatus(ModelDownloadStatusType.SUCCEEDED))
       channel.close()
-
     } catch (e: Exception) {
       // 拦截任何异常投递给前端，防止崩溃
       send(
         ModelDownloadStatus(
           statusType = ModelDownloadStatusType.FAILED,
-          errorMessage = e.localizedMessage ?: "网络同步遭遇异常"
-        )
+          errorMessage = e.localizedMessage ?: "网络同步遭遇异常",
+        ),
       )
       channel.close()
     }
     awaitClose {
-      // 如果你的 downloadManager 支持中途取消，可以在这里调用：downloadManager.cancel()
+      // 协调器模式下，调用方销毁不主动 cancel，后续订阅者可复用同一下载任务
     }
   }.flowOn(Dispatchers.IO)
 }

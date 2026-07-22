@@ -18,7 +18,7 @@ internal interface SpeechModelProvider {
   /**
    * 确保模型可用（线程安全，内部 Mutex 防止并发下载）。
    *
-   * @param onEvent 生命周期事件回调，从 IO 线程或下载回调线程调用，
+   * @param onEvent 生命周期事件回调，从 IO 线程或下载回调线程调用,
    *                使用 [kotlinx.coroutines.channels.ProducerScope.trySend] 等线程安全方法接收。
    */
   suspend fun ensureReady(
@@ -80,15 +80,21 @@ internal class DefaultSpeechModelProvider(
         modelBaseDir.mkdirs()
         if (!isArchiveReady()) {
           tmpArchiveFile.parentFile?.mkdirs()
-          downloadManager.download(
-            fileUrl = MODEL_ARCHIVE_URL,
-            targetFile = archiveFile,
-            tmpFile = tmpArchiveFile,
-          ) { downloaded, total, _, _ ->
-            val progress = if (total > 0) {
-              ((downloaded.toFloat() / total) * 100).toInt().coerceIn(0, 100)
-            } else 0
-            onEvent(SpeechRecognitionEngineModelEvent.Downloading(progress))
+          downloadManager.await(
+            request = DownloadManager.DownloadRequest(
+              fileUrl = MODEL_ARCHIVE_URL,
+              targetFile = archiveFile,
+              tmpFile = tmpArchiveFile,
+            ),
+          ) { progress ->
+            val normalizedProgress = if (progress.totalBytes > 0) {
+              ((progress.downloadedBytes.toFloat() / progress.totalBytes) * 100)
+                .toInt()
+                .coerceIn(0, 100)
+            } else {
+              0
+            }
+            onEvent(SpeechRecognitionEngineModelEvent.Downloading(normalizedProgress))
           }
         }
 
