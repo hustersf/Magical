@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.sofar.core.ai.edge.data.entity.models.Model
-import com.sofar.core.ai.edge.data.repository.ModelsDataManager
 import com.sofar.core.ai.edge.data.storage.AppStorageHub
 import com.sofar.core.ui.recyclerview.LinearMarginItemDecoration
 import com.sofar.core.ui.state.observeEvent
@@ -145,7 +144,7 @@ class ModelsHomeFragment : Fragment() {
   }
 
   private fun jump(model: Model) {
-    ModelsDataManager.updateActiveModel(model)
+    viewModel.selectActiveModel(model)
     chatNavigator.launchChatDetail(requireContext())
   }
 }

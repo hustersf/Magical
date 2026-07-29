@@ -1,5 +1,6 @@
 package com.sofar.feature.ai.edge.models.impl
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sofar.core.ai.edge.data.entity.models.AllowedModel
@@ -7,8 +8,11 @@ import com.sofar.core.ai.edge.data.entity.models.Model
 import com.sofar.core.ai.edge.data.entity.models.ModelDownloadStatus
 import com.sofar.core.ai.edge.data.entity.models.ModelDownloadStatusType
 import com.sofar.core.ai.edge.data.repository.DownloadRepository
-import com.sofar.core.ai.edge.data.repository.ModelsDataManager
+import com.sofar.core.ai.edge.domain.usecase.ActiveModelHolder
+import com.sofar.core.ai.edge.domain.usecase.InitModelConfigUseCase
 import com.sofar.core.ui.state.Event
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,27 +23,35 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
+import javax.inject.Inject
 
-class ModelsManagerViewModel : ViewModel() {
+@HiltViewModel
+class ModelsManagerViewModel @Inject constructor(
+  @param:ApplicationContext private val appContext: Context,
+  private val initModelConfigUseCase: InitModelConfigUseCase,
+  private val activeModelHolder: ActiveModelHolder,
+) : ViewModel() {
 
   private val _uiState = MutableStateFlow(ModelManagerUiState())
   val uiState: StateFlow<ModelManagerUiState> = _uiState.asStateFlow()
-
-  private val appContext = ModelsDataManager.appContext()
   private val downloadRepository = DownloadRepository()
 
   init {
     _uiState.update { it.copy(isScanningStorage = true) }
   }
 
+  fun selectActiveModel(model: Model) {
+    activeModelHolder.updateActiveModel(model)
+  }
+
   fun fetchConfig() {
     viewModelScope.launch {
       // 先尝试获取缓存数据（秒开）
-      val cachedData = ModelsDataManager.getModelData()
+      val cachedData = initModelConfigUseCase.getModelData()
       updateUiState(cachedData.models)
 
       // 持续监听后台的最新数据（预加载完成或后续更新）
-      ModelsDataManager.dataFlow
+      initModelConfigUseCase.dataFlow
         .onEach { latestData ->
           updateUiState(latestData.models)
         }
@@ -60,7 +72,8 @@ class ModelsManagerViewModel : ViewModel() {
       downloadRepository.downloadModel(appContext, model)
         .collect { downloadStatus ->
           _uiState.update {
-            val updatedStatusMap = it.modelDownloadStatus + (model.name to downloadStatus)
+            val updatedStatusMap =
+              it.modelDownloadStatus + (model.name to downloadStatus)
             it.copy(modelDownloadStatus = updatedStatusMap)
           }
 
@@ -85,7 +98,8 @@ class ModelsManagerViewModel : ViewModel() {
 
       // 更新状态
       _uiState.update {
-        val newStatus = ModelDownloadStatus(statusType = ModelDownloadStatusType.NOT_DOWNLOADED)
+        val newStatus =
+          ModelDownloadStatus(statusType = ModelDownloadStatusType.NOT_DOWNLOADED)
         val updatedStatusMap = it.modelDownloadStatus + (model.name to newStatus)
         it.copy(modelDownloadStatus = updatedStatusMap)
       }

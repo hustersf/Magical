@@ -72,6 +72,7 @@ dependencies {
   implementation(project(":core:res"))
   implementation(project(":core:ai-edge:design"))
   implementation(project(":core:ai-edge:data"))
+  implementation(project(":core:ai-edge:domain"))
 
   implementation(project(":feature:ai-edge:agent:api"))
   implementation(project(":feature:ai-edge:agent:impl"))

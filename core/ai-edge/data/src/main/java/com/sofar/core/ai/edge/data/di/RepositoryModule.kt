@@ -1,14 +1,17 @@
 package com.sofar.core.ai.edge.data.di
 
+import android.content.Context
 import com.sofar.core.ai.edge.data.datasource.LiteRtLmDataSource
 import com.sofar.core.ai.edge.data.repository.AgentRepository
 import com.sofar.core.ai.edge.data.repository.ChatRepository
+import com.sofar.core.ai.edge.data.repository.ModelRepository
 import com.sofar.core.ai.edge.database.dao.AgentDao
 import com.sofar.core.ai.edge.database.dao.MessageDao
 import com.sofar.core.ai.edge.database.dao.SessionDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -35,5 +38,13 @@ internal object RepositoryModule {
   @Singleton
   fun providesAgentRepository(agentDao: AgentDao): AgentRepository {
     return AgentRepository(agentDao)
+  }
+
+  @Provides
+  @Singleton
+  fun provideModelRepository(
+    @ApplicationContext context: Context
+  ): ModelRepository {
+    return ModelRepository(context)
   }
 }

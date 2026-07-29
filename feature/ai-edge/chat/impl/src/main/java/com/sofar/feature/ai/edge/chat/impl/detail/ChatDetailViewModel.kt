@@ -6,10 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.sofar.core.ai.edge.data.entity.models.Model
 import com.sofar.core.ai.edge.data.repository.AgentRepository
 import com.sofar.core.ai.edge.data.repository.ChatRepository
-import com.sofar.core.ai.edge.data.repository.ModelsDataManager
+import com.sofar.core.ai.edge.domain.usecase.ActiveModelHolder
 import com.sofar.feature.ai.edge.chat.impl.detail.image.SelectedImageState
 import com.sofar.feature.ai.edge.chat.impl.detail.voice.VoiceInputUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -25,8 +26,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChatDetailViewModel @Inject constructor(
+  @param:ApplicationContext private val appContext: Context,
   private val repository: ChatRepository,
-  private val agentRepository: AgentRepository
+  private val agentRepository: AgentRepository,
+  private val activeModelHolder: ActiveModelHolder,
 ) : ViewModel() {
 
   //  负责持续性状态
@@ -68,14 +71,14 @@ class ChatDetailViewModel @Inject constructor(
       }
 
       launch {
-        ModelsDataManager.activeModelFlow.collect { freshModel ->
+        activeModelHolder.activeModelFlow.collect { freshModel ->
           _currentActiveModel.value = freshModel
           if (freshModel == null) {
             alertEffect("当前未在模型Tab激活任何本地大模型")
           } else {
             // 初始化
             prepareEngine(
-              ModelsDataManager.appContext(),
+              appContext,
               freshModel,
               sessionId,
               agent?.systemPrompt

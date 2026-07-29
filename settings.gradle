@@ -66,6 +66,7 @@ include ':core:speech'
 include ':core:ai-edge:data'
 include ':core:ai-edge:design'
 include ':core:ai-edge:database'
+include ':core:ai-edge:domain'
 
 include ':feature:ai-edge:agent:api'
 include ':feature:ai-edge:agent:impl'
