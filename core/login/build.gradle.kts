@@ -1,0 +1,26 @@
+plugins {
+    alias(libs.plugins.convention.android.library)
+}
+
+android {
+    namespace = "com.sofar.login"
+}
+
+dependencies {
+    implementation(project(":external:social-sdk"))
+    implementation(project(":core:base"))
+    implementation(project(":framework:network"))
+    implementation(project(":framework:utility"))
+
+    implementation(libs.androidx.appcompat)
+
+    implementation(libs.rxjava)
+    implementation(libs.rxandroid)
+    implementation(libs.okhttp)
+    implementation(libs.gson)
+    implementation(libs.retrofit)
+}
+
+
+
+
