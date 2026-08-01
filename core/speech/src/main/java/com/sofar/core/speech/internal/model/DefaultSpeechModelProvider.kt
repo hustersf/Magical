@@ -1,8 +1,8 @@
 package com.sofar.core.speech.internal.model
 
 import android.content.Context
-import com.sofar.core.download.DownloadManager
-import com.sofar.core.download.ZipUtil
+import com.sofar.download.DownloadManager
+import com.sofar.download.ZipUtil
 import com.sofar.core.speech.internal.contract.SpeechRecognitionEngineModelEvent
 import com.sofar.core.speech.sherpa.SherpaOnnxModelConfig
 import com.sofar.core.speech.sherpa.SherpaOnnxModelType

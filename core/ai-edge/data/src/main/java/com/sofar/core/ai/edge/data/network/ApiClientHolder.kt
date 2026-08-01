@@ -4,14 +4,14 @@ import com.sofar.core.network.ApiClient
 
 object ApiClientHolder {
 
-  private val instance: ApiClient by lazy {
+  private val apiClient: ApiClient by lazy {
     ApiClient(
       baseUrl = ApiConst.CONFIG_BASE_URL,
       debugMode = true
     )
   }
 
-  fun client(): ApiClient {
-    return instance
+  val modelApiService: ModelApiService by lazy {
+    apiClient.create()
   }
 }

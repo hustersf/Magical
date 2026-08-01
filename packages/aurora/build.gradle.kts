@@ -17,7 +17,7 @@ dependencies {
 
     implementation(project(":framework:utility"))
     implementation(project(":framework:widget"))
-    implementation(project(":framework:network"))
+    implementation(project(":core:network"))
     implementation(project(":framework:image"))
     implementation(project(":framework:player"))
 

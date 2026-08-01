@@ -1,15 +1,19 @@
 package com.sofar.core.network
 
+import com.google.gson.Gson
 import okhttp3.Interceptor
 import okhttp3.logging.HttpLoggingInterceptor
 
-class ApiClient(
+class ApiClient @JvmOverloads constructor(
   private val baseUrl: String,
+  private val customInterceptors: List<Interceptor> = emptyList(),
+  private val gson: Gson = Gson(),
   private val debugMode: Boolean = false
 ) {
 
   private val engine: NetworkEngine by lazy {
     val interceptors = mutableListOf<Interceptor>().apply {
+      addAll(customInterceptors)
       if (debugMode) {
         add(HttpLoggingInterceptor().apply {
           level = HttpLoggingInterceptor.Level.BODY
@@ -19,15 +23,9 @@ class ApiClient(
 
     NetworkEngine(
       baseUrl = baseUrl,
-      interceptors = interceptors
+      interceptors = interceptors,
+      gson = gson
     )
-  }
-
-  /**
-   * 快速克隆方法：仅切换 BaseUrl
-   */
-  fun newBuilder(newBaseUrl: String): ApiClient {
-    return ApiClient(newBaseUrl, debugMode)
   }
 
   fun <T : Any> create(serviceClass: Class<T>): T {

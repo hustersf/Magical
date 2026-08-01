@@ -10,5 +10,5 @@ dependencies {
   implementation(libs.androidx.core.ktx)
   implementation(libs.coroutines.android)
   implementation(libs.coroutines)
-  implementation(project(":core:download"))
+  implementation(project(":framework:download"))
 }

@@ -1,12 +1,16 @@
 package com.sofar.core.network
 
+import com.google.gson.Gson
 import com.skydoves.retrofit.adapters.result.ResultCallAdapterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -14,7 +18,8 @@ import java.util.concurrent.ConcurrentHashMap
  */
 class NetworkEngine(
   val baseUrl: String,
-  private val interceptors: List<Interceptor>
+  private val interceptors: List<Interceptor>,
+  private val gson: Gson,
 ) {
 
   companion object {
@@ -42,8 +47,11 @@ class NetworkEngine(
     Retrofit.Builder()
       .baseUrl(baseUrl)
       .client(client)
+      .addConverterFactory(ScalarsConverterFactory.create())
+      .addConverterFactory(GsonConverterFactory.create(gson))
       .addConverterFactory(sdkJson.asConverterFactory(contentType))
       .addCallAdapterFactory(ResultCallAdapterFactory.create())
+      .addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
       .build()
   }
 

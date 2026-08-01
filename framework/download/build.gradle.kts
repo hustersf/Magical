@@ -1,15 +1,11 @@
 plugins {
-    alias(libs.plugins.convention.android.library)
+  alias(libs.plugins.convention.android.library)
 }
 
 android {
-    namespace = "com.sofar.download"
+  namespace = "com.sofar.core.download"
 }
 
 dependencies {
-    implementation(libs.androidx.appcompat)
+  implementation(libs.androidx.work.runtime.ktx)
 }
-
-
-
-

@@ -16,7 +16,7 @@ import java.io.File
 class ModelRepository(context: Context) {
   // 安全提取 ApplicationContext，防止潜在的内存泄漏
   private val appContext = context.applicationContext
-  private val modelApiService: ModelApiService = ApiClientHolder.client().create()
+  private val modelApiService: ModelApiService = ApiClientHolder.modelApiService
 
   companion object {
     private const val MODEL_ALLOWLIST_FILENAME = "model_allowlist.json"

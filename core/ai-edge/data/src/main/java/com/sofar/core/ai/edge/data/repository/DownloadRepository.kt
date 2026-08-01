@@ -4,8 +4,8 @@ import android.content.Context
 import com.sofar.core.ai.edge.data.entity.models.Model
 import com.sofar.core.ai.edge.data.entity.models.ModelDownloadStatus
 import com.sofar.core.ai.edge.data.entity.models.ModelDownloadStatusType
-import com.sofar.core.download.DownloadManager
-import com.sofar.core.download.ZipUtil
+import com.sofar.download.DownloadManager
+import com.sofar.download.ZipUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow

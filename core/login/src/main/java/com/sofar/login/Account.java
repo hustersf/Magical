@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 import com.google.gson.Gson;
 import com.sofar.base.BaseActivity;
 import com.sofar.base.callback.ActivityCallback;
-import com.sofar.login.api.LoginApiProvider;
+import com.sofar.login.api.LoginApiClientHolder;
 import com.sofar.login.auth.QQAuth;
 import com.sofar.login.model.User;
 import com.sofar.login.ui.LoginActivity;
@@ -59,7 +59,9 @@ public class Account {
     return qqAuth.requestAuth()
       .flatMap(s -> {
         Log.d(TAG, qqAuth.getToken() + " : " + qqAuth.getOpenId());
-        return LoginApiProvider.getLoginApiService().loginWithQQ(QQConfig.APP_ID, qqAuth.getToken(), qqAuth.getOpenId());
+        return LoginApiClientHolder.getLoginApiService().loginWithQQ(QQConfig.APP_ID,
+          qqAuth.getToken(),
+          qqAuth.getOpenId());
       }).map(response -> {
         User user = new User();
         user.userId = qqAuth.getOpenId();

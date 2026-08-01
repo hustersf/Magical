@@ -20,7 +20,6 @@ dependencies {
     implementation(project(":framework:utility"))
     implementation(project(":framework:widget"))
     implementation(project(":framework:network"))
-    implementation(project(":framework:download"))
     implementation(project(":framework:player"))
     implementation(project(":framework:image"))
     implementation(project(":framework:skin"))

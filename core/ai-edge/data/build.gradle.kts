@@ -24,6 +24,6 @@ dependencies {
 
   implementation(project(":core:common"))
   implementation(project(":core:network"))
-  implementation(project(":core:download"))
+  implementation(project(":framework:download"))
   api(project(":core:ai-edge:database"))
 }

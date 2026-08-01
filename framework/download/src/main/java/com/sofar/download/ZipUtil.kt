@@ -1,4 +1,4 @@
-package com.sofar.core.download
+package com.sofar.download
 
 import java.io.File
 import java.io.FileOutputStream
