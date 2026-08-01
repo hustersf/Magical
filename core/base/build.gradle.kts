@@ -4,6 +4,10 @@ plugins {
 
 android {
     namespace = "com.sofar.base"
+
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
