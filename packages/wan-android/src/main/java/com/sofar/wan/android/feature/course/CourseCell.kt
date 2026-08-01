@@ -8,7 +8,7 @@ import com.bumptech.glide.Glide
 import com.sofar.base.rx.RxBus
 import com.sofar.wan.android.R
 import com.sofar.wan.android.model.Kind
-import com.sofar.widget.recycler.adapter.Cell
+import com.sofar.core.ui.recyclerview.adapter.Cell
 
 class CourseCell : Cell<Kind>() {
 

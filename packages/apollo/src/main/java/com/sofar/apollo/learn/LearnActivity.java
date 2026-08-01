@@ -7,10 +7,10 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.sofar.base.R;
-import com.sofar.base.BaseActivity;
+import com.sofar.core.legacy.R;
+import androidx.appcompat.app.AppCompatActivity;
 
-public class LearnActivity extends BaseActivity {
+public class LearnActivity extends AppCompatActivity {
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {

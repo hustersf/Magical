@@ -1,14 +1,14 @@
 package com.sofar.apollo;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.sofar.apollo.home.HomeFragment;
 import com.sofar.apollo.mock.MockManager;
 import com.sofar.apollo.word.WordDataManager;
-import com.sofar.base.BaseActivity;
-import com.sofar.utility.ToastUtil;
+import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends AppCompatActivity {
 
   private static final int MAX_BACK_PRESS_INTERVAL = 2500;
   private long lastBackPressed;
@@ -32,7 +32,8 @@ public class MainActivity extends BaseActivity {
       finish();
     } else {
       lastBackPressed = current;
-      ToastUtil.startShort(this, getString(com.sofar.base.R.string.back_press_again));
+      Toast.makeText(this, getString(com.sofar.core.legacy.R.string.back_press_again),
+        Toast.LENGTH_SHORT).show();
     }
   }
 }

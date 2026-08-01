@@ -1,6 +1,6 @@
 package com.sofar.core.ai.edge.data.network
 
-import com.sofar.core.network.ApiClient
+import com.sofar.network.ApiClient
 
 object ApiClientHolder {
 

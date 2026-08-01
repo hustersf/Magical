@@ -5,10 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
-import com.sofar.base.BaseFragment
+import androidx.fragment.app.Fragment
 import com.sofar.snapu.R
 
-class MineFragment : BaseFragment() {
+class MineFragment : Fragment() {
 
   private lateinit var scanLauncher: ActivityResultLauncher<Unit>
 

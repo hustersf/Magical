@@ -7,8 +7,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":external:social-sdk"))
-    implementation(project(":core:base"))
+    implementation(project(":core:social-sdk"))
 }
 
 

@@ -9,11 +9,10 @@ import com.sofar.aurora.feature.home.block.BannerAdapter;
 import com.sofar.aurora.feature.home.model.HomeBlock;
 import com.sofar.aurora.model.Banner;
 import com.sofar.base.viewbinder.RecyclerViewBinder;
-import com.sofar.base.widget.banner.BannerIndicator;
-import com.sofar.utility.CollectionUtil;
-import com.sofar.utility.DeviceUtil;
-import com.sofar.widget.recycler.CenterPagerSnapHelper;
-import com.sofar.widget.recycler.LinearMarginItemDecoration;
+import com.sofar.core.ui.banner.BannerIndicator;
+import com.sofar.core.ui.recyclerview.CenterPagerSnapHelper;
+import com.sofar.core.ui.recyclerview.LinearMarginItemDecoration;
+import com.sofar.core.ui.util.DimensExtKt;
 
 public class BannerBlockViewBinder extends RecyclerViewBinder<HomeBlock<Banner>> {
 
@@ -37,8 +36,8 @@ public class BannerBlockViewBinder extends RecyclerViewBinder<HomeBlock<Banner>>
     mIndicatorView = bindView(R.id.banner_indicator);
     mAdapter = new BannerAdapter(loopCount);
     layoutManager = new LinearLayoutManager(context, RecyclerView.HORIZONTAL, false);
-    int betweenSpace = DeviceUtil.dp2px(context, 30);
-    sideSpace = DeviceUtil.dp2px(context, 15);
+    int betweenSpace = DimensExtKt.dp2pxInt(context, 30);
+    sideSpace = DimensExtKt.dp2pxInt(context, 15);
     LinearMarginItemDecoration itemDecoration =
       new LinearMarginItemDecoration(RecyclerView.HORIZONTAL, sideSpace, betweenSpace);
     mRecyclerView.addItemDecoration(itemDecoration);
@@ -53,12 +52,12 @@ public class BannerBlockViewBinder extends RecyclerViewBinder<HomeBlock<Banner>>
   @Override
   protected void onBind(HomeBlock<Banner> data) {
     super.onBind(data);
-    if (!CollectionUtil.isEmpty(data.results)) {
+    if (data.results != null && !data.results.isEmpty()) {
       bannerSize = data.results.size();
       mAdapter.setList(data.results);
       mAdapter.notifyDataSetChanged();
-      int size = DeviceUtil.dp2px(context, 5);
-      int margin = DeviceUtil.dp2px(context, 2);
+      int size = DimensExtKt.dp2pxInt(context, 5);
+      int margin = DimensExtKt.dp2pxInt(context, 2);
       mIndicatorView.initIndicatorItems(bannerSize, size, size, margin, margin);
 
       mRecyclerView.post(() -> {

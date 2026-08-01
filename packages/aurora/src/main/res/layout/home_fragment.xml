@@ -4,10 +4,6 @@
   android:layout_height="wrap_content"
   android:orientation="vertical">
 
-  <com.sofar.base.widget.StatusBarView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content" />
-
   <androidx.swiperefreshlayout.widget.SwipeRefreshLayout style="@style/Widget.RefreshLayout">
 
     <androidx.recyclerview.widget.RecyclerView style="@style/Widget.RecyclerView" />

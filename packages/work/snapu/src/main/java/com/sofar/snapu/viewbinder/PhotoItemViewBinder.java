@@ -1,19 +1,20 @@
 package com.sofar.snapu.viewbinder;
 
+import java.io.File;
+
 import android.net.Uri;
+import android.widget.ImageView;
 
 import com.sofar.base.viewbinder.RecyclerViewBinder;
-import com.sofar.image.widget.SofarImageView;
+import com.sofar.image.ImageExtKt;
 import com.sofar.snapu.R;
 import com.sofar.snapu.core.PhotoHelper;
 import com.sofar.snapu.model.ImageInfo;
 import com.sofar.snapu.ui.PhotoPreviewActivity;
 
-import java.io.File;
-
 public class PhotoItemViewBinder extends RecyclerViewBinder<ImageInfo> {
 
-  SofarImageView photoView;
+  ImageView photoView;
 
   @Override
   protected void onCreate() {
@@ -26,10 +27,7 @@ public class PhotoItemViewBinder extends RecyclerViewBinder<ImageInfo> {
     super.onBind(data);
     PhotoHelper helper = new PhotoHelper(getActivity(), data.taskId);
     Uri uri = Uri.fromFile(new File(helper.getPhotoThumbDir(), data.name));
-    if (data.width > 0 && data.height > 0) {
-      photoView.setAspectRatio(1.0f * data.width / data.height);
-    }
-    photoView.bindUrl(uri.toString());
+    ImageExtKt.loadImage(photoView, uri.toString());
 
     view.setOnClickListener(v -> {
       PhotoPreviewActivity.launch(getActivity(), data);

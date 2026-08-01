@@ -11,9 +11,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.sofar.base.app.BaseUIActivity
+import com.sofar.snapu.base.BaseUIActivity
 import com.sofar.base.rx.RxBus
-import com.sofar.base.tab.FragmentAdapter
+import com.sofar.core.ui.viewpager.FragmentAdapter
 import com.sofar.mlkit.core.MLKit
 import com.sofar.snapu.feature.daq.product.ProductEvent
 import com.sofar.snapu.feature.daq.product.ProductListFragment

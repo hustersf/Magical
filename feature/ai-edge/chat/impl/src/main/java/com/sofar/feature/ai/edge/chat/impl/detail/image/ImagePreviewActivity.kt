@@ -7,9 +7,9 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
-import com.sofar.core.image.loadImage
-import com.sofar.core.ui.BaseUIActivity
+import com.sofar.core.ui.activity.BaseUIActivity
 import com.sofar.feature.ai.edge.chat.impl.R
+import com.sofar.image.loadImage
 
 class ImagePreviewActivity : BaseUIActivity() {
 

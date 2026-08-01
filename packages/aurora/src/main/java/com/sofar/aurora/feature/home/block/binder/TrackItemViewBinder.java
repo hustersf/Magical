@@ -1,15 +1,16 @@
 package com.sofar.aurora.feature.home.block.binder;
 
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sofar.aurora.R;
 import com.sofar.aurora.model.Track;
 import com.sofar.base.viewbinder.RecyclerViewBinder;
-import com.sofar.image.widget.SofarImageView;
+import com.sofar.image.ImageExtKt;
 
 public class TrackItemViewBinder extends RecyclerViewBinder<Track> {
 
-  SofarImageView coverIv;
+  ImageView coverIv;
   TextView titleTv;
   TextView summaryTv;
 
@@ -24,7 +25,7 @@ public class TrackItemViewBinder extends RecyclerViewBinder<Track> {
   @Override
   protected void onBind(Track data) {
     super.onBind(data);
-    coverIv.bindUrl(data.url);
+    ImageExtKt.loadImage(coverIv, data.url);
     titleTv.setText(data.title);
     summaryTv.setText(data.trackCount + "首单曲");
   }

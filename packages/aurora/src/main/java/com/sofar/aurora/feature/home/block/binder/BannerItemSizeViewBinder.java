@@ -4,7 +4,8 @@ import android.view.ViewGroup;
 
 import com.sofar.aurora.model.Banner;
 import com.sofar.base.viewbinder.RecyclerViewBinder;
-import com.sofar.utility.DeviceUtil;
+import com.sofar.core.ui.util.DimensExtKt;
+import com.sofar.core.ui.util.WindowExtKt;
 
 public class BannerItemSizeViewBinder extends RecyclerViewBinder<Banner> {
 
@@ -12,7 +13,7 @@ public class BannerItemSizeViewBinder extends RecyclerViewBinder<Banner> {
   protected void onCreate() {
     super.onCreate();
     ViewGroup.LayoutParams lp = view.getLayoutParams();
-    lp.width = DeviceUtil.getMetricsWidth(context) - DeviceUtil.dp2px(context, 2 * 15);
+    lp.width = WindowExtKt.getScreenWidth(context) - DimensExtKt.dp2pxInt(context, 2 * 15);
     view.setLayoutParams(lp);
   }
 

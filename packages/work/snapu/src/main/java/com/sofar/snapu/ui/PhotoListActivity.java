@@ -7,13 +7,13 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.sofar.base.BaseActivity;
-import com.sofar.base.R;
+import androidx.appcompat.app.AppCompatActivity;
+import com.sofar.core.legacy.R;
 
 /**
  * 图片列表页面
  */
-public class PhotoListActivity extends BaseActivity {
+public class PhotoListActivity extends AppCompatActivity {
 
   public static final String KEY_TASK_ID = "task_id";
 

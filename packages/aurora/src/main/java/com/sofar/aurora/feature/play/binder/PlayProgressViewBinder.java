@@ -11,7 +11,6 @@ import com.sofar.aurora.feature.play.PlayManager;
 import com.sofar.aurora.feature.play.signal.PlayControlSignal;
 import com.sofar.aurora.feature.play.signal.PlayStateSignal;
 import com.sofar.aurora.utility.NumberUtil;
-import com.sofar.base.exception.SofarErrorConsumer;
 
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
@@ -90,9 +89,9 @@ public class PlayProgressViewBinder extends PlayBaseViewBinder {
   protected void onBind(PlayContext data) {
     super.onBind(data);
     mDisposable
-      .add(data.mPlayControlSignal.subscribe(mPlayControlSignalConsumer, new SofarErrorConsumer()));
+      .add(data.mPlayControlSignal.subscribe(mPlayControlSignalConsumer));
     mDisposable
-      .add(data.mPlayStateSignal.subscribe(mPlayStateSignalConsumer, new SofarErrorConsumer()));
+      .add(data.mPlayStateSignal.subscribe(mPlayStateSignalConsumer));
 
     mPlayControlSignal = data.mPlayControlSignal;
     updateUI();

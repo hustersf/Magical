@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.sofar.base.app.BaseUIActivity
+import com.sofar.snapu.base.BaseUIActivity
 import com.sofar.snapu.R
 import com.sofar.snapu.feature.login.LoginActivity
 

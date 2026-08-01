@@ -12,10 +12,9 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.sofar.aurora.feature.home.HomeFragment;
 import com.sofar.aurora.feature.home.HomeTabBar;
 import com.sofar.aurora.feature.mine.MineFragment;
-import com.sofar.base.BaseActivity;
-import com.sofar.utility.statusbar.StatusBarUtil;
+import com.sofar.core.ui.activity.BaseUIActivity;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseUIActivity {
 
   @NonNull
   HomeTabBar mTabBar;
@@ -28,7 +27,6 @@ public class MainActivity extends BaseActivity {
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_activity);
-    StatusBarUtil.setLightMode(this);
 
     mTabBar = findViewById(R.id.home_tab_bar);
     mViewPager2 = findViewById(R.id.view_pager);

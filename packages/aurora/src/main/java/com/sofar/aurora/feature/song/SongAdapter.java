@@ -1,5 +1,6 @@
 package com.sofar.aurora.feature.song;
 
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
@@ -13,13 +14,12 @@ import com.sofar.aurora.feature.song.binder.SongTitleViewBinder;
 import com.sofar.aurora.model.Song;
 import com.sofar.base.recycler.RecyclerAdapter;
 import com.sofar.base.viewbinder.RecyclerViewBinder;
-import com.sofar.utility.ViewUtil;
 
 public class SongAdapter extends RecyclerAdapter<Song> {
 
   @Override
   protected View onCreateView(ViewGroup parent, int viewType) {
-    return ViewUtil.inflate(parent, R.layout.song_item);
+    return LayoutInflater.from(parent.getContext()).inflate(R.layout.song_item, parent, false);
   }
 
   @NonNull

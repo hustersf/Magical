@@ -3,8 +3,8 @@ package com.sofar.snapu.feature.daq
 import android.content.Context
 import androidx.annotation.WorkerThread
 import com.google.gson.Gson
+import com.sofar.core.common.util.FileUtil
 import com.sofar.snapu.feature.daq.model.Product
-import com.sofar.utility.io.FileUtil
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date

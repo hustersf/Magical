@@ -10,9 +10,8 @@ import com.sofar.aurora.feature.home.block.SongAdapter;
 import com.sofar.aurora.feature.home.model.HomeBlock;
 import com.sofar.aurora.model.Song;
 import com.sofar.base.viewbinder.RecyclerViewBinder;
-import com.sofar.utility.CollectionUtil;
-import com.sofar.utility.DeviceUtil;
-import com.sofar.widget.recycler.GridMarginItemDecoration;
+import com.sofar.core.ui.recyclerview.GridMarginItemDecoration;
+import com.sofar.core.ui.util.DimensExtKt;
 
 public class SongBlockViewBinder extends RecyclerViewBinder<HomeBlock<Song>> {
 
@@ -29,7 +28,7 @@ public class SongBlockViewBinder extends RecyclerViewBinder<HomeBlock<Song>> {
     GridLayoutManager layoutManager =
       new GridLayoutManager(context, spanCount, RecyclerView.HORIZONTAL, false);
     int sideSpace = (int) context.getResources().getDimension(R.dimen.block_padding_left);
-    int betweenSpace = DeviceUtil.dp2px(context, 10);
+    int betweenSpace = DimensExtKt.dp2pxInt(context, 10);
     GridMarginItemDecoration decoration =
       new GridMarginItemDecoration(RecyclerView.HORIZONTAL, spanCount, betweenSpace, sideSpace,
         sideSpace);
@@ -45,7 +44,7 @@ public class SongBlockViewBinder extends RecyclerViewBinder<HomeBlock<Song>> {
   @Override
   protected void onBind(HomeBlock<Song> data) {
     super.onBind(data);
-    if (!CollectionUtil.isEmpty(data.results)) {
+    if (data.results != null && !data.results.isEmpty()) {
       mAdapter.setList(data.results);
       mAdapter.notifyDataSetChanged();
     }

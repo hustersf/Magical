@@ -1,8 +1,8 @@
 package com.sofar.wan.android.feature.course
 
 import com.sofar.wan.android.model.Kind
-import com.sofar.widget.recycler.adapter.Cell
-import com.sofar.widget.recycler.adapter.CellAdapter
+import com.sofar.core.ui.recyclerview.adapter.Cell
+import com.sofar.core.ui.recyclerview.adapter.CellAdapter
 
 class CourseAdapter : CellAdapter<Kind>() {
   private var lastPosition = -1

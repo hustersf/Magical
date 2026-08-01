@@ -1,5 +1,7 @@
 package com.sofar.snapu.ui;
 
+import java.io.File;
+
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -8,31 +10,29 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
-
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.sofar.base.BaseActivity;
-import com.sofar.image.widget.SofarImageView;
+import androidx.appcompat.app.AppCompatActivity;
+import com.sofar.core.common.extension.BitmapExtKt;
+import com.sofar.image.ImageExtKt;
 import com.sofar.snapu.R;
 import com.sofar.snapu.core.PhotoHelper;
 import com.sofar.snapu.model.ImageInfo;
-import com.sofar.utility.BitmapUtil;
-import com.sofar.utility.ToastUtil;
-
-import java.io.File;
 
 /**
  * 图片预览界面
  */
-public class PhotoPreviewActivity extends BaseActivity {
+public class PhotoPreviewActivity extends AppCompatActivity {
 
   public static final String KEY_PHOTO = "photo";
 
   ImageInfo imageInfo;
 
-  SofarImageView photoView;
+  ImageView photoView;
 
   TextView uploadTv;
   TextView editTv;
@@ -74,10 +74,7 @@ public class PhotoPreviewActivity extends BaseActivity {
 
   private void showPhoto() {
     Uri uri = Uri.fromFile(new File(helper.getPhotoThumbDir(), imageInfo.name));
-    if (imageInfo.width > 0 && imageInfo.height > 0) {
-      photoView.setAspectRatio(1.0f * imageInfo.width / imageInfo.height);
-    }
-    photoView.bindUrl(uri.toString());
+    ImageExtKt.loadImage(photoView, uri.toString());
   }
 
   private void upload() {
@@ -92,20 +89,20 @@ public class PhotoPreviewActivity extends BaseActivity {
     rotateThumb(degrees);
     viewRotate(degrees);
 
-    ToastUtil.startShort(this, "旋转90度");
+    Toast.makeText(this, "旋转90度", Toast.LENGTH_SHORT).show();
   }
 
   private void rotateImage(int degrees) {
     File file = new File(helper.getPhotoDir(), imageInfo.name);
     Bitmap srcBt = BitmapFactory.decodeFile(file.getAbsolutePath());
-    Bitmap bitmap = BitmapUtil.rotateBitmap(srcBt, degrees);
+    Bitmap bitmap = BitmapExtKt.rotate(srcBt, degrees);
     PhotoHelper.saveBitmapFile(bitmap, file);
   }
 
   private void rotateThumb(int degrees) {
     File file = new File(helper.getPhotoThumbDir(), imageInfo.name);
     Bitmap srcBt = BitmapFactory.decodeFile(file.getAbsolutePath());
-    Bitmap bitmap = BitmapUtil.rotateBitmap(srcBt, degrees);
+    Bitmap bitmap = BitmapExtKt.rotate(srcBt, degrees);
     PhotoHelper.saveBitmapFile(bitmap, file);
   }
 
@@ -126,7 +123,7 @@ public class PhotoPreviewActivity extends BaseActivity {
     File thumbFile = new File(helper.getPhotoThumbDir(), imageInfo.name);
     thumbFile.delete();
 
-    ToastUtil.startShort(this, "删除成功");
+    Toast.makeText(this, "删除成功", Toast.LENGTH_SHORT).show();
   }
 
   public static void launch(@NonNull Activity activity, ImageInfo imageInfo) {

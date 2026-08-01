@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -12,18 +11,17 @@ import com.sofar.apollo.R;
 import com.sofar.apollo.SofarApp;
 import com.sofar.apollo.mine.viewbinder.LogoutViewBinder;
 import com.sofar.apollo.mine.viewbinder.UserInfoViewBinder;
-import com.sofar.base.BaseFragment;
+import androidx.fragment.app.Fragment;
 import com.sofar.base.viewbinder.ViewBinder;
-import com.sofar.utility.ViewUtil;
 
-public class MineFragment extends BaseFragment {
+public class MineFragment extends Fragment {
 
   ViewBinder binder = new ViewBinder();
 
   @Nullable
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-    return ViewUtil.inflate(container, R.layout.mine_fragment);
+    return inflater.inflate(R.layout.mine_fragment, container, false);
   }
 
   @Override

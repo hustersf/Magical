@@ -7,7 +7,7 @@ import android.widget.TextView
 import com.sofar.base.rx.RxBus
 import com.sofar.wan.android.R
 import com.sofar.wan.android.model.Tag
-import com.sofar.widget.recycler.adapter.Cell
+import com.sofar.core.ui.recyclerview.adapter.Cell
 
 class NaviTabCell : Cell<Tag>() {
 

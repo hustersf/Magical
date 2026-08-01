@@ -7,7 +7,7 @@ import android.widget.TextView
 import com.sofar.wan.android.R
 import com.sofar.wan.android.model.Article
 import com.sofar.wan.android.webview.WebViewActivity
-import com.sofar.widget.recycler.adapter.Cell
+import com.sofar.core.ui.recyclerview.adapter.Cell
 
 class NaviTagCell : Cell<Article>() {
   private lateinit var name: TextView

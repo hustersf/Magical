@@ -11,8 +11,8 @@ import com.sofar.wan.android.feature.base.BasePageFragment
 import com.sofar.wan.android.model.Article
 import com.sofar.wan.android.model.Banners
 import com.sofar.wan.android.paging.PageList
-import com.sofar.widget.recycler.adapter.CellAdapter
-import com.sofar.widget.recycler.adapter.multitype.MultiTypeAdapter
+import com.sofar.core.ui.recyclerview.adapter.CellAdapter
+import com.sofar.core.ui.recyclerview.adapter.multitype.MultiTypeAdapter
 
 class HomeFragment : BasePageFragment<Any>() {
 

@@ -23,7 +23,7 @@ dependencies {
   implementation(libs.litertlm)
 
   implementation(project(":core:common"))
-  implementation(project(":core:network"))
+  implementation(project(":framework:network"))
   implementation(project(":framework:download"))
   api(project(":core:ai-edge:database"))
 }

@@ -3,7 +3,7 @@ package com.sofar.aurora.retrofit;
 import java.io.IOException;
 import java.util.TreeSet;
 
-import com.sofar.utility.cipher.MD5Util;
+import com.sofar.core.common.extension.CryptExtKt;
 
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -34,7 +34,7 @@ public class SignParamInterceptor implements Interceptor {
     }
 
     HttpUrl newUrl = originUrl.newBuilder()
-      .addQueryParameter("sign", MD5Util.md5(sb.toString()))
+      .addQueryParameter("sign", CryptExtKt.toMD5(sb.toString()))
       .build();
     requestBuilder.url(newUrl);
     request = requestBuilder.build();

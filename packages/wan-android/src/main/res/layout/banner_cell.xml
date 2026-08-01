@@ -8,7 +8,7 @@
   app:strokeColor="@color/cover_border_color"
   app:strokeWidth="@dimen/banner_border_width">
 
-  <com.sofar.base.widget.banner.NestedScrollableHost
+  <com.sofar.core.ui.viewpager.NestedScrollableHost
     android:id="@+id/banner_viewpager_wrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -18,9 +18,9 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content" />
 
-  </com.sofar.base.widget.banner.NestedScrollableHost>
+  </com.sofar.core.ui.viewpager.NestedScrollableHost>
 
-  <com.sofar.base.widget.banner.BannerIndicator
+  <com.sofar.core.ui.banner.BannerIndicator
     android:id="@+id/banner_indicator"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"

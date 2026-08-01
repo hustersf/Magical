@@ -10,8 +10,8 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.sofar.ai.edge.R
 import com.sofar.ai.edge.feature.home.viewmodel.HomeViewModel
-import com.sofar.core.ui.BaseUIActivity
-import com.sofar.core.ui.FragmentAdapter
+import com.sofar.core.ui.activity.BaseUIActivity
+import com.sofar.core.ui.viewpager.FragmentAdapter
 import com.sofar.feature.ai.edge.agent.impl.home.AgentHomeFragment
 import com.sofar.feature.ai.edge.chat.impl.home.ChatHomeFragment
 import com.sofar.feature.ai.edge.explore.impl.ExploreHomeFragment

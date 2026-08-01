@@ -12,21 +12,21 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.sofar.base.BaseFragment
+import androidx.fragment.app.Fragment
 import com.sofar.base.rx.RxBus
 import com.sofar.wan.android.R
 import com.sofar.wan.android.model.Article
 import com.sofar.wan.android.model.Tag
 import com.sofar.wan.android.utility.CommonUtil
-import com.sofar.widget.recycler.LinearMarginItemDecoration
-import com.sofar.widget.recycler.adapter.multitype.MultiTypeAdapter
+import com.sofar.core.ui.recyclerview.LinearMarginItemDecoration
+import com.sofar.core.ui.recyclerview.adapter.multitype.MultiTypeAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class NaviFragment : BaseFragment() {
+class NaviFragment : Fragment() {
 
   private val viewModel: NaviViewModel by lazy {
     ViewModelProvider(this).get(NaviViewModel::class.java)

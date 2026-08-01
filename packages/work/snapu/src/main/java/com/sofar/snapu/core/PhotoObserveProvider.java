@@ -7,10 +7,10 @@ public class PhotoObserveProvider {
 
   int imageOrder = 0;
 
-  public void startTask(@NonNull PhotoHelper helper, long taskId) {
+
+  public void startTask(@NonNull PhotoHelper helper, String filePath) {
     imageOrder++;
-    Observable.just(taskId)
-      .flatMap(new OpenCameraObservable(helper, imageOrder))
+    Observable.just(filePath)
       .doOnNext(new PhotoRotateConsumer(helper))
       .map(new PhotoInfoReadFunction())
       .doOnNext(new PhotoAddTaskIdConsumer(helper))

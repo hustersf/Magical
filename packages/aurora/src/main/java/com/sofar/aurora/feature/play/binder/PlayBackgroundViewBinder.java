@@ -9,11 +9,9 @@ import com.sofar.aurora.R;
 import com.sofar.aurora.feature.play.PlayContext;
 import com.sofar.aurora.feature.play.signal.PlayControlSignal;
 import com.sofar.aurora.model.Song;
-import com.sofar.base.blur.BlurUtil;
-import com.sofar.base.exception.SofarErrorConsumer;
-import com.sofar.image.FrescoUtil;
-import com.sofar.utility.BitmapUtil;
-import com.sofar.utility.DeviceUtil;
+import com.sofar.core.common.extension.BitmapExtKt;
+import com.sofar.core.ui.util.DimensExtKt;
+import com.sofar.image.ImageExtKt;
 
 import io.reactivex.functions.Consumer;
 
@@ -43,7 +41,7 @@ public class PlayBackgroundViewBinder extends PlayBaseViewBinder {
   protected void onBind(PlayContext data) {
     super.onBind(data);
     mDisposable
-      .add(data.mPlayControlSignal.subscribe(mPlayControlSignalConsumer, new SofarErrorConsumer()));
+      .add(data.mPlayControlSignal.subscribe(mPlayControlSignalConsumer));
     if (data.playSong != null) {
       update(data.playSong);
     }
@@ -54,17 +52,18 @@ public class PlayBackgroundViewBinder extends PlayBaseViewBinder {
       return;
     }
 
-    int size = DeviceUtil.dp2px(context, 25);
-    FrescoUtil.fetchImage(song.url, bitmap -> {
-      Bitmap smallBitmap = BitmapUtil.resizeBitmap(bitmap, size, size);
-      blurBitmap = BlurUtil.getBlurBitmap(context, smallBitmap, 25);
+    int size = DimensExtKt.dp2pxInt(context, 25);
+    ImageExtKt.fetchImage(context, song.url, bitmap -> {
+      Bitmap smallBitmap = BitmapExtKt.resize(bitmap, size, size);
+      blurBitmap = BitmapExtKt.blur(smallBitmap, context, 25);
       playRoot.setBackground(new BitmapDrawable(context.getResources(), blurBitmap));
+      return null;
     });
   }
 
   private void setDefaultBg() {
     Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.RGB_565);
-    Bitmap defaultBitmap = BlurUtil.getBlurBitmap(context, bitmap, 25);
+    Bitmap defaultBitmap = BitmapExtKt.blur(bitmap, context, 25);
     playRoot.setBackground(new BitmapDrawable(context.getResources(), defaultBitmap));
   }
 

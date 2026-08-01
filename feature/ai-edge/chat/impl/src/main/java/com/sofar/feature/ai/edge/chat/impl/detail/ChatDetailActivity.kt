@@ -35,7 +35,7 @@ import com.sofar.core.media.MediaAction
 import com.sofar.core.speech.SpeechRecognitionClient
 import com.sofar.core.speech.SpeechRecognitionEvent
 import com.sofar.core.speech.SpeechRecognitionRequest
-import com.sofar.core.ui.BaseUIActivity
+import com.sofar.core.ui.activity.BaseUIActivity
 import com.sofar.core.ui.recyclerview.LinearMarginItemDecoration
 import com.sofar.feature.ai.edge.chat.impl.R
 import com.sofar.feature.ai.edge.chat.impl.detail.image.SelectedImageAdapter

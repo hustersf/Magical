@@ -7,10 +7,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":external:social-sdk"))
-    implementation(project(":core:base"))
-    implementation(project(":core:network"))
-    implementation(project(":framework:utility"))
+    implementation(project(":core:social-sdk"))
+    implementation(project(":framework:network"))
 
     implementation(libs.androidx.appcompat)
 

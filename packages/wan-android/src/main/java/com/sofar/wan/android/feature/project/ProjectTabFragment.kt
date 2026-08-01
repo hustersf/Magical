@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayout
-import com.sofar.base.tab.TabFragment
+import com.sofar.wan.android.tab.TabFragment
 import com.sofar.wan.android.feature.article.ArticleConst
 import com.sofar.wan.android.model.Kind
 import kotlinx.coroutines.flow.collect

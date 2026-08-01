@@ -1,8 +1,8 @@
 package com.sofar.wan.android.feature.base
 
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.sofar.utility.ViewUtil
 import com.sofar.wan.android.R
 
 open class SimplePageStateUI(val parent: ViewGroup) : PageStateUI(parent) {
@@ -22,7 +22,7 @@ open class SimplePageStateUI(val parent: ViewGroup) : PageStateUI(parent) {
   }
 
   open fun createLoadingView(): View {
-    return ViewUtil.inflate(parent.context, R.layout.state_loading_layout)
+    return LayoutInflater.from(parent.context).inflate(R.layout.state_loading_layout, null)
   }
 
   fun showEmpty() {
@@ -35,7 +35,7 @@ open class SimplePageStateUI(val parent: ViewGroup) : PageStateUI(parent) {
 
 
   open fun createEmptyView(): View {
-    return ViewUtil.inflate(parent.context, R.layout.state_empty_layout)
+    return LayoutInflater.from(parent.context).inflate(R.layout.state_empty_layout, null)
   }
 
   fun showError() {
@@ -47,6 +47,6 @@ open class SimplePageStateUI(val parent: ViewGroup) : PageStateUI(parent) {
   }
 
   open fun createErrorView(): View {
-    return ViewUtil.inflate(parent.context, R.layout.state_error_layout)
+    return LayoutInflater.from(parent.context).inflate(R.layout.state_error_layout, null)
   }
 }

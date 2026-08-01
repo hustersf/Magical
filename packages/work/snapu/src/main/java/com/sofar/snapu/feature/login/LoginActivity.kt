@@ -9,8 +9,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import com.sofar.base.app.BaseUIActivity
-import com.sofar.base.util.setOnSingleClickListener
+import com.sofar.snapu.base.BaseUIActivity
+import com.sofar.core.ui.util.setOnSingleClickListener
 import com.sofar.snapu.MainActivity
 import com.sofar.snapu.R
 import io.reactivex.Observable

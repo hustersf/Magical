@@ -4,7 +4,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.sofar.auto.play.Playable
 import com.sofar.auto.play.RecyclerViewPlayer
-import com.sofar.widget.recycler.adapter.CellViewHolder
+import com.sofar.core.ui.recyclerview.adapter.CellViewHolder
 
 class ProductListPlayer : RecyclerViewPlayer() {
 

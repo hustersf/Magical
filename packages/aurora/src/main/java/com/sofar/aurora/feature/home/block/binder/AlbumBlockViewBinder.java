@@ -9,9 +9,8 @@ import com.sofar.aurora.feature.home.block.AlbumAdapter;
 import com.sofar.aurora.feature.home.model.HomeBlock;
 import com.sofar.aurora.model.Album;
 import com.sofar.base.viewbinder.RecyclerViewBinder;
-import com.sofar.utility.CollectionUtil;
-import com.sofar.utility.DeviceUtil;
-import com.sofar.widget.recycler.LinearMarginItemDecoration;
+import com.sofar.core.ui.recyclerview.LinearMarginItemDecoration;
+import com.sofar.core.ui.util.DimensExtKt;
 
 public class AlbumBlockViewBinder extends RecyclerViewBinder<HomeBlock<Album>> {
 
@@ -27,7 +26,7 @@ public class AlbumBlockViewBinder extends RecyclerViewBinder<HomeBlock<Album>> {
     LinearLayoutManager layoutManager =
       new LinearLayoutManager(context, RecyclerView.HORIZONTAL, false);
     int sideSpace = (int) context.getResources().getDimension(R.dimen.block_padding_left);
-    int betweenSpace = DeviceUtil.dp2px(context, 10);
+    int betweenSpace = DimensExtKt.dp2pxInt(context, 10);
     LinearMarginItemDecoration decoration =
       new LinearMarginItemDecoration(RecyclerView.HORIZONTAL, sideSpace, betweenSpace);
     mRecyclerView.addItemDecoration(decoration);
@@ -39,7 +38,7 @@ public class AlbumBlockViewBinder extends RecyclerViewBinder<HomeBlock<Album>> {
   @Override
   protected void onBind(HomeBlock<Album> data) {
     super.onBind(data);
-    if (!CollectionUtil.isEmpty(data.results)) {
+    if (data.results != null && !data.results.isEmpty()) {
       mAdapter.setList(data.results);
       mAdapter.notifyDataSetChanged();
     }

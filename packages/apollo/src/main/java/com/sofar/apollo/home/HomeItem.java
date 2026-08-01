@@ -9,14 +9,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import com.sofar.apollo.R;
-import com.sofar.utility.DeviceUtil;
+import com.sofar.core.ui.util.DimensExtKt;
 
 public class HomeItem extends LinearLayout {
 
@@ -48,8 +46,8 @@ public class HomeItem extends LinearLayout {
 
   private void initIcon() {
     imageView = new ImageView(getContext());
-    int width = DeviceUtil.dp2px(getContext(), 25);
-    int height = DeviceUtil.dp2px(getContext(), 25);
+    int width = DimensExtKt.dp2pxInt(getContext(), 25);
+    int height = DimensExtKt.dp2pxInt(getContext(), 25);
     ViewGroup.LayoutParams imgLp = new ViewGroup.LayoutParams(width, height);
     addView(imageView, imgLp);
     imageView.setVisibility(GONE);
@@ -58,12 +56,12 @@ public class HomeItem extends LinearLayout {
   private void initText() {
     textView = new TextView(getContext());
     textView.setTextColor(
-      getContext().getResources().getColor(com.sofar.base.R.color.main_text_color));
+      getContext().getResources().getColor(com.sofar.core.legacy.R.color.main_text_color));
     textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
     int width = ViewGroup.LayoutParams.WRAP_CONTENT;
     int height = ViewGroup.LayoutParams.WRAP_CONTENT;
     ViewGroup.MarginLayoutParams textLp = new ViewGroup.MarginLayoutParams(width, height);
-    textLp.topMargin = DeviceUtil.dp2px(getContext(), 5);
+    textLp.topMargin = DimensExtKt.dp2pxInt(getContext(), 5);
     addView(textView, textLp);
     textView.setVisibility(GONE);
   }

@@ -4,12 +4,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.viewpager2.widget.ViewPager2
-import com.sofar.base.widget.banner.BannerAutoHelper
-import com.sofar.base.widget.banner.BannerIndicator
+import com.sofar.core.ui.banner.BannerAutoHelper
+import com.sofar.core.ui.banner.BannerIndicator
+import com.sofar.core.ui.recyclerview.adapter.Cell
 import com.sofar.wan.android.R
 import com.sofar.wan.android.model.Banners
 import com.sofar.wan.android.utility.CommonUtil
-import com.sofar.widget.recycler.adapter.Cell
 
 class BannerCell : Cell<Banners>() {
 

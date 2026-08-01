@@ -1,5 +1,6 @@
 package com.sofar.aurora.feature.home.block;
 
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
@@ -12,7 +13,6 @@ import com.sofar.aurora.feature.home.block.binder.BannerItemViewBinder;
 import com.sofar.aurora.model.Banner;
 import com.sofar.base.recycler.RecyclerAdapter;
 import com.sofar.base.viewbinder.RecyclerViewBinder;
-import com.sofar.utility.ViewUtil;
 
 public class BannerAdapter extends RecyclerAdapter<Banner> {
 
@@ -24,7 +24,7 @@ public class BannerAdapter extends RecyclerAdapter<Banner> {
 
   @Override
   protected View onCreateView(ViewGroup parent, int viewType) {
-    return ViewUtil.inflate(parent, R.layout.block_item_banner_item);
+    return LayoutInflater.from(parent.getContext()).inflate(R.layout.block_item_banner_item, parent, false);
   }
 
   @NonNull

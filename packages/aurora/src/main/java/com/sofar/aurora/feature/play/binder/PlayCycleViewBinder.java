@@ -1,12 +1,12 @@
 package com.sofar.aurora.feature.play.binder;
 
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.sofar.aurora.R;
 import com.sofar.aurora.feature.play.PlayContext;
 import com.sofar.aurora.feature.play.PlayManager;
 import com.sofar.aurora.feature.play.PlayMode;
-import com.sofar.utility.ToastUtil;
 
 public class PlayCycleViewBinder extends PlayBaseViewBinder {
 
@@ -47,7 +47,7 @@ public class PlayCycleViewBinder extends PlayBaseViewBinder {
         break;
     }
     PlayManager.get().setPlayMode(playMode);
-    ToastUtil.startShort(context, text);
+    Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
     updateUI();
   }
 

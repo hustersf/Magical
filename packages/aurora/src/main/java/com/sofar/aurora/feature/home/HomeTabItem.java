@@ -7,13 +7,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.sofar.aurora.R;
-import com.sofar.utility.DeviceUtil;
+import com.sofar.core.ui.util.DimensExtKt;
 
 public class HomeTabItem extends RelativeLayout {
 
@@ -42,7 +41,7 @@ public class HomeTabItem extends RelativeLayout {
     tabIconView = new ImageView(getContext());
     tabIconView.setId(R.id.tab_icon);
     tabIconView.setColorFilter(normalColor);
-    int iconSize = DeviceUtil.dp2px(getContext(), 24);
+    int iconSize = DimensExtKt.dp2pxInt(getContext(), 24);
     RelativeLayout.LayoutParams iconLp = new RelativeLayout.LayoutParams(iconSize, iconSize);
     iconLp.addRule(RelativeLayout.CENTER_HORIZONTAL);
     addView(tabIconView, iconLp);

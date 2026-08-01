@@ -6,8 +6,8 @@ import android.view.ViewGroup;
 
 import com.sofar.apollo.R;
 import com.sofar.apollo.learn.LearnActivity;
-import com.sofar.base.blur.BlurUtil;
 import com.sofar.base.viewbinder.ViewBinder;
+import com.sofar.core.common.extension.BitmapExtKt;
 
 public class HomeLearnViewBinder extends ViewBinder<HomeContext> {
 
@@ -25,8 +25,9 @@ public class HomeLearnViewBinder extends ViewBinder<HomeContext> {
   protected void onBind(HomeContext data) {
     super.onBind(data);
     learnLayout.post(() -> {
-      Bitmap targetBitmap = BlurUtil.getTargetBitmap(homeRoot, learnLayout);
-      learnLayout.setBackground(new BitmapDrawable(context.getResources(), BlurUtil.getBlurBitmap(context, targetBitmap, 25)));
+      Bitmap targetBitmap = BitmapExtKt.getTargetAreaOf(homeRoot, learnLayout);
+      learnLayout.setBackground(new BitmapDrawable(context.getResources(),
+        BitmapExtKt.blur(targetBitmap, context, 25)));
     });
 
     learnLayout.setOnClickListener(v -> {

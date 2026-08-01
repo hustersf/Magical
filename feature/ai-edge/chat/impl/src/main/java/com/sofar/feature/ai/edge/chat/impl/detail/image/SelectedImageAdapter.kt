@@ -7,8 +7,8 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.sofar.core.image.clearImage
-import com.sofar.core.image.loadImage
+import com.sofar.image.clearImage
+import com.sofar.image.loadImage
 import com.sofar.feature.ai.edge.chat.impl.R
 
 internal class SelectedImageAdapter(

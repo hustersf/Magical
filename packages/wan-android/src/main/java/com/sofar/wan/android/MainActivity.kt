@@ -2,7 +2,6 @@ package com.sofar.wan.android
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.sofar.base.R
 
 class MainActivity : AppCompatActivity() {
 

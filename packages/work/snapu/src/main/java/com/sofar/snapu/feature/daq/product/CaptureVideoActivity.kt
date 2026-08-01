@@ -11,8 +11,8 @@ import android.widget.Button
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.content.ContextCompat
 import androidx.media3.ui.PlayerView
-import com.sofar.base.app.BaseUIActivity
-import com.sofar.base.util.setOnSingleClickListener
+import com.sofar.snapu.base.BaseUIActivity
+import com.sofar.core.ui.util.setOnSingleClickListener
 import com.sofar.player.VideoPlayer
 import com.sofar.snapu.R
 import com.sofar.snapu.feature.daq.CaptureFileUtil

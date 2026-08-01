@@ -1,14 +1,16 @@
 package com.sofar.snapu.viewbinder;
 
 
+import android.widget.ImageView;
+
 import com.sofar.base.viewbinder.RecyclerViewBinder;
-import com.sofar.image.widget.SofarImageView;
+import com.sofar.image.ImageExtKt;
 import com.sofar.snapu.R;
 import com.sofar.snapu.model.Banner;
 
 public class BannerItemViewBinder extends RecyclerViewBinder<Banner> {
 
-  SofarImageView photoView;
+  ImageView photoView;
 
   @Override
   protected void onCreate() {
@@ -20,6 +22,6 @@ public class BannerItemViewBinder extends RecyclerViewBinder<Banner> {
   @Override
   protected void onBind(Banner data) {
     super.onBind(data);
-    photoView.bindUrl(data.imgUrl);
+    ImageExtKt.loadImage(photoView, data.imgUrl);
   }
 }

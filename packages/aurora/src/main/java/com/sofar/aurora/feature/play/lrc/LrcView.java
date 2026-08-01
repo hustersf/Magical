@@ -17,7 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.sofar.aurora.R;
-import com.sofar.utility.DeviceUtil;
+import com.sofar.core.ui.util.DimensExtKt;
 
 public class LrcView extends View {
 
@@ -53,9 +53,9 @@ public class LrcView extends View {
   private void init(AttributeSet attrs) {
     TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.LrcView);
     mTextSize =
-      ta.getDimension(R.styleable.LrcView_lrcTextSize, DeviceUtil.dp2px(getContext(), 12));
+      ta.getDimension(R.styleable.LrcView_lrcTextSize, DimensExtKt.dp2pxInt(getContext(), 12));
     mDividerHeight =
-      ta.getDimension(R.styleable.LrcView_lrcDividerHeight, DeviceUtil.dp2px(getContext(), 16));
+      ta.getDimension(R.styleable.LrcView_lrcDividerHeight, DimensExtKt.dp2pxInt(getContext(), 16));
     mAnimationDuration = ta.getInt(R.styleable.LrcView_lrcAnimationDuration, 1000);
     mNormalColor = ta.getColor(R.styleable.LrcView_lrcNormalTextColor, 0xFFFFFFFF);
     mCurrentColor = ta.getColor(R.styleable.LrcView_lrcCurrentTextColor, 0xFFFF4081);

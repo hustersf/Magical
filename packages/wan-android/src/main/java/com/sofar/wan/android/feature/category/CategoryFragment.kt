@@ -21,7 +21,7 @@ import com.sofar.wan.android.model.Article
 import com.sofar.wan.android.model.Kind
 import com.sofar.wan.android.paging.PageList
 import com.sofar.wan.android.utility.CommonUtil
-import com.sofar.widget.recycler.adapter.CellAdapter
+import com.sofar.core.ui.recyclerview.adapter.CellAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer

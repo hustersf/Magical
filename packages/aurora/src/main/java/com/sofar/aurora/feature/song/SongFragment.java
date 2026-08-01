@@ -13,7 +13,6 @@ import com.sofar.base.page.PageList;
 import com.sofar.base.page.SimplePageList;
 import com.sofar.base.recycler.RecyclerAdapter;
 import com.sofar.base.recycler.RecyclerFragment;
-import com.sofar.utility.CollectionUtil;
 
 /**
  * 歌曲列表
@@ -40,7 +39,7 @@ public class SongFragment extends RecyclerFragment<Song> {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     String id = getArguments().getString(KEY_ID);
     songs = SongDataManager.get().get(id);
-    if (CollectionUtil.isEmpty(songs)) {
+    if (songs == null || songs.isEmpty()) {
       getActivity().finish();
       return;
     }

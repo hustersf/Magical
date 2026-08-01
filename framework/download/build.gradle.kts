@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-  namespace = "com.sofar.core.download"
+  namespace = "com.sofar.download"
 }
 
 dependencies {

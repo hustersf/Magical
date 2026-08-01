@@ -10,7 +10,7 @@ import com.sofar.wan.android.feature.article.ArticleConst
 import com.sofar.wan.android.feature.base.BasePageFragment
 import com.sofar.wan.android.model.Article
 import com.sofar.wan.android.paging.PageList
-import com.sofar.widget.recycler.adapter.CellAdapter
+import com.sofar.core.ui.recyclerview.adapter.CellAdapter
 
 class WxArticleFragment : BasePageFragment<Article>() {
 

@@ -2,8 +2,8 @@ package com.sofar.wan.android.feature.navi
 
 import android.text.TextUtils
 import com.sofar.wan.android.model.Tag
-import com.sofar.widget.recycler.adapter.Cell
-import com.sofar.widget.recycler.adapter.CellAdapter
+import com.sofar.core.ui.recyclerview.adapter.Cell
+import com.sofar.core.ui.recyclerview.adapter.CellAdapter
 
 class NaviTabAdapter : CellAdapter<Tag>() {
 

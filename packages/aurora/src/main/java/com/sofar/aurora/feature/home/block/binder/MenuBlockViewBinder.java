@@ -9,7 +9,6 @@ import com.sofar.aurora.feature.home.block.MenuAdapter;
 import com.sofar.aurora.feature.home.model.HomeBlock;
 import com.sofar.aurora.model.Menu;
 import com.sofar.base.viewbinder.RecyclerViewBinder;
-import com.sofar.utility.CollectionUtil;
 
 public class MenuBlockViewBinder extends RecyclerViewBinder<HomeBlock<Menu>> {
 
@@ -33,7 +32,7 @@ public class MenuBlockViewBinder extends RecyclerViewBinder<HomeBlock<Menu>> {
   @Override
   protected void onBind(HomeBlock<Menu> data) {
     super.onBind(data);
-    if (!CollectionUtil.isEmpty(data.results)) {
+    if (data.results != null && !data.results.isEmpty()) {
       mLayoutManager.setSpanCount(data.results.size());
       mAdapter.setList(data.results);
       mAdapter.notifyDataSetChanged();

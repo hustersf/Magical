@@ -1,6 +1,6 @@
 package com.sofar.snapu.core;
 
-import com.sofar.base.BaseActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import com.sofar.snapu.model.ImageInfo;
 import com.sofar.snapu.ui.PhotoPreviewActivity;
 
@@ -15,11 +15,11 @@ import io.reactivex.functions.Function;
 public class PhotoPreviewObservable implements Function<ImageInfo, ObservableSource<?>> {
 
   @NonNull
-  public BaseActivity activity;
+  public AppCompatActivity activity;
   @NonNull
   public PhotoHelper helper;
 
-  public PhotoPreviewObservable(@NonNull PhotoHelper helper, @NonNull BaseActivity activity) {
+  public PhotoPreviewObservable(@NonNull PhotoHelper helper, @NonNull AppCompatActivity activity) {
     this.helper = helper;
     this.activity = activity;
   }

@@ -2,11 +2,9 @@ package com.sofar.apollo;
 
 import android.app.Application;
 import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
 
-import com.sofar.base.app.AppLifeManager;
-import com.sofar.image.ImageManager;
+import com.sofar.core.common.lifecycle.AppLifeManager;
 import com.sofar.login.Account;
 import com.sofar.login.model.User;
 
@@ -29,7 +27,6 @@ public class SofarApp extends Application {
     super.onCreate();
     theApp = this;
     AppLifeManager.get().init(this);
-    ImageManager.get().init(this);
 
     ME = Account.getCurrentUser(this);
   }

@@ -23,7 +23,7 @@ dependencies {
   implementation(project(":core:ui"))
   implementation(project(":core:common"))
   implementation(project(":core:media"))
-  implementation(project(":core:image"))
+  implementation(project(":framework:image"))
   implementation(project(":core:ai-edge:data"))
   implementation(project(":core:ai-edge:design"))
   implementation(project(":core:ai-edge:domain"))

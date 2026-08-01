@@ -1,14 +1,14 @@
 package com.sofar.snapu.core;
 
+import java.io.File;
+import java.io.IOException;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.util.Log;
 
-import com.sofar.utility.BitmapUtil;
-
-import java.io.File;
-import java.io.IOException;
+import com.sofar.core.common.extension.BitmapExtKt;
 
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
@@ -32,7 +32,7 @@ public class PhotoRotateConsumer implements Consumer<String> {
     int degree = readPictureDegree(srcPath);
     Log.d(PhotoHelper.TAG, "图片旋转角度=" + degree);
     Bitmap srcBt = BitmapFactory.decodeFile(srcPath);
-    Bitmap bitmap = BitmapUtil.rotateBitmap(srcBt, degree);
+    Bitmap bitmap = BitmapExtKt.rotate(srcBt, degree);
     PhotoHelper.saveBitmapFile(bitmap, new File(srcPath));
   }
 

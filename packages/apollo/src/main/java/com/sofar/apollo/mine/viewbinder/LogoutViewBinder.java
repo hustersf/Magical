@@ -6,7 +6,7 @@ import android.view.View;
 import com.sofar.apollo.R;
 import com.sofar.apollo.SofarApp;
 import com.sofar.apollo.splash.SplashActivity;
-import com.sofar.base.app.AppLifeManager;
+import com.sofar.core.common.lifecycle.AppLifeManager;
 import com.sofar.base.viewbinder.ViewBinder;
 import com.sofar.login.Account;
 import com.sofar.login.model.User;

@@ -2,8 +2,7 @@ package com.sofar.snapu;
 
 import android.app.Application;
 
-import com.sofar.base.app.AppLifeManager;
-import com.sofar.image.ImageManager;
+import com.sofar.core.common.lifecycle.AppLifeManager;
 import com.sofar.snapu.model.User;
 
 public class SofarApp extends Application {
@@ -21,7 +20,6 @@ public class SofarApp extends Application {
     super.onCreate();
     theApp = this;
     AppLifeManager.get().init(this);
-    ImageManager.get().init(this);
   }
 
 

@@ -1,8 +1,8 @@
 package com.sofar.wan.android.feature.banner
 
 import com.sofar.wan.android.model.Banner
-import com.sofar.widget.recycler.adapter.Cell
-import com.sofar.widget.recycler.adapter.CellAdapter
+import com.sofar.core.ui.recyclerview.adapter.Cell
+import com.sofar.core.ui.recyclerview.adapter.CellAdapter
 
 class BannerAdapter : CellAdapter<Banner>() {
 

@@ -13,11 +13,11 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:base"))
-    implementation(project(":framework:utility"))
+    implementation(project(":core:legacy"))
+    implementation(project(":core:ui"))
+    implementation(project(":core:common"))
+    implementation(project(":core:webview"))
     implementation(project(":framework:network"))
-    implementation(project(":framework:widget"))
-    implementation(project(":framework:webview"))
 
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)

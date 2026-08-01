@@ -1,15 +1,14 @@
 package com.sofar.snapu.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.sofar.base.page.retrofit.SofarRetrofitPageList;
-import com.sofar.snapu.api.ApiRetrofitConfig;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.sofar.snapu.api.ApiProvider;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -31,7 +30,7 @@ public class BannerPageList extends SofarRetrofitPageList<BannerResponse, Banner
       List<Banner> list = new ArrayList<>();
 
       Banner banner = new Banner();
-      banner.imgUrl = ApiRetrofitConfig.baseUrl + "photo";
+      banner.imgUrl = ApiProvider.baseUrl + "photo";
       list.add(banner);
       response.items = list;
       Log.d("PhotoPageList", "thread=" + Thread.currentThread().getName());

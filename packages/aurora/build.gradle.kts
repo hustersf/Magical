@@ -13,11 +13,11 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:base"))
+    implementation(project(":core:legacy"))
+    implementation(project(":core:ui"))
+    implementation(project(":core:common"))
 
-    implementation(project(":framework:utility"))
-    implementation(project(":framework:widget"))
-    implementation(project(":core:network"))
+    implementation(project(":framework:network"))
     implementation(project(":framework:image"))
     implementation(project(":framework:player"))
 
@@ -32,6 +32,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.viewpager2)
+    implementation(libs.androidx.swiperefreshlayout)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

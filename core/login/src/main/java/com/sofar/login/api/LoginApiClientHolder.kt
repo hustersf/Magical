@@ -1,6 +1,6 @@
 package com.sofar.login.api
 
-import com.sofar.core.network.ApiClient
+import com.sofar.network.ApiClient
 
 object LoginApiClientHolder {
 

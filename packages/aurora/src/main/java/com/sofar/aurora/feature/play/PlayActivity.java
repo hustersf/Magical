@@ -18,14 +18,14 @@ import com.sofar.aurora.feature.play.binder.PlayTitleViewBinder;
 import com.sofar.aurora.feature.play.signal.PlayControlSignal;
 import com.sofar.aurora.feature.play.signal.PlayStateSignal;
 import com.sofar.aurora.model.Song;
-import com.sofar.base.BaseActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import com.sofar.base.viewbinder.ViewBinder;
-import com.sofar.widget.swipe.SwipeBack;
-import com.sofar.widget.swipe.SwipeLayout;
+import com.sofar.core.ui.swip.SwipeBack;
+import com.sofar.core.ui.swip.SwipeLayout;
 
 import io.reactivex.subjects.PublishSubject;
 
-public class PlayActivity extends BaseActivity {
+public class PlayActivity extends AppCompatActivity {
 
   ViewBinder playViewBinder = new ViewBinder();
 
@@ -83,10 +83,5 @@ public class PlayActivity extends BaseActivity {
   public static void launch(@NonNull Context context) {
     Intent intent = new Intent(context, PlayActivity.class);
     context.startActivity(intent);
-  }
-
-  @Override
-  protected int finishExitPageAnim() {
-    return com.sofar.base.R.anim.bottom_slide_out;
   }
 }

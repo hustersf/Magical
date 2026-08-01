@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import androidx.core.content.FileProvider
-import com.sofar.utility.FileUtil
+import com.sofar.core.common.util.FileUtil
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream

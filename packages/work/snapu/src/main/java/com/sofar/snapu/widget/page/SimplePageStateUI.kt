@@ -1,9 +1,9 @@
 package com.sofar.snapu.widget.page
 
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.sofar.snapu.R
-import com.sofar.utility.ViewUtil
 
 open class SimplePageStateUI(val parent: ViewGroup) : PageStateUI(parent) {
 
@@ -22,7 +22,7 @@ open class SimplePageStateUI(val parent: ViewGroup) : PageStateUI(parent) {
   }
 
   open fun createLoadingView(): View {
-    return ViewUtil.inflate(parent.context, R.layout.page_loading_layout)
+    return LayoutInflater.from(parent.context).inflate(R.layout.page_loading_layout, null)
   }
 
   fun showEmpty() {
@@ -35,7 +35,7 @@ open class SimplePageStateUI(val parent: ViewGroup) : PageStateUI(parent) {
 
 
   open fun createEmptyView(): View {
-    return ViewUtil.inflate(parent.context, R.layout.page_empty_layout)
+    return LayoutInflater.from(parent.context).inflate(R.layout.page_empty_layout, null)
   }
 
   fun showError() {
@@ -47,6 +47,6 @@ open class SimplePageStateUI(val parent: ViewGroup) : PageStateUI(parent) {
   }
 
   open fun createErrorView(): View {
-    return ViewUtil.inflate(parent.context, R.layout.page_error_layout)
+    return LayoutInflater.from(parent.context).inflate(R.layout.page_error_layout, null)
   }
 }

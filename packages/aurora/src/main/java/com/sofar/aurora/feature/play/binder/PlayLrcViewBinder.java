@@ -10,7 +10,6 @@ import com.sofar.aurora.feature.play.lrc.LrcUtil;
 import com.sofar.aurora.feature.play.lrc.LrcView;
 import com.sofar.aurora.feature.play.signal.PlayControlSignal;
 import com.sofar.aurora.model.Song;
-import com.sofar.base.exception.SofarErrorConsumer;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
@@ -56,7 +55,7 @@ public class PlayLrcViewBinder extends PlayBaseViewBinder {
   protected void onBind(PlayContext data) {
     super.onBind(data);
     mDisposable
-      .add(data.mPlayControlSignal.subscribe(mPlayControlSignalConsumer, new SofarErrorConsumer()));
+      .add(data.mPlayControlSignal.subscribe(mPlayControlSignalConsumer));
     if (data.playSong != null) {
       updateUI(data.playSong);
     }
@@ -72,6 +71,6 @@ public class PlayLrcViewBinder extends PlayBaseViewBinder {
       .map(LrcUtil::parseLrcList)
       .subscribeOn(Schedulers.io())
       .observeOn(AndroidSchedulers.mainThread())
-      .subscribe(list -> lrcView.setEntryList(list), new SofarErrorConsumer()));
+      .subscribe(list -> lrcView.setEntryList(list)));
   }
 }

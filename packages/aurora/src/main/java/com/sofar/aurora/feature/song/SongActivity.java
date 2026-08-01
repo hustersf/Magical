@@ -6,10 +6,9 @@ import androidx.annotation.Nullable;
 
 import com.sofar.aurora.R;
 import com.sofar.aurora.retrofit.ExceptionHandler;
-import com.sofar.base.BaseActivity;
-import com.sofar.utility.statusbar.StatusBarUtil;
+import com.sofar.core.ui.activity.BaseUIActivity;
 
-public abstract class SongActivity extends BaseActivity {
+public abstract class SongActivity extends BaseUIActivity {
 
   public static final String KEY_ID = "id";
 
@@ -20,7 +19,6 @@ public abstract class SongActivity extends BaseActivity {
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.song_activty);
-    StatusBarUtil.setLightMode(this);
     if (getIntent() != null && getIntent().getStringExtra(KEY_ID) instanceof String) {
       id = getIntent().getStringExtra(KEY_ID);
     } else {

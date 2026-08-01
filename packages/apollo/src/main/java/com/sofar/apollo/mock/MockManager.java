@@ -10,7 +10,7 @@ import com.google.gson.reflect.TypeToken;
 import com.sofar.apollo.SofarApp;
 import com.sofar.apollo.cache.AudioFileCache;
 import com.sofar.apollo.word.model.EnglishWord;
-import com.sofar.utility.FileUtil;
+import com.sofar.core.common.util.FileUtil;
 
 import java.io.File;
 import java.util.ArrayList;

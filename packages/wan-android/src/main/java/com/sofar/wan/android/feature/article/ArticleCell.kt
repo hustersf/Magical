@@ -5,11 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.sofar.utility.CollectionUtil
+import com.sofar.core.ui.recyclerview.adapter.Cell
 import com.sofar.wan.android.R
 import com.sofar.wan.android.model.Article
 import com.sofar.wan.android.webview.WebViewActivity
-import com.sofar.widget.recycler.adapter.Cell
 
 class ArticleCell : Cell<Article>() {
   private lateinit var rootView: View
@@ -57,7 +56,7 @@ class ArticleCell : Cell<Article>() {
     } else {
       newTag.visibility = View.GONE
     }
-    if (!CollectionUtil.isEmpty(data.tags)) {
+    if (data.tags != null && !data.tags.isEmpty()) {
       var sb = StringBuffer()
       data.tags.forEach {
         sb.append(it.name)

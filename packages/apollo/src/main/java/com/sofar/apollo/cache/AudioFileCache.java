@@ -4,7 +4,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.sofar.utility.FileUtil;
+import com.sofar.core.common.util.FileUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,29 +39,27 @@ public class AudioFileCache {
    */
   public static String copyWordAssetsToDir(@NonNull Context context, String name, String toDir) {
     String toFile = toDir + File.separator + name;
-    InputStream is = null;
-    OutputStream os = null;
-    try {
-      is = context.getAssets().open("test/" + WORD_DIR + File.separator + name);
-      File fileDir = new File(toDir);
-      if (!fileDir.exists()) {
-        fileDir.mkdirs();
-      }
-      os = new FileOutputStream(toFile);
-      int byteCount;
-      byte[] bytes = new byte[1024];
 
+    File fileDir = new File(toDir);
+    if (!fileDir.exists()) {
+      fileDir.mkdirs();
+    }
+
+    // 使用 Try-with-resources 自动管理资源
+    try (InputStream is = context.getAssets().open("test/" + WORD_DIR + File.separator + name);
+         OutputStream os = new FileOutputStream(toFile)) {
+
+      byte[] bytes = new byte[8192];
+      int byteCount;
       while ((byteCount = is.read(bytes)) != -1) {
         os.write(bytes, 0, byteCount);
       }
-      os.close();
-      is.close();
+
     } catch (IOException e) {
       e.printStackTrace();
-    } finally {
-      FileUtil.closeQuietly(is);
-      FileUtil.closeQuietly(os);
     }
+
     return toFile;
   }
+
 }

@@ -5,16 +5,10 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent">
 
-  <com.sofar.base.widget.StatusBarView
-    android:id="@+id/status_view"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content" />
-
-  <com.sofar.image.widget.SofarImageView
+  <ImageView
     android:id="@+id/author"
     android:layout_width="40dp"
     android:layout_height="40dp"
-    android:layout_below="@id/status_view"
     android:layout_marginLeft="@dimen/widget_padding_left"
     app:roundAsCircle="true" />
 

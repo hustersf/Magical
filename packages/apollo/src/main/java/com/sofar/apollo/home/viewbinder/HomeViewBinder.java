@@ -5,9 +5,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.view.ViewGroup;
 
 import com.sofar.apollo.R;
-import com.sofar.base.blur.BlurUtil;
-import com.sofar.base.util.AssetUtil;
 import com.sofar.base.viewbinder.ViewBinder;
+import com.sofar.core.common.util.FileUtil;
 
 public class HomeViewBinder extends ViewBinder<HomeContext> {
 
@@ -24,7 +23,7 @@ public class HomeViewBinder extends ViewBinder<HomeContext> {
   @Override
   protected void onBind(HomeContext data) {
     super.onBind(data);
-    homeImg = AssetUtil.getImageFromAssetsFile(context, "img/home_img.jpg");
+    homeImg = FileUtil.getImageFromAssetsFile(context, "img/home_img.jpg");
     homeRoot.setBackground(new BitmapDrawable(context.getResources(), homeImg));
   }
 

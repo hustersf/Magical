@@ -1,17 +1,18 @@
 plugins {
-    alias(libs.plugins.convention.android.library)
+  alias(libs.plugins.convention.android.library)
 }
 
 android {
-    namespace = "com.sofar.network"
+  namespace = "com.sofar.network"
 }
 
 dependencies {
-    implementation(libs.rxandroid)
-    implementation(libs.rxjava)
-    implementation(libs.gson)
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.gson)
-    implementation(libs.retrofit.rxjava2)
-    implementation(libs.retrofit.scalars)
+  implementation(libs.retrofit)
+  implementation(libs.retrofit.serialization)
+  implementation(libs.retrofit.result)
+  implementation(libs.retrofit.gson)
+  implementation(libs.retrofit.rxjava2)
+  implementation(libs.retrofit.scalars)
+  implementation(libs.okhttp)
+  implementation(libs.okhttp.logging)
 }

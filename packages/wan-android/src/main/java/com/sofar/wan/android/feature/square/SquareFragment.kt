@@ -9,7 +9,7 @@ import com.sofar.wan.android.feature.article.ArticleUtil
 import com.sofar.wan.android.feature.base.BasePageFragment
 import com.sofar.wan.android.model.Article
 import com.sofar.wan.android.paging.PageList
-import com.sofar.widget.recycler.adapter.CellAdapter
+import com.sofar.core.ui.recyclerview.adapter.CellAdapter
 
 class SquareFragment : BasePageFragment<Article>() {
 

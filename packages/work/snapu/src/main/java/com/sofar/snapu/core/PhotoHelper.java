@@ -1,24 +1,23 @@
 package com.sofar.snapu.core;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
-
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 
+import com.sofar.core.common.util.FileUtil;
 import com.sofar.snapu.SofarApp;
 import com.sofar.snapu.api.ApiProvider;
-import com.sofar.utility.FileUtil;
-import com.sofar.utility.ToastUtil;
-
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -58,11 +57,11 @@ public class PhotoHelper {
       .subscribe(s -> {
         Log.d(TAG, "upload success");
         dialog.dismiss();
-        ToastUtil.startShort(activity, "上传成功");
+        Toast.makeText(activity, "上传成功", Toast.LENGTH_SHORT).show();
       }, throwable -> {
         Log.d(TAG, "upload failed:" + throwable.toString());
         dialog.dismiss();
-        ToastUtil.startShort(activity, "上传失败");
+        Toast.makeText(activity, "上传失败", Toast.LENGTH_SHORT).show();
       });
   }
 

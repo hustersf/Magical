@@ -4,7 +4,7 @@
   android:layout_width="match_parent"
   android:layout_height="wrap_content">
 
-  <com.sofar.image.widget.SofarImageView
+  <ImageView
     android:id="@+id/photo"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

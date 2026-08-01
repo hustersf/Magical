@@ -2,18 +2,17 @@ package com.sofar.snapu.ui;
 
 import android.os.Bundle;
 import android.widget.TextView;
-
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.sofar.base.BaseActivity;
+import androidx.appcompat.app.AppCompatActivity;
+import com.sofar.core.common.extension.DateExtKt;
 import com.sofar.snapu.R;
 import com.sofar.snapu.core.PhotoHelper;
 import com.sofar.snapu.core.PhotoObserveProvider;
-import com.sofar.utility.DateUtil;
-import com.sofar.utility.ToastUtil;
 
-public class TaskActivity extends BaseActivity {
+public class TaskActivity extends AppCompatActivity {
 
   TextView taskTimeTv;
   long taskId;
@@ -40,7 +39,7 @@ public class TaskActivity extends BaseActivity {
 
   private void initView() {
     taskTimeTv = findViewById(R.id.task_time);
-    taskTimeTv.setText("创建任务时间 " + DateUtil.getTime(taskId));
+    taskTimeTv.setText("创建任务时间 " + DateExtKt.toDateTimeString(taskId));
 
     photoTv = findViewById(R.id.photo);
     cameraTv = findViewById(R.id.camera);
@@ -60,6 +59,6 @@ public class TaskActivity extends BaseActivity {
   protected void onDestroy() {
     super.onDestroy();
     helper.deleteAllFile();
-    ToastUtil.startShort(this, "已删除当前任务拍摄的图片");
+    Toast.makeText(this, "已删除当前任务拍摄的图片", Toast.LENGTH_SHORT).show();
   }
 }

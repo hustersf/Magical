@@ -32,4 +32,11 @@
 
   <dimen name="title_bar_height">44dp</dimen>
 
+  <dimen name="tab_height">44dp</dimen>
+  <dimen name="tab_padding_start">10dp</dimen>
+  <dimen name="tab_padding_end">10dp</dimen>
+  <dimen name="tab_indicator_width">20dp</dimen>
+  <dimen name="tab_indicator_height">3dp</dimen>
+  <dimen name="tab_indicator_rounder">2dp</dimen>
+
 </resources>

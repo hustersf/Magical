@@ -2,7 +2,6 @@ package com.sofar.snapu.ui;
 
 import android.os.Bundle;
 import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,10 +10,10 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import com.sofar.base.page.PageList;
 import com.sofar.base.recycler.RecyclerAdapter;
 import com.sofar.base.recycler.RecyclerFragment;
+import com.sofar.core.ui.recyclerview.StaggeredGridMarginItemDecoration;
+import com.sofar.core.ui.util.DimensExtKt;
 import com.sofar.snapu.model.ImageInfo;
 import com.sofar.snapu.model.PhotoPageList;
-import com.sofar.utility.DeviceUtil;
-import com.sofar.widget.recycler.StaggeredGridMarginItemDecoration;
 
 public class PhotoListFragment extends RecyclerFragment<ImageInfo> {
 
@@ -39,8 +38,9 @@ public class PhotoListFragment extends RecyclerFragment<ImageInfo> {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     taskId = getArguments().getLong(PhotoListActivity.KEY_TASK_ID);
     super.onViewCreated(view, savedInstanceState);
-    int itemSpace = DeviceUtil.dp2px(getContext(), 2);
-    StaggeredGridMarginItemDecoration itemDecoration = new StaggeredGridMarginItemDecoration(3, itemSpace, 0, 0);
+    int itemSpace = DimensExtKt.dp2pxInt(getContext(), 2);
+    StaggeredGridMarginItemDecoration
+      itemDecoration = new StaggeredGridMarginItemDecoration(3, itemSpace, 0, 0);
     getRecyclerView().addItemDecoration(itemDecoration);
   }
 }

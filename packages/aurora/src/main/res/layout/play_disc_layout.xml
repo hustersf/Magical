@@ -21,7 +21,7 @@
     android:layout_centerHorizontal="true"
     android:src="@drawable/play_disc_needle" />
 
-  <com.sofar.image.widget.SofarImageView
+  <ImageView
     android:id="@+id/cover"
     android:layout_width="match_parent"
     android:layout_height="match_parent"

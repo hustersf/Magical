@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 
 import com.sofar.aurora.model.Song;
 import com.sofar.aurora.retrofit.api.ApiProvider;
-import com.sofar.utility.FileUtil;
+import com.sofar.core.common.util.FileUtil;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;

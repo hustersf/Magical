@@ -11,8 +11,7 @@ import com.sofar.aurora.feature.play.PlayContext;
 import com.sofar.aurora.feature.play.signal.PlayControlSignal;
 import com.sofar.aurora.feature.play.signal.PlayStateSignal;
 import com.sofar.aurora.model.Song;
-import com.sofar.base.exception.SofarErrorConsumer;
-import com.sofar.image.widget.SofarImageView;
+import com.sofar.image.ImageExtKt;
 
 import io.reactivex.functions.Consumer;
 
@@ -21,7 +20,7 @@ public class PlayDiscViewBinder extends PlayBaseViewBinder {
   View playDiscRoot;
   ImageView discIv;
   ImageView needleIv;
-  SofarImageView coverIv;
+  ImageView coverIv;
 
   ObjectAnimator coverAnimator;
 
@@ -67,9 +66,9 @@ public class PlayDiscViewBinder extends PlayBaseViewBinder {
   protected void onBind(PlayContext data) {
     super.onBind(data);
     mDisposable
-      .add(data.mPlayControlSignal.subscribe(mPlayControlSignalConsumer, new SofarErrorConsumer()));
+      .add(data.mPlayControlSignal.subscribe(mPlayControlSignalConsumer));
     mDisposable
-      .add(data.mPlayStateSignal.subscribe(mPlayStateSignalConsumer, new SofarErrorConsumer()));
+      .add(data.mPlayStateSignal.subscribe(mPlayStateSignalConsumer));
     startCoverAnim();
 
     if (data.playSong != null) {
@@ -83,7 +82,7 @@ public class PlayDiscViewBinder extends PlayBaseViewBinder {
   }
 
   private void updateUI(Song song) {
-    coverIv.bindUrl(song.url);
+    ImageExtKt.loadImage(coverIv, song.url);
   }
 
   private void startCoverAnim() {

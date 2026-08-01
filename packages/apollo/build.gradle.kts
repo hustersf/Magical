@@ -13,16 +13,14 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:base"))
+    implementation(project(":core:legacy"))
+    implementation(project(":core:ui"))
+    implementation(project(":core:common"))
     implementation(project(":core:login"))
     implementation(project(":core:share"))
 
-    implementation(project(":framework:utility"))
-    implementation(project(":framework:widget"))
-    implementation(project(":framework:network"))
     implementation(project(":framework:player"))
     implementation(project(":framework:image"))
-    implementation(project(":framework:skin"))
 
     implementation(libs.rxjava)
     implementation(libs.rxandroid)

@@ -6,7 +6,6 @@ import android.widget.TextView;
 import com.sofar.aurora.R;
 import com.sofar.aurora.model.Song;
 import com.sofar.base.viewbinder.RecyclerViewBinder;
-import com.sofar.utility.CollectionUtil;
 
 public class SongSummaryViewBinder extends RecyclerViewBinder<Song> {
 
@@ -22,7 +21,7 @@ public class SongSummaryViewBinder extends RecyclerViewBinder<Song> {
   protected void onBind(Song data) {
     super.onBind(data);
     StringBuffer sb = new StringBuffer();
-    if (!CollectionUtil.isEmpty(data.artists)) {
+    if (data.artists != null && !data.artists.isEmpty()) {
       sb.append(data.artists.get(0).name);
     }
     if (!TextUtils.isEmpty(data.albumTitle)) {

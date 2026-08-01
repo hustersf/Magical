@@ -1,6 +1,6 @@
 package com.sofar.aurora.retrofit.api
 
-import com.sofar.core.network.ApiClient
+import com.sofar.network.ApiClient
 import com.sofar.aurora.retrofit.SignParamInterceptor
 import com.sofar.aurora.retrofit.SofarParamsInterceptor
 import com.sofar.aurora.retrofit.gson.Gsons

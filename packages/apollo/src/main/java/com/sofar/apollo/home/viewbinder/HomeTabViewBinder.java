@@ -1,11 +1,11 @@
 package com.sofar.apollo.home.viewbinder;
 
 import android.view.View;
+import android.widget.Toast;
 
 import com.sofar.apollo.R;
 import com.sofar.apollo.home.HomeTabBar;
 import com.sofar.base.viewbinder.ViewBinder;
-import com.sofar.utility.ToastUtil;
 
 public class HomeTabViewBinder extends ViewBinder<HomeContext> {
 
@@ -23,7 +23,7 @@ public class HomeTabViewBinder extends ViewBinder<HomeContext> {
     tabBar.setOnTabClickListener(new HomeTabBar.OnTabClickListener() {
       @Override
       public void OnTabClick(int index, View view) {
-        ToastUtil.startShort(context, "点击：" + index);
+        Toast.makeText(context, "点击：" + index, Toast.LENGTH_SHORT).show();
       }
     });
   }

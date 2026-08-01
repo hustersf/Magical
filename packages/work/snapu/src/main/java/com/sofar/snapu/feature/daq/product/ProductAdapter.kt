@@ -13,14 +13,14 @@ import com.bumptech.glide.signature.ObjectKey
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.sofar.auto.play.Playable
 import com.sofar.base.rx.RxBus
-import com.sofar.base.util.setOnSingleClickListener
+import com.sofar.core.ui.util.setOnSingleClickListener
+import com.sofar.core.ui.recyclerview.adapter.Cell
+import com.sofar.core.ui.recyclerview.adapter.CellAdapter
+import com.sofar.core.ui.util.getViewShowRatio
 import com.sofar.player.VideoPlayer
 import com.sofar.snapu.R
 import com.sofar.snapu.feature.daq.TaskUtil
 import com.sofar.snapu.feature.daq.model.Product
-import com.sofar.utility.ViewUtil
-import com.sofar.widget.recycler.adapter.Cell
-import com.sofar.widget.recycler.adapter.CellAdapter
 
 class ProductAdapter : CellAdapter<Product>() {
   override fun onCreateCell(viewType: Int): Cell<Product> {
@@ -116,7 +116,7 @@ class ProductAdapter : CellAdapter<Product>() {
     }
 
     override fun getViewShowRatio(): Float {
-      return ViewUtil.getViewShowRatio(playerView)
+      return playerView.getViewShowRatio()
     }
 
     private fun showDialog(context: Context, id: Int, titleResId: Int) {

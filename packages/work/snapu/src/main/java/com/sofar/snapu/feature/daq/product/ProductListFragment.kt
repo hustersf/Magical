@@ -18,9 +18,9 @@ import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
-import com.sofar.base.BaseFragment
+import androidx.fragment.app.Fragment
 import com.sofar.base.rx.RxBus
-import com.sofar.base.util.setOnSingleClickListener
+import com.sofar.core.ui.util.setOnSingleClickListener
 import com.sofar.mlkit.barcode.BarcodeContract
 import com.sofar.snapu.R
 import com.sofar.snapu.feature.base.DialogUtil
@@ -32,7 +32,7 @@ import com.sofar.snapu.feature.daq.model.ProductListViewModel
 import com.sofar.snapu.widget.page.SimplePageStateUI
 import io.reactivex.disposables.CompositeDisposable
 
-class ProductListFragment : BaseFragment() {
+class ProductListFragment : Fragment() {
 
   private lateinit var refreshLayout: SwipeRefreshLayout
   private lateinit var pageStateUI: SimplePageStateUI
@@ -154,7 +154,7 @@ class ProductListFragment : BaseFragment() {
         recyclerView.post {
           viewModel.deleteProduct(it.product)
           val pos = adapter.items.indexOf(it.product)
-          adapter.items.removeAt(pos)
+          adapter.mutableItems.removeAt(pos)
           adapter.notifyItemRemoved(pos)
         }
       }

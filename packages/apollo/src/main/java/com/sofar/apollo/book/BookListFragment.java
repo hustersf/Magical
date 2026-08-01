@@ -2,7 +2,6 @@ package com.sofar.apollo.book;
 
 import android.os.Bundle;
 import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,8 +11,8 @@ import com.sofar.apollo.book.model.BookPageList;
 import com.sofar.base.page.PageList;
 import com.sofar.base.recycler.RecyclerAdapter;
 import com.sofar.base.recycler.RecyclerFragment;
-import com.sofar.utility.DeviceUtil;
-import com.sofar.widget.recycler.LinearMarginItemDecoration;
+import com.sofar.core.ui.recyclerview.LinearMarginItemDecoration;
+import com.sofar.core.ui.util.DimensExtKt;
 
 public class BookListFragment extends RecyclerFragment<Book> {
 
@@ -30,8 +29,8 @@ public class BookListFragment extends RecyclerFragment<Book> {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    int sideSpace = DeviceUtil.dp2px(getActivity(), 10);
-    int betweenSpace = DeviceUtil.dp2px(getActivity(), 15);
+    int sideSpace = DimensExtKt.dp2pxInt(getActivity(), 10);
+    int betweenSpace = DimensExtKt.dp2pxInt(getActivity(), 15);
     LinearMarginItemDecoration decoration = new LinearMarginItemDecoration(RecyclerView.VERTICAL, sideSpace, betweenSpace);
     getRecyclerView().addItemDecoration(decoration);
   }

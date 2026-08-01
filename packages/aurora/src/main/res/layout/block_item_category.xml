@@ -24,7 +24,7 @@
     android:textColor="@color/text_color_plain"
     android:textSize="14dp" />
 
-  <com.sofar.widget.flowlayout.FlowTagList
+  <com.sofar.core.ui.flowlayout.FlowTagList
     android:id="@+id/category_list"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

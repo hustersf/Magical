@@ -1,13 +1,13 @@
 package com.sofar.snapu.core;
 
+import java.io.File;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.sofar.core.common.extension.BitmapExtKt;
 import com.sofar.snapu.model.ImageInfo;
-import com.sofar.utility.BitmapUtil;
-
-import java.io.File;
 
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
@@ -33,7 +33,7 @@ public class PhotoThumbSaveConsumer implements Consumer<ImageInfo> {
   public void accept(ImageInfo imageInfo) throws Exception {
     File imageFile = new File(helper.getPhotoDir(), imageInfo.name);
     Bitmap srcBt = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
-    Bitmap thumbBt = BitmapUtil.compressBitmap(srcBt, THUMB_MAX_SIZE);
+    Bitmap thumbBt = BitmapExtKt.compressToLimit(srcBt, THUMB_MAX_SIZE);
     Log.d(PhotoHelper.TAG, "生成缩图图");
 
     File thumbFile = new File(helper.getPhotoThumbDir(), imageFile.getName());

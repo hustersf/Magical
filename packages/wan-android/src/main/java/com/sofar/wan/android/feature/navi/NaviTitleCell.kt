@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.sofar.wan.android.R
 import com.sofar.wan.android.model.Tag
-import com.sofar.widget.recycler.adapter.Cell
+import com.sofar.core.ui.recyclerview.adapter.Cell
 
 class NaviTitleCell : Cell<Tag>() {
   private lateinit var name: TextView

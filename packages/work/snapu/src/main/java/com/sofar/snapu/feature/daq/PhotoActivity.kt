@@ -9,8 +9,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import com.sofar.base.app.BaseUIActivity
-import com.sofar.base.util.setOnSingleClickListener
+import com.sofar.snapu.base.BaseUIActivity
+import com.sofar.core.ui.util.setOnSingleClickListener
 import com.sofar.snapu.R
 
 class PhotoActivity : BaseUIActivity() {

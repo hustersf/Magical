@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.util.Pair
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,19 +17,19 @@ import android.widget.ImageView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import com.sofar.base.app.BaseUIActivity
-import com.sofar.base.util.setOnSingleClickListener
-import com.sofar.snapu.R
-import android.util.Pair
+import com.sofar.snapu.base.BaseUIActivity
+import com.sofar.core.ui.util.setOnSingleClickListener
+import com.sofar.core.ui.util.screenHeight
+import com.sofar.core.ui.util.screenWidth
 import com.sofar.mlkit.barcode.BarcodeResult
 import com.sofar.mlkit.barcode.BarcodeScannerProcessor
 import com.sofar.mlkit.core.GraphicOverlay
 import com.sofar.mlkit.core.VisionImageProcessor
+import com.sofar.snapu.R
 import com.sofar.snapu.feature.daq.BitmapUtil
 import com.sofar.snapu.feature.daq.CaptureFileUtil
 import com.sofar.snapu.feature.daq.TaskManager
 import com.sofar.snapu.feature.daq.TaskUtil
-import com.sofar.utility.DeviceUtil
 import java.io.File
 
 class CaptureProductActivity : BaseUIActivity() {
@@ -113,8 +114,8 @@ class CaptureProductActivity : BaseUIActivity() {
       override fun error(e: Exception) {
       }
     })
-    imageMaxWith = DeviceUtil.getMetricsWidth(this)
-    imageMaxHeight = DeviceUtil.getMetricsHeight(this)
+    imageMaxWith = this.screenWidth
+    imageMaxHeight = this.screenHeight
     taskId = intent.getLongExtra(TaskUtil.KET_TASK_ID, 0)
     var edit = false
     if (taskId <= 0) {

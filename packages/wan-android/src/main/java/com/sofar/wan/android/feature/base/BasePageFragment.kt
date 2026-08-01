@@ -3,13 +3,12 @@ package com.sofar.wan.android.feature.base
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
-import com.sofar.utility.NetworkUtil
-import com.sofar.utility.ToastUtil
+import com.sofar.core.common.extension.isNetworkAvailable
 import com.sofar.wan.android.App
 import com.sofar.wan.android.paging.LoadState
 import com.sofar.wan.android.paging.PageFragment
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -45,8 +44,8 @@ abstract class BasePageFragment<MODEL : Any> : PageFragment<MODEL>() {
       if (isEmpty) {
         pageStateUI.showError()
       }
-      if (!NetworkUtil.isNetworkAvailable(App.getAppContext())) {
-        ToastUtil.startShort(App.getAppContext(), "网络错误")
+      if (!App.getAppContext().isNetworkAvailable()) {
+        Toast.makeText(App.getAppContext(), "网络错误", Toast.LENGTH_SHORT).show()
       }
       return
     }

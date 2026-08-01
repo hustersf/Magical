@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sofar.core.ai.edge.data.entity.chat.ChatMessageRole
 import com.sofar.core.ai.edge.data.entity.chat.ChatMessageType
 import com.sofar.core.ai.edge.database.entity.MessageEntity
-import com.sofar.core.image.loadImage
+import com.sofar.image.loadImage
 import com.sofar.core.ui.image.RoundImageView
 import com.sofar.core.ui.recyclerview.LinearMarginItemDecoration
 import com.sofar.feature.ai.edge.chat.impl.R

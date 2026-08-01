@@ -9,8 +9,7 @@ import com.sofar.aurora.R;
 import com.sofar.aurora.feature.home.model.HomeBlock;
 import com.sofar.aurora.model.Banner;
 import com.sofar.base.viewbinder.RecyclerViewBinder;
-import com.sofar.base.widget.banner.BannerIndicator;
-import com.sofar.utility.CollectionUtil;
+import com.sofar.core.ui.banner.BannerIndicator;
 
 public class BannerAutoScrollViewBinder extends RecyclerViewBinder<HomeBlock<Banner>> {
 
@@ -73,7 +72,7 @@ public class BannerAutoScrollViewBinder extends RecyclerViewBinder<HomeBlock<Ban
   @Override
   protected void onBind(HomeBlock<Banner> data) {
     super.onBind(data);
-    if (!CollectionUtil.isEmpty(data.results)) {
+    if (data.results != null && !data.results.isEmpty()) {
       bannerSize = data.results.size();
       updateScrollState();
     }

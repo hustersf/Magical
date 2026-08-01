@@ -8,7 +8,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.sofar.base.util.JsonUtil;
+import com.sofar.aurora.utility.JsonUtil;
 
 /**
  * 对服务端的数据统一处理，只关心data中的数据

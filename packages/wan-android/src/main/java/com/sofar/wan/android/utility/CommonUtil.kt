@@ -7,7 +7,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
-import com.sofar.utility.DeviceUtil
+import com.sofar.core.ui.util.dp2pxInt
 import com.sofar.wan.android.App
 
 object CommonUtil {
@@ -17,7 +17,7 @@ object CommonUtil {
   }
 
   fun dip2px(dip: Float): Int {
-    return DeviceUtil.dp2px(context(), dip)
+    return context().dp2pxInt(dip)
   }
 
   fun dimen(@DimenRes res: Int): Int {

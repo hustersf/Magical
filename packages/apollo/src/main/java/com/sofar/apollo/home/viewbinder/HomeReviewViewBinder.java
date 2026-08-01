@@ -5,8 +5,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.view.ViewGroup;
 
 import com.sofar.apollo.R;
-import com.sofar.base.blur.BlurUtil;
 import com.sofar.base.viewbinder.ViewBinder;
+import com.sofar.core.common.extension.BitmapExtKt;
 
 public class HomeReviewViewBinder extends ViewBinder<HomeContext> {
 
@@ -24,8 +24,9 @@ public class HomeReviewViewBinder extends ViewBinder<HomeContext> {
   protected void onBind(HomeContext data) {
     super.onBind(data);
     reviewLayout.post(() -> {
-      Bitmap targetBitmap = BlurUtil.getTargetBitmap(homeRoot, reviewLayout);
-      reviewLayout.setBackground(new BitmapDrawable(context.getResources(), BlurUtil.getBlurBitmap(context, targetBitmap, 25)));
+      Bitmap targetBitmap = BitmapExtKt.getTargetAreaOf(homeRoot, reviewLayout);
+      reviewLayout.setBackground(
+        new BitmapDrawable(context.getResources(), BitmapExtKt.blur(targetBitmap, context, 25)));
     });
   }
 }

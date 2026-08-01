@@ -21,7 +21,7 @@ import com.sofar.aurora.model.Menu;
 import com.sofar.aurora.model.Song;
 import com.sofar.aurora.model.Track;
 import com.sofar.aurora.model.Video;
-import com.sofar.base.util.JsonUtil;
+import com.sofar.aurora.utility.JsonUtil;
 
 public class HomeBlockDeserializer implements JsonDeserializer<HomeBlock> {
 

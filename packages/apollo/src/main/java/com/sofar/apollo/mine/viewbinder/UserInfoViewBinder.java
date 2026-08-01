@@ -1,15 +1,16 @@
 package com.sofar.apollo.mine.viewbinder;
 
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sofar.apollo.R;
 import com.sofar.base.viewbinder.ViewBinder;
-import com.sofar.image.widget.SofarImageView;
+import com.sofar.image.ImageExtKt;
 import com.sofar.login.model.User;
 
 public class UserInfoViewBinder extends ViewBinder<User> {
 
-  SofarImageView author;
+  ImageView author;
   TextView name;
 
   @Override
@@ -22,7 +23,7 @@ public class UserInfoViewBinder extends ViewBinder<User> {
   @Override
   protected void onBind(User data) {
     super.onBind(data);
-    author.bindUrl(data.headUrl);
+    ImageExtKt.loadImage(author, data.headUrl);
     name.setText(data.name);
   }
 }

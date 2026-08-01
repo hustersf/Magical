@@ -13,14 +13,14 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:base"))
-    implementation(project(":core:mlkit"))
+    implementation(project(":core:legacy"))
+    implementation(project(":core:ui"))
+    implementation(project(":core:common"))
     implementation(project(":core:auto-play"))
-    implementation(project(":framework:utility"))
-    implementation(project(":framework:widget"))
     implementation(project(":framework:network"))
     implementation(project(":framework:image"))
     implementation(project(":framework:player"))
+    implementation(project(":framework:mlkit"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

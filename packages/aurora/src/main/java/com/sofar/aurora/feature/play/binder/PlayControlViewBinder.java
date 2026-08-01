@@ -6,7 +6,6 @@ import com.sofar.aurora.R;
 import com.sofar.aurora.feature.play.PlayContext;
 import com.sofar.aurora.feature.play.PlayManager;
 import com.sofar.aurora.feature.play.signal.PlayStateSignal;
-import com.sofar.base.exception.SofarErrorConsumer;
 
 import io.reactivex.functions.Consumer;
 
@@ -60,7 +59,7 @@ public class PlayControlViewBinder extends PlayBaseViewBinder {
     });
 
     mDisposable
-      .add(data.mPlayStateSignal.subscribe(mPlayStateSignalConsumer, new SofarErrorConsumer()));
+      .add(data.mPlayStateSignal.subscribe(mPlayStateSignalConsumer));
   }
 
   private void updateUI() {
