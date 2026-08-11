@@ -1,4 +1,4 @@
-package com.sofar.ai.edge.feature.home
+package com.sofar.ai.edge
 
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -8,8 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.sofar.ai.edge.R
-import com.sofar.ai.edge.feature.home.viewmodel.HomeViewModel
 import com.sofar.core.ui.activity.BaseUIActivity
 import com.sofar.core.ui.viewpager.FragmentAdapter
 import com.sofar.feature.ai.edge.agent.impl.home.AgentHomeFragment

@@ -1,4 +1,4 @@
-package com.sofar.ai.edge.feature.home.viewmodel
+package com.sofar.ai.edge
 
 import androidx.lifecycle.ViewModel
 
