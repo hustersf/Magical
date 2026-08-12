@@ -40,7 +40,6 @@ include(":packages:diana")
 include(":packages:aurora")
 include(":packages:wan-android")
 include(":packages:work:snapu")
-include(":packages:samples:compose")
 include(":packages:ai-edge")
 
 include(":framework:network")

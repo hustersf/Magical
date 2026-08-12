@@ -11,10 +11,11 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.sofar.core.ui.activity.BaseUIActivity
 import com.sofar.wan.android.R
 import com.sofar.webview.SofaWebView
 
-class WebViewActivity : AppCompatActivity() {
+class WebViewActivity : BaseUIActivity() {
 
   private var url: String? = null
   private lateinit var webView: SofaWebView

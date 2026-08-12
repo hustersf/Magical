@@ -1,13 +1,12 @@
 package com.sofar.core.ui.activity
 
-import android.R
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.sofar.core.ui.util.applyEdgeToEdgeInsetsToContentRoot
+import com.sofar.core.ui.util.setupEdgeToEdge
 
 /**
  * 应用级 UI 基类。
@@ -19,7 +18,7 @@ abstract class BaseUIActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    enableEdgeToEdge()
+    setupEdgeToEdge()
   }
 
   override fun setContentView(layoutResID: Int) {
@@ -38,13 +37,7 @@ abstract class BaseUIActivity : AppCompatActivity() {
   }
 
   private fun applyInsetsToRoot() {
-    val contentContainer = findViewById<ViewGroup>(R.id.content) ?: return
-    val rootView = contentContainer.getChildAt(0) ?: return
-    ViewCompat.setOnApplyWindowInsetsListener(rootView) { v, insets ->
-      val systemBars = insets.getInsets(windowInsetsType())
-      v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-      insets
-    }
+    applyEdgeToEdgeInsetsToContentRoot { windowInsetsType() }
   }
 
   open fun windowInsetsType(): Int {

@@ -18,14 +18,14 @@ import com.sofar.aurora.feature.play.binder.PlayTitleViewBinder;
 import com.sofar.aurora.feature.play.signal.PlayControlSignal;
 import com.sofar.aurora.feature.play.signal.PlayStateSignal;
 import com.sofar.aurora.model.Song;
-import androidx.appcompat.app.AppCompatActivity;
 import com.sofar.base.viewbinder.ViewBinder;
+import com.sofar.core.ui.activity.BaseUIActivity;
 import com.sofar.core.ui.swip.SwipeBack;
 import com.sofar.core.ui.swip.SwipeLayout;
 
 import io.reactivex.subjects.PublishSubject;
 
-public class PlayActivity extends AppCompatActivity {
+public class PlayActivity extends BaseUIActivity {
 
   ViewBinder playViewBinder = new ViewBinder();
 

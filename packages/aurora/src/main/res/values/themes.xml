@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-  <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-    <item name="android:windowIsTranslucent">true</item>
-    <item name="android:windowBackground">@android:color/transparent</item>
+  <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
   </style>
 
   <style name="AppTheme.NoAnimation">

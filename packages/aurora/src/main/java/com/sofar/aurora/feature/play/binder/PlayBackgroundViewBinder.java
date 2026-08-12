@@ -62,7 +62,7 @@ public class PlayBackgroundViewBinder extends PlayBaseViewBinder {
   }
 
   private void setDefaultBg() {
-    Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.RGB_565);
+    Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
     Bitmap defaultBitmap = BitmapExtKt.blur(bitmap, context, 25);
     playRoot.setBackground(new BitmapDrawable(context.getResources(), defaultBitmap));
   }
