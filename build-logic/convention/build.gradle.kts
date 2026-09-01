@@ -19,6 +19,7 @@ dependencies {
     // 必须使用 compileOnly 引入 AGP 和 Kotlin 核心编译依赖
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
+    compileOnly(libs.compose.gradlePlugin)
 }
 
 // 🌟 注册你自己的统一约定规范插件
@@ -38,6 +39,11 @@ gradlePlugin {
         register("androidApplication") {
             id = "convention.android.application"
             implementationClass = "AndroidApplicationConventionPlugin"
+        }
+        // 插件四：✨ 新增：面向 Magic 多 APP 矩阵的统一主程序规范 (含 Compose)
+        register("androidApplicationCompose") {
+            id = "convention.android.application.compose"
+            implementationClass = "AndroidApplicationComposeConventionPlugin"
         }
     }
 }

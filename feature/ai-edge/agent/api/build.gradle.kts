@@ -1,5 +1,6 @@
 plugins {
   alias(libs.plugins.convention.android.library)
+  alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -7,4 +8,5 @@ android {
 }
 
 dependencies {
+  api(project(":core:ai-edge:navigation"))
 }
