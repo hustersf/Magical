@@ -5,11 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Chat
-import androidx.compose.material.icons.filled.Explore
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Widgets
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -18,7 +14,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
@@ -35,6 +33,11 @@ import com.sofar.feature.ai.edge.explore.impl.navigation.exploreEntry
 import com.sofar.feature.ai.edge.models.api.navigation.ModelsNavKey
 import com.sofar.feature.ai.edge.models.impl.navigation.modelsEntry
 import dagger.hilt.android.AndroidEntryPoint
+import com.sofar.core.res.icon.R as coreIconR
+import com.sofar.feature.ai.edge.agent.api.R as agentR
+import com.sofar.feature.ai.edge.chat.api.R as chatR
+import com.sofar.feature.ai.edge.explore.api.R as exploreR
+import com.sofar.feature.ai.edge.models.api.R as modelsR
 
 @AndroidEntryPoint
 class HomeActivity : ComponentActivity() {
@@ -67,8 +70,14 @@ fun MainScreen(navigationState: NavigationState, navigator: Navigator) {
         val currentTopLevelKey = navigationState.currentTopLevelKey
         navigationState.topLevelKeys.forEach { key ->
           NavigationBarItem(
-            icon = { Icon(getIconForKey(key), contentDescription = null) },
-            label = { Text(getLabelForKey(key)) },
+            icon = {
+              Icon(
+                painter = painterResource(id = getIconResForKey(key)),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+              )
+            },
+            label = { Text(text = stringResource(id = getLabelResForKey(key))) },
             selected = currentTopLevelKey == key,
             onClick = { navigator.navigate(key) }
           )
@@ -94,22 +103,22 @@ fun MainScreen(navigationState: NavigationState, navigator: Navigator) {
   }
 }
 
-fun getIconForKey(key: NavKey): ImageVector {
+fun getIconResForKey(key: NavKey): Int {
   return when (key) {
-    ChatNavKey -> Icons.AutoMirrored.Filled.Chat
-    AgentNavKey -> Icons.Filled.Face
-    ExploreNavKey -> Icons.Filled.Explore
-    ModelsNavKey -> Icons.Filled.Widgets
-    else -> Icons.Filled.Face
+    ChatNavKey -> coreIconR.drawable.core_ic_chat
+    AgentNavKey -> coreIconR.drawable.core_ic_agent
+    ExploreNavKey -> coreIconR.drawable.core_ic_explore
+    ModelsNavKey -> coreIconR.drawable.core_ic_setting
+    else -> coreIconR.drawable.core_ic_agent
   }
 }
 
-fun getLabelForKey(key: NavKey): String {
+fun getLabelResForKey(key: NavKey): Int {
   return when (key) {
-    ChatNavKey -> "对话"
-    AgentNavKey -> "智能体"
-    ExploreNavKey -> "探索"
-    ModelsNavKey -> "模型管理"
-    else -> ""
+    ChatNavKey -> chatR.string.feature_chat_tab_name
+    AgentNavKey -> agentR.string.feature_agent_tab_name
+    ExploreNavKey -> exploreR.string.feature_explore_tab_name
+    ModelsNavKey -> modelsR.string.feature_models_tab_name
+    else -> agentR.string.feature_agent_tab_name
   }
 }

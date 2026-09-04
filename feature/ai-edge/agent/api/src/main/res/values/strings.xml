@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="feature_agent_tab_name">Agent</string>
   <string name="feature_agent_home_title">Discover Agents</string>
   <string name="feature_agent_home_description_default">AI Assistant</string>
   <string name="feature_agent_empty_state">No agents found. Tap the top right corner to create one.</string>

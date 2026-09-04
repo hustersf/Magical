@@ -4,20 +4,20 @@
     android:id="@+id/nav_chat"
     android:enabled="true"
     android:icon="@drawable/core_ic_chat"
-    android:title="@string/bottom_nav_page_chat" />
+    android:title="@string/feature_chat_tab_name" />
   <item
     android:id="@+id/nav_agent"
     android:enabled="true"
     android:icon="@drawable/core_ic_agent"
-    android:title="@string/bottom_nav_page_agent" />
+    android:title="@string/feature_agent_tab_name" />
   <item
     android:id="@+id/nav_explore"
     android:enabled="true"
     android:icon="@drawable/core_ic_explore"
-    android:title="@string/bottom_nav_page_explore" />
+    android:title="@string/feature_explore_tab_name" />
   <item
     android:id="@+id/nav_model"
     android:enabled="true"
     android:icon="@drawable/core_ic_setting"
-    android:title="@string/bottom_nav_page_model" />
+    android:title="@string/feature_models_tab_name" />
 </menu>

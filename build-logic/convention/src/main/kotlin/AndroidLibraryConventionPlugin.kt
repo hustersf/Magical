@@ -29,13 +29,23 @@ abstract class AndroidLibraryConventionPlugin : Plugin<Project> {
           }
         }
 
-        // 自动资源前缀命名约束
-        resourcePrefix = path
-          .split("""\W""".toRegex())
-          .drop(1)
-          .distinct()
-          .joinToString(separator = "_")
-          .lowercase() + "_"
+        // 自动资源前缀命名约束：基于路径深度的智能精简算法
+        val segments = path.split(":").filter { it.isNotBlank() }
+        if (segments.isNotEmpty()) {
+          val prefixSegments = mutableListOf<String>()
+          prefixSegments.add(segments[0])
+
+          val technicalKeywords = setOf("api", "impl", "core")
+          val startIndex = if (segments.size > 2) 2 else 1
+
+          for (i in startIndex until segments.size) {
+            val segment = segments[i]
+            if (segment !in technicalKeywords) {
+              prefixSegments.add(segment)
+            }
+          }
+          resourcePrefix = prefixSegments.distinct().joinToString("_").lowercase() + "_"
+        }
       }
 
       // 统一为全家所有子模块自动注入高频必装的基础依赖

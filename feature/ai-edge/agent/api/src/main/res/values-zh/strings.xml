@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="feature_agent_tab_name">智能体</string>
   <string name="feature_agent_home_title">发现智能体</string>
   <string name="feature_agent_home_description_default">智能助手</string>
   <string name="feature_agent_empty_state">暂时没有智能体，点击右上角创建一个吧</string>

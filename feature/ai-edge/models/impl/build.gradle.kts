@@ -22,9 +22,10 @@ dependencies {
   implementation(libs.hilt.android)
   ksp(libs.hilt.compiler)
 
+  implementation(project(":feature:ai-edge:models:api"))
   implementation(project(":feature:ai-edge:chat:api"))
   implementation(project(":core:ui"))
-  implementation(project(":core:res"))
+  implementation(project(":core:res:icon"))
   implementation(project(":core:common"))
   implementation(project(":core:ai-edge:data"))
   implementation(project(":core:ai-edge:domain"))

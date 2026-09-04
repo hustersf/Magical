@@ -575,7 +575,7 @@ class ChatDetailActivity : BaseUIActivity() {
   private fun showMoreMenu(anchorView: View) {
     // 创建原生的快捷气泡菜单，直接锚定在 + 号按钮上方或下方弹出
     val popup = PopupMenu(this, anchorView)
-    popup.menuInflater.inflate(R.menu.feature_detail_more_menu, popup.menu)
+    popup.menuInflater.inflate(R.menu.feature_chat_detail_more_menu, popup.menu)
     popup.setForceShowIcon(true)
     // 根据 XML 中定义的 ID 分发点击事件
     popup.setOnMenuItemClickListener { item ->

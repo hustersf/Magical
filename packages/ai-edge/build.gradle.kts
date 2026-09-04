@@ -31,7 +31,7 @@ dependencies {
   androidTestImplementation(libs.androidx.espresso.core)
 
   implementation(project(":core:ui"))
-  implementation(project(":core:res"))
+  implementation(project(":core:res:icon"))
   implementation(project(":core:ai-edge:design"))
   implementation(project(":core:ai-edge:data"))
   implementation(project(":core:ai-edge:domain"))

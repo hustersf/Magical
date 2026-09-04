@@ -13,7 +13,7 @@ class VisionHomeFragment : Fragment() {
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    return inflater.inflate(R.layout.vision_home_fragment, container, false);
+    return inflater.inflate(R.layout.feature_vision_home_fragment, container, false);
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

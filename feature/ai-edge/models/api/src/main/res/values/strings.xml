@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="feature_models_tab_name">Model</string>
   <string name="feature_models_storage_hub_title">Storage Hub &amp; Cleanup</string>
   <string name="feature_models_storage_scanning">Scanning storage…</string>
   <string name="feature_models_storage_used_format">%1$s / %2$s Free</string>

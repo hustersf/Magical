@@ -19,6 +19,7 @@ android {
 dependencies {
   implementation(project(":core:ai-edge:design-compose"))
   implementation(project(":core:ai-edge:navigation"))
+  implementation(project(":core:res:icon"))
 
   implementation(project(":feature:ai-edge:chat:api"))
   implementation(project(":feature:ai-edge:chat:impl-compose"))

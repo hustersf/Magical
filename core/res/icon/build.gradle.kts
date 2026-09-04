@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-  namespace = "com.sofar.core.res"
+  namespace = "com.sofar.core.res.icon"
 }
 
 dependencies {

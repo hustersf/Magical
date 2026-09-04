@@ -14,6 +14,7 @@ import com.sofar.core.ai.edge.data.entity.models.Model
 import com.sofar.core.ai.edge.data.entity.models.ModelDownloadStatus
 import com.sofar.core.ai.edge.data.entity.models.ModelDownloadStatusType
 import io.noties.markwon.Markwon
+import com.sofar.feature.ai.edge.models.api.R as modelsR
 
 class ModelsAdapter(
   private val onActionClick: (Model, View) -> Unit,
@@ -85,7 +86,7 @@ class ModelViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val context = downloadBtn.context
     if (status == null) {
       downloadBtn.visibility = View.VISIBLE
-      downloadBtn.text = context.getString(R.string.feature_models_download)
+      downloadBtn.text = context.getString(modelsR.string.feature_models_download)
       downloadBtn.isEnabled = true
       return
     }
@@ -99,14 +100,14 @@ class ModelViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     when (status.statusType) {
       ModelDownloadStatusType.NOT_DOWNLOADED -> {
         downloadBtn.visibility = View.VISIBLE
-        downloadBtn.text = context.getString(R.string.feature_models_download)
+        downloadBtn.text = context.getString(modelsR.string.feature_models_download)
         downloadBtn.isEnabled = true
       }
 
       ModelDownloadStatusType.PARTIALLY_DOWNLOADED -> {
         downloadBtn.visibility = View.VISIBLE
         downloadBtn.text =
-          context.getString(R.string.feature_models_download_partial, progressInt)
+          context.getString(modelsR.string.feature_models_download_partial, progressInt)
         downloadBtn.isEnabled = true
       }
 
@@ -122,9 +123,9 @@ class ModelViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         }
         val minutes = (remainingSeconds / 60).coerceAtLeast(1)
         val remainingTimeStr =
-          context.getString(R.string.feature_models_time_minutes, minutes)
+          context.getString(modelsR.string.feature_models_time_minutes, minutes)
         downloadBtn.text = context.getString(
-          R.string.feature_models_download_progress,
+          modelsR.string.feature_models_download_progress,
           progressInt, currentStr, totalStr, remainingTimeStr
         )
         downloadBtn.isEnabled = false // 下载中途拦截用户的二次重复点击
@@ -132,7 +133,7 @@ class ModelViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
       ModelDownloadStatusType.UNZIPPING -> {
         downloadBtn.visibility = View.VISIBLE
-        downloadBtn.text = context.getString(R.string.feature_models_download_unzipping)
+        downloadBtn.text = context.getString(modelsR.string.feature_models_download_unzipping)
         downloadBtn.isEnabled = false
       }
 
@@ -144,7 +145,7 @@ class ModelViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
       ModelDownloadStatusType.FAILED -> {
         downloadBtn.visibility = View.VISIBLE
-        downloadBtn.text = context.getString(R.string.feature_models_download_retry)
+        downloadBtn.text = context.getString(modelsR.string.feature_models_download_retry)
         downloadBtn.isEnabled = true
       }
     }

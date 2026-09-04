@@ -13,7 +13,7 @@ class MeetingHomeFragment : Fragment() {
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    return inflater.inflate(R.layout.meeting_home_fragment, container, false);
+    return inflater.inflate(R.layout.feature_meeting_home_fragment, container, false);
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -19,7 +19,8 @@ dependencies {
   implementation(libs.markwon)
 
   implementation(project(":feature:ai-edge:chat:api"))
-  implementation(project(":core:res"))
+  implementation(project(":core:res:icon"))
+  implementation(project(":core:res:view"))
   implementation(project(":core:ui"))
   implementation(project(":core:common"))
   implementation(project(":core:media"))

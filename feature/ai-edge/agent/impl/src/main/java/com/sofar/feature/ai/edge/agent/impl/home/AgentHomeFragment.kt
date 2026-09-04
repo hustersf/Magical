@@ -25,6 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.sofar.feature.ai.edge.agent.api.R as agentR
 
 @AndroidEntryPoint
 class AgentHomeFragment : Fragment() {
@@ -95,21 +96,21 @@ class AgentHomeFragment : Fragment() {
       .setTitle(agent.name)
       .setMessage(
         getString(
-          R.string.feature_agent_detail_message,
+          agentR.string.feature_agent_detail_message,
           agent.avatar,
-          agent.modelId ?: getString(R.string.feature_agent_model_unbound),
+          agent.modelId ?: getString(agentR.string.feature_agent_model_unbound),
           agent.systemPrompt
         )
       )
-      .setPositiveButton(R.string.feature_agent_action_chat) { dialog, _ ->
+      .setPositiveButton(agentR.string.feature_agent_action_chat) { dialog, _ ->
         dialog.dismiss()
         onAgentSelected(agent)
       }
-      .setNeutralButton(R.string.feature_agent_action_edit) { dialog, _ ->
+      .setNeutralButton(agentR.string.feature_agent_action_edit) { dialog, _ ->
         dialog.dismiss()
         showAgentEditorDialog(agent)
       }
-      .setNegativeButton(R.string.feature_agent_action_delete) { dialog, _ ->
+      .setNegativeButton(agentR.string.feature_agent_action_delete) { dialog, _ ->
         dialog.dismiss()
         showDeleteConfirmationDialog(agent)
       }
@@ -123,8 +124,8 @@ class AgentHomeFragment : Fragment() {
     }
 
     val options = arrayOf(
-      getString(R.string.feature_agent_action_edit),
-      getString(R.string.feature_agent_action_delete)
+      getString(agentR.string.feature_agent_action_edit),
+      getString(agentR.string.feature_agent_action_delete)
     )
 
     MaterialAlertDialogBuilder(requireContext())
@@ -148,15 +149,15 @@ class AgentHomeFragment : Fragment() {
     avatarEt.setText(agent?.avatar ?: "🤖")
     nameEt.setText(agent?.name.orEmpty())
     promptEt.setText(
-      agent?.systemPrompt ?: resources.getString(R.string.feature_agent_default_prompt_content)
+      agent?.systemPrompt ?: resources.getString(agentR.string.feature_agent_default_prompt_content)
     )
 
     val dialog = MaterialAlertDialogBuilder(requireContext())
-      .setTitle(if (agent == null) R.string.feature_agent_create_title else R.string.feature_agent_edit_title)
+      .setTitle(if (agent == null) agentR.string.feature_agent_create_title else agentR.string.feature_agent_edit_title)
       .setView(dialogView)
-      .setNegativeButton(R.string.feature_agent_action_cancel, null)
+      .setNegativeButton(agentR.string.feature_agent_action_cancel, null)
       .setPositiveButton(
-        if (agent == null) R.string.feature_agent_action_create else R.string.feature_agent_action_save,
+        if (agent == null) agentR.string.feature_agent_action_create else agentR.string.feature_agent_action_save,
         null
       )
       .create()
@@ -187,13 +188,13 @@ class AgentHomeFragment : Fragment() {
 
   private fun showDeleteConfirmationDialog(agent: AgentEntity) {
     MaterialAlertDialogBuilder(requireContext())
-      .setTitle(R.string.feature_agent_delete_title)
-      .setMessage(getString(R.string.feature_agent_delete_message, agent.name))
-      .setPositiveButton(R.string.feature_agent_action_delete) { dialog, _ ->
+      .setTitle(agentR.string.feature_agent_delete_title)
+      .setMessage(getString(agentR.string.feature_agent_delete_message, agent.name))
+      .setPositiveButton(agentR.string.feature_agent_action_delete) { dialog, _ ->
         viewModel.deleteAgent(agent)
         dialog.dismiss()
       }
-      .setNegativeButton(R.string.feature_agent_action_cancel, null)
+      .setNegativeButton(agentR.string.feature_agent_action_cancel, null)
       .show()
   }
 

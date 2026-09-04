@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="feature_models_tab_name">模型</string>
   <string name="feature_models_storage_hub_title">存储中心与清理</string>
   <string name="feature_models_storage_scanning">存储空间扫描中…</string>
   <string name="feature_models_storage_used_format">%1$s / %2$s 可用</string>
