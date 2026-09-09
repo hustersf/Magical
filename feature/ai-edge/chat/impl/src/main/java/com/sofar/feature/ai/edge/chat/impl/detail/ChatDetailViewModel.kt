@@ -1,6 +1,5 @@
 package com.sofar.feature.ai.edge.chat.impl.detail
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sofar.core.ai.edge.data.entity.models.Model
@@ -10,7 +9,6 @@ import com.sofar.core.ai.edge.domain.usecase.ActiveModelHolder
 import com.sofar.feature.ai.edge.chat.impl.detail.image.SelectedImageState
 import com.sofar.feature.ai.edge.chat.impl.detail.voice.VoiceInputUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -26,7 +24,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChatDetailViewModel @Inject constructor(
-  @param:ApplicationContext private val appContext: Context,
   private val repository: ChatRepository,
   private val agentRepository: AgentRepository,
   private val activeModelHolder: ActiveModelHolder,
@@ -78,7 +75,6 @@ class ChatDetailViewModel @Inject constructor(
           } else {
             // 初始化
             prepareEngine(
-              appContext,
               freshModel,
               sessionId,
               agent?.systemPrompt
@@ -100,7 +96,6 @@ class ChatDetailViewModel @Inject constructor(
    * 对应 Activity 的 initData 阶段，或者用户去 Tab 5 页面动态重载大模型时调用
    */
   private fun prepareEngine(
-    context: Context,
     model: Model,
     sessionId: String,
     agentSystemPrompt: String?
@@ -111,7 +106,6 @@ class ChatDetailViewModel @Inject constructor(
     // 🚀 在主线程作用域中无忧启动协程，保持 UI 的极速响应
     viewModelScope.launch {
       val errorResult = repository.initializeModel(
-        context = context,
         model = model,
         sessionId = sessionId,
         agentSystemPrompt = agentSystemPrompt

@@ -4,8 +4,11 @@ import android.content.Context
 import com.sofar.core.ai.edge.data.entity.models.Model
 import com.sofar.core.ai.edge.data.entity.models.ModelDownloadStatus
 import com.sofar.core.ai.edge.data.entity.models.ModelDownloadStatusType
+import com.sofar.core.ai.edge.data.entity.models.getPath
+import com.sofar.core.ai.edge.data.entity.models.getTmpPath
 import com.sofar.download.DownloadManager
 import com.sofar.download.ZipUtil
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -14,11 +17,13 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import java.io.File
 
-class DownloadRepository {
+class DownloadRepository(
+  @param:ApplicationContext private val context: Context
+) {
 
   private val downloadManager = DownloadManager()
 
-  fun downloadModel(context: Context, model: Model): Flow<ModelDownloadStatus> = callbackFlow {
+  fun downloadModel(model: Model): Flow<ModelDownloadStatus> = callbackFlow {
     val targetFile = File(model.getPath(context))
     val tmpFile = File(model.getTmpPath(context))
     targetFile.parentFile?.mkdirs()

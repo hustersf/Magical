@@ -17,12 +17,8 @@ import com.google.ai.edge.litertlm.MessageCallback
 import com.google.ai.edge.litertlm.SamplerConfig
 import com.google.ai.edge.litertlm.ToolProvider
 import com.sofar.core.ai.edge.data.entity.llm.Accelerator
-import com.sofar.core.ai.edge.data.entity.llm.DEFAULT_MAX_TOKEN
-import com.sofar.core.ai.edge.data.entity.llm.DEFAULT_TEMPERATURE
-import com.sofar.core.ai.edge.data.entity.llm.DEFAULT_TOPK
-import com.sofar.core.ai.edge.data.entity.llm.DEFAULT_TOPP
-import com.sofar.core.ai.edge.data.entity.llm.DEFAULT_VISION_ACCELERATOR
 import com.sofar.core.ai.edge.data.entity.models.Model
+import com.sofar.core.ai.edge.data.entity.models.getPath
 import com.sofar.core.ai.edge.data.util.cleanUpMediapipeTaskErrorMessage
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.CancellationException

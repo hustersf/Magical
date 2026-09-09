@@ -1,6 +1,5 @@
 package com.sofar.feature.ai.edge.models.impl
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sofar.core.ai.edge.data.entity.models.AllowedModel
@@ -8,11 +7,11 @@ import com.sofar.core.ai.edge.data.entity.models.Model
 import com.sofar.core.ai.edge.data.entity.models.ModelDownloadStatus
 import com.sofar.core.ai.edge.data.entity.models.ModelDownloadStatusType
 import com.sofar.core.ai.edge.data.repository.DownloadRepository
+import com.sofar.core.ai.edge.data.repository.ModelRepository
 import com.sofar.core.ai.edge.domain.usecase.ActiveModelHolder
 import com.sofar.core.ai.edge.domain.usecase.InitModelConfigUseCase
 import com.sofar.core.ui.state.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,19 +21,18 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
 class ModelsManagerViewModel @Inject constructor(
-  @param:ApplicationContext private val appContext: Context,
+  private val modelRepository: ModelRepository,
+  private val downloadRepository: DownloadRepository,
   private val initModelConfigUseCase: InitModelConfigUseCase,
   private val activeModelHolder: ActiveModelHolder,
 ) : ViewModel() {
 
   private val _uiState = MutableStateFlow(ModelManagerUiState())
   val uiState: StateFlow<ModelManagerUiState> = _uiState.asStateFlow()
-  private val downloadRepository = DownloadRepository()
 
   init {
     _uiState.update { it.copy(isScanningStorage = true) }
@@ -69,7 +67,7 @@ class ModelsManagerViewModel @Inject constructor(
 
   fun downloadModel(model: Model) {
     viewModelScope.launch {
-      downloadRepository.downloadModel(appContext, model)
+      downloadRepository.downloadModel(model)
         .collect { downloadStatus ->
           _uiState.update {
             val updatedStatusMap =
@@ -91,10 +89,7 @@ class ModelsManagerViewModel @Inject constructor(
   fun deleteModel(model: Model) {
     viewModelScope.launch(Dispatchers.IO) {
       // 删除模型文件
-      val modelFile = File(model.getPath(appContext))
-      if (modelFile.exists()) {
-        modelFile.delete()
-      }
+      modelRepository.deleteModelFile(model)
 
       // 更新状态
       _uiState.update {
@@ -113,7 +108,7 @@ class ModelsManagerViewModel @Inject constructor(
     }
 
     val currentStatusMap = list.associate { model ->
-      model.name to model.getDownloadStatus(appContext)
+      model.name to modelRepository.getDownloadStatus(model)
     }
 
     _uiState.update {

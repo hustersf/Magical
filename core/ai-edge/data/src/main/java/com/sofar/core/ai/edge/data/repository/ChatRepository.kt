@@ -1,7 +1,6 @@
 package com.sofar.core.ai.edge.data.repository
 
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.util.Log
 import com.google.ai.edge.litertlm.Contents
 import com.google.ai.edge.litertlm.Message
@@ -38,11 +37,14 @@ import java.io.File
 import java.util.UUID
 
 class ChatRepository(
+  context: Context,
   private val sessionDao: SessionDao,
   private val messageDao: MessageDao,
   private val agentDao: AgentDao,
   private val dataSource: LiteRtLmDataSource
 ) {
+
+  private val appContext = context.applicationContext
 
   companion object {
     private const val TAG = "ChatRepository"
@@ -152,7 +154,6 @@ class ChatRepository(
    * 初始化底层的擎配置
    */
   suspend fun initializeModel(
-    context: Context,
     model: Model,
     sessionId: String,
     agentSystemPrompt: String? = null,
@@ -187,9 +188,6 @@ class ChatRepository(
       lastInitializedSessionId = sessionId
       return@withContext ""
     }
-
-    // 1. 防内存泄漏防御：强行将上下文转换为长生命周期的 Application 级别 [^5]
-    val appContext = context.applicationContext
 
     // 2. 此时这一步解析提示词的操作，也已经安全地运行在子线程了
     val systemInstruction = agentSystemPrompt?.let { Contents.of(it) }

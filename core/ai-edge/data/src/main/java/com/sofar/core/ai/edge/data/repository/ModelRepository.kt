@@ -1,7 +1,11 @@
 package com.sofar.core.ai.edge.data.repository
 
 import android.content.Context
+import com.sofar.core.ai.edge.data.entity.models.Model
 import com.sofar.core.ai.edge.data.entity.models.ModelAllowlist
+import com.sofar.core.ai.edge.data.entity.models.ModelDownloadStatus
+import com.sofar.core.ai.edge.data.entity.models.deleteModelFile
+import com.sofar.core.ai.edge.data.entity.models.getDownloadStatus
 import com.sofar.core.ai.edge.data.network.ApiClientHolder
 import com.sofar.core.ai.edge.data.network.ModelApiService
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +24,14 @@ class ModelRepository(context: Context) {
 
   companion object {
     private const val MODEL_ALLOWLIST_FILENAME = "model_allowlist.json"
+  }
+
+  fun getDownloadStatus(model: Model): ModelDownloadStatus {
+    return model.getDownloadStatus(appContext)
+  }
+
+  suspend fun deleteModelFile(model: Model) {
+    model.deleteModelFile(appContext)
   }
 
   fun getModelAllowlist(): Flow<ModelAllowlist> = flow {
