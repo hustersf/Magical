@@ -1,4 +1,4 @@
-package com.sofar.core.ui.state
+package com.sofar.core.common.state
 
 class Event<out T>(private val content: T) {
 

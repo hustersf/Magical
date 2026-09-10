@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sofar.core.ai.edge.data.entity.models.Model
 import com.sofar.core.ai.edge.data.entity.models.ModelDownloadStatus
 import com.sofar.core.ai.edge.data.entity.models.ModelDownloadStatusType
+import com.sofar.feature.ai.edge.models.logic.ModelUiState
 import io.noties.markwon.Markwon
 import com.sofar.feature.ai.edge.models.api.R as modelsR
 

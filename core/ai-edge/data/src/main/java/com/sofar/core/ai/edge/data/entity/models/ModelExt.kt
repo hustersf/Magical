@@ -2,8 +2,6 @@ package com.sofar.core.ai.edge.data.entity.models
 
 import android.content.Context
 import com.sofar.core.ai.edge.data.storage.AppStorageHub
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.io.File
 
 /**
@@ -56,7 +54,7 @@ fun Model.getDownloadStatus(context: Context): ModelDownloadStatus {
   }
 }
 
-suspend fun Model.deleteModelFile(context: Context) = withContext(Dispatchers.IO) {
+fun Model.deleteModelFile(context: Context) {
   val modelFile = File(getPath(context))
   if (modelFile.exists()) {
     modelFile.delete()

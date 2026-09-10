@@ -17,10 +17,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.sofar.core.ai.edge.data.entity.models.Model
-import com.sofar.core.ai.edge.data.storage.AppStorageHub
+import com.sofar.core.common.state.observeEvent
 import com.sofar.core.ui.recyclerview.LinearMarginItemDecoration
-import com.sofar.core.ui.state.observeEvent
 import com.sofar.feature.ai.edge.chat.api.ChatNavigator
+import com.sofar.feature.ai.edge.models.logic.ModelManagerUiState
+import com.sofar.feature.ai.edge.models.logic.ModelUiState
+import com.sofar.feature.ai.edge.models.logic.ModelsManagerViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -40,8 +42,6 @@ class ModelsHomeFragment : Fragment() {
 
   @Inject
   lateinit var chatNavigator: ChatNavigator
-
-  private var lastStorageRefreshTime: Long = 0L
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -105,24 +105,20 @@ class ModelsHomeFragment : Fragment() {
       )
     }
     adapter.submitList(uiModels)
-
-    val currentTime = System.currentTimeMillis()
-    if (state.isScanningStorage || (currentTime - lastStorageRefreshTime >= 1000L)) {
-      renderStorageCard(state) // 放行刷新卡片并读取物理大盘
-      lastStorageRefreshTime = currentTime // 🌟 重新咬死时间戳起点
-    }
+    renderStorageCard(state)
   }
 
   private fun renderStorageCard(state: ModelManagerUiState) {
+    val snapshot = state.storageSnapshot ?: return
     val context = storageUsageTv.context
-    val snapshot = AppStorageHub.getStorageSnapshot(context)
     val usedStr = Formatter.formatFileSize(context, snapshot.modelsSize)
     val availStr = Formatter.formatFileSize(context, snapshot.availableSize)
-    storageUsageTv.text = getString(modelsR.string.feature_models_storage_used_format, usedStr, availStr)
+    storageUsageTv.text =
+      getString(modelsR.string.feature_models_storage_used_format, usedStr, availStr)
 
-    val totalSpaceDenom = snapshot.modelsSize + snapshot.availableSize
-    val progressPercent = if (totalSpaceDenom > 0) {
-      (snapshot.modelsSize.toFloat() / totalSpaceDenom * 100).toInt()
+    val totalSpace = snapshot.modelsSize + snapshot.availableSize
+    val progressPercent = if (totalSpace > 0) {
+      (snapshot.modelsSize.toFloat() / totalSpace * 100).toInt()
     } else {
       0
     }
@@ -141,8 +137,7 @@ class ModelsHomeFragment : Fragment() {
       }
       .setNegativeButton(getString(modelsR.string.feature_models_delete_dialog_cancel)) { dialog, _ ->
         dialog.dismiss()
-      }
-      .show()
+      }.show()
   }
 
   private fun jump(model: Model) {

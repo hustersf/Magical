@@ -1,4 +1,4 @@
-package com.sofar.feature.ai.edge.models.impl
+package com.sofar.feature.ai.edge.models.logic
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,9 +10,8 @@ import com.sofar.core.ai.edge.data.repository.DownloadRepository
 import com.sofar.core.ai.edge.data.repository.ModelRepository
 import com.sofar.core.ai.edge.domain.usecase.ActiveModelHolder
 import com.sofar.core.ai.edge.domain.usecase.InitModelConfigUseCase
-import com.sofar.core.ui.state.Event
+import com.sofar.core.common.state.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,6 +42,7 @@ class ModelsManagerViewModel @Inject constructor(
   }
 
   fun fetchConfig() {
+    refreshStorageStats()
     viewModelScope.launch {
       // 先尝试获取缓存数据（秒开）
       val cachedData = initModelConfigUseCase.getModelData()
@@ -80,16 +80,17 @@ class ModelsManagerViewModel @Inject constructor(
             downloadStatus.statusType == ModelDownloadStatusType.FAILED ||
             downloadStatus.statusType == ModelDownloadStatusType.NOT_DOWNLOADED
           ) {
-            _uiState.update { it.copy(isScanningStorage = true) }
+            refreshStorageStats()
           }
         }
     }
   }
 
   fun deleteModel(model: Model) {
-    viewModelScope.launch(Dispatchers.IO) {
+    viewModelScope.launch {
       // 删除模型文件
       modelRepository.deleteModelFile(model)
+      refreshStorageStats()
 
       // 更新状态
       _uiState.update {
@@ -101,7 +102,15 @@ class ModelsManagerViewModel @Inject constructor(
     }
   }
 
-  private fun updateUiState(modelList: List<AllowedModel>) {
+  private fun refreshStorageStats() {
+    viewModelScope.launch {
+      _uiState.update { it.copy(isScanningStorage = true) }
+      val snapshot = modelRepository.getStorageSnapshot()
+      _uiState.update { it.copy(storageSnapshot = snapshot, isScanningStorage = false) }
+    }
+  }
+
+  private suspend fun updateUiState(modelList: List<AllowedModel>) {
     val list = mutableListOf<Model>()
     for (item in modelList) {
       list.add(item.toModel())

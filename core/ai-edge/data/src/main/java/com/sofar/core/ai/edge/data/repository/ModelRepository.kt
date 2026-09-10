@@ -8,6 +8,7 @@ import com.sofar.core.ai.edge.data.entity.models.deleteModelFile
 import com.sofar.core.ai.edge.data.entity.models.getDownloadStatus
 import com.sofar.core.ai.edge.data.network.ApiClientHolder
 import com.sofar.core.ai.edge.data.network.ModelApiService
+import com.sofar.core.ai.edge.data.storage.AppStorageHub
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -26,12 +27,16 @@ class ModelRepository(context: Context) {
     private const val MODEL_ALLOWLIST_FILENAME = "model_allowlist.json"
   }
 
-  fun getDownloadStatus(model: Model): ModelDownloadStatus {
-    return model.getDownloadStatus(appContext)
+  suspend fun getDownloadStatus(model: Model): ModelDownloadStatus = withContext(Dispatchers.IO) {
+    return@withContext model.getDownloadStatus(appContext)
   }
 
-  suspend fun deleteModelFile(model: Model) {
+  suspend fun deleteModelFile(model: Model) = withContext(Dispatchers.IO) {
     model.deleteModelFile(appContext)
+  }
+
+  suspend fun getStorageSnapshot(): AppStorageHub.StorageSnapshot = withContext(Dispatchers.IO) {
+    AppStorageHub.getStorageSnapshot(appContext)
   }
 
   fun getModelAllowlist(): Flow<ModelAllowlist> = flow {

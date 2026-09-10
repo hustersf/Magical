@@ -8,6 +8,6 @@ import com.sofar.feature.ai.edge.models.impl.ModelsScreen
 
 fun EntryProviderScope<NavKey>.modelsEntry(navigator: Navigator) {
   entry<ModelsNavKey> {
-    ModelsScreen()
+    ModelsScreen(navigator = navigator)
   }
 }

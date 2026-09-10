@@ -2,6 +2,7 @@ package com.sofar.feature.ai.edge.models.impl
 
 import android.os.Bundle
 import androidx.recyclerview.widget.DiffUtil
+import com.sofar.feature.ai.edge.models.logic.ModelUiState
 
 class ModelDiffCallback : DiffUtil.ItemCallback<ModelUiState>() {
 
