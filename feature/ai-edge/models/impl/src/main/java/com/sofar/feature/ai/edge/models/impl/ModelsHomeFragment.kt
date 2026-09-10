@@ -24,6 +24,8 @@ import com.sofar.feature.ai.edge.chat.api.ChatNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.sofar.core.ui.R as coreUiR
+import com.sofar.feature.ai.edge.models.api.R as modelsR
 
 @AndroidEntryPoint
 class ModelsHomeFragment : Fragment() {
@@ -61,7 +63,7 @@ class ModelsHomeFragment : Fragment() {
     storageCircularProgress = view.findViewById(R.id.storage_progress)
     modelsRv = view.findViewById(R.id.models_rv)
     modelsRv.layoutManager = LinearLayoutManager(context)
-    val padding = resources.getDimension(R.dimen.core_ui_spacing_lg).toInt()
+    val padding = resources.getDimension(coreUiR.dimen.core_ui_spacing_lg).toInt()
     modelsRv.addItemDecoration(
       LinearMarginItemDecoration(
         RecyclerView.VERTICAL,
@@ -116,7 +118,7 @@ class ModelsHomeFragment : Fragment() {
     val snapshot = AppStorageHub.getStorageSnapshot(context)
     val usedStr = Formatter.formatFileSize(context, snapshot.modelsSize)
     val availStr = Formatter.formatFileSize(context, snapshot.availableSize)
-    storageUsageTv.text = getString(R.string.feature_models_storage_used_format, usedStr, availStr)
+    storageUsageTv.text = getString(modelsR.string.feature_models_storage_used_format, usedStr, availStr)
 
     val totalSpaceDenom = snapshot.modelsSize + snapshot.availableSize
     val progressPercent = if (totalSpaceDenom > 0) {
@@ -130,14 +132,14 @@ class ModelsHomeFragment : Fragment() {
 
   private fun showDeleteConfirmationDialog(model: Model) {
     MaterialAlertDialogBuilder(requireContext())
-      .setTitle(getString(R.string.feature_models_delete_dialog_title))
-      .setMessage(getString(R.string.feature_models_delete_dialog_message, model.name))
+      .setTitle(getString(modelsR.string.feature_models_delete_dialog_title))
+      .setMessage(getString(modelsR.string.feature_models_delete_dialog_message, model.name))
       .setCancelable(true)
-      .setPositiveButton(getString(R.string.feature_models_delete_dialog_confirm)) { dialog, _ ->
+      .setPositiveButton(getString(modelsR.string.feature_models_delete_dialog_confirm)) { dialog, _ ->
         viewModel.deleteModel(model)
         dialog.dismiss()
       }
-      .setNegativeButton(getString(R.string.feature_models_delete_dialog_cancel)) { dialog, _ ->
+      .setNegativeButton(getString(modelsR.string.feature_models_delete_dialog_cancel)) { dialog, _ ->
         dialog.dismiss()
       }
       .show()

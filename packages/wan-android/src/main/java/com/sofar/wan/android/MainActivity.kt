@@ -1,17 +1,17 @@
 package com.sofar.wan.android
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import com.sofar.core.ui.activity.BaseUIActivity
+import com.sofar.core.legacy.R as legacyR
 
 class MainActivity : BaseUIActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_container)
+    setContentView(legacyR.layout.activity_container)
 
     supportFragmentManager.beginTransaction()
-      .replace(R.id.fragment_container, MainFragment())
+      .replace(legacyR.id.fragment_container, MainFragment())
       .commitAllowingStateLoss()
   }
 

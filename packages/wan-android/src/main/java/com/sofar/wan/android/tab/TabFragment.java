@@ -35,8 +35,8 @@ public abstract class TabFragment extends Fragment {
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
     @Nullable Bundle savedInstanceState) {
     View rootView = inflater.inflate(getLayoutResId(), container, false);
-    mTabLayout = rootView.findViewById(R.id.tab_layout);
-    mViewPager2 = rootView.findViewById(R.id.view_pager);
+    mTabLayout = rootView.findViewById(com.sofar.core.legacy.R.id.tab_layout);
+    mViewPager2 = rootView.findViewById(com.sofar.core.legacy.R.id.view_pager);
     return rootView;
   }
 

@@ -13,6 +13,7 @@ import com.sofar.core.ai.edge.data.entity.chat.ChatPriority
 import com.sofar.core.ai.edge.data.entity.chat.ChatSessionType
 import com.sofar.core.ai.edge.database.entity.SessionEntity
 import com.sofar.feature.ai.edge.chat.impl.R
+import com.sofar.feature.ai.edge.chat.api.R as chatR
 
 class ChatHomeAdapter(
   private val agentCache: AgentCache,
@@ -53,7 +54,7 @@ class ChatHomeViewHolder(
       true
     }
     titleTv.text = item.title.ifEmpty {
-      titleTv.context.getString(R.string.feature_chat_title_default)
+      titleTv.context.getString(chatR.string.feature_chat_title_default)
     }
 
     var targetColorRes = R.color.feature_chat_home_avatar_pink

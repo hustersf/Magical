@@ -11,14 +11,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sofar.core.ai.edge.data.entity.chat.ChatMessageRole
 import com.sofar.core.ai.edge.data.entity.chat.ChatMessageType
 import com.sofar.core.ai.edge.database.entity.MessageEntity
-import com.sofar.image.loadImage
 import com.sofar.core.ui.image.RoundImageView
 import com.sofar.core.ui.recyclerview.LinearMarginItemDecoration
 import com.sofar.feature.ai.edge.chat.impl.R
 import com.sofar.feature.ai.edge.chat.impl.detail.image.ImagePreviewActivity
 import com.sofar.feature.ai.edge.chat.impl.detail.image.SelectedImageAdapter
 import com.sofar.feature.ai.edge.chat.impl.detail.image.SelectedImageState
+import com.sofar.image.loadImage
 import io.noties.markwon.Markwon
+import com.sofar.core.ui.R as coreUiR
+import com.sofar.feature.ai.edge.chat.api.R as chatR
 
 class ChatDetailAdapter(
   private val diffCallback: ChatDetailDiffCallback = ChatDetailDiffCallback()
@@ -165,7 +167,7 @@ class AiTextViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
   fun bind(item: MessageEntity) {
     // 首次顶出气泡时，若内容为空自动展示思考兜底字样
     if (item.textContent.isNullOrEmpty()) {
-      contentTv.text = itemView.context.getString(R.string.feature_chat_ai_thinking)
+      contentTv.text = itemView.context.getString(chatR.string.feature_chat_ai_thinking)
     } else {
       updateTextInline(item.textContent)
     }
@@ -192,7 +194,8 @@ class UserImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     multiImageRecyclerView.layoutManager =
       LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
     multiImageRecyclerView.adapter = subImageAdapter
-    val imagePadding = itemView.context.resources.getDimension(R.dimen.core_ui_spacing_sm).toInt()
+    val imagePadding = itemView.context.resources.getDimension(coreUiR.dimen.core_ui_spacing_sm)
+      .toInt()
     multiImageRecyclerView.addItemDecoration(
       LinearMarginItemDecoration(
         RecyclerView.HORIZONTAL,

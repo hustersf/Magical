@@ -10,6 +10,7 @@ import android.widget.ImageView
 import com.sofar.core.ui.activity.BaseUIActivity
 import com.sofar.feature.ai.edge.chat.impl.R
 import com.sofar.image.loadImage
+import com.sofar.core.res.view.R as coreViewR
 
 class ImagePreviewActivity : BaseUIActivity() {
 
@@ -26,7 +27,7 @@ class ImagePreviewActivity : BaseUIActivity() {
       // Android 13 及以下设备，启动动画必须在发出端紧跟在 startActivity 后面调用
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE && context is Activity) {
         @Suppress("DEPRECATION")
-        context.overridePendingTransition(R.anim.core_anim_fade_in, 0)
+        context.overridePendingTransition(coreViewR.anim.core_anim_fade_in, 0)
       }
     }
   }
@@ -37,7 +38,7 @@ class ImagePreviewActivity : BaseUIActivity() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
       overrideActivityTransition(
         OVERRIDE_TRANSITION_OPEN,
-        R.anim.core_anim_fade_in, // 进入动画：淡入
+        coreViewR.anim.core_anim_fade_in, // 进入动画：淡入
         0 // 0：让前一个页面静止，不发生奇怪的滑动拉扯
       )
     }
@@ -61,11 +62,11 @@ class ImagePreviewActivity : BaseUIActivity() {
       overrideActivityTransition(
         OVERRIDE_TRANSITION_CLOSE,
         0,
-        R.anim.core_anim_fade_out
+        coreViewR.anim.core_anim_fade_out
       )
     } else {
       @Suppress("DEPRECATION")
-      overridePendingTransition(0, R.anim.core_anim_fade_out)
+      overridePendingTransition(0, coreViewR.anim.core_anim_fade_out)
     }
   }
 }

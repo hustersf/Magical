@@ -8,7 +8,8 @@ import android.view.Gravity
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.sofar.core.ui.wave.VoiceWaveView
-import com.sofar.feature.ai.edge.chat.impl.R
+import com.sofar.core.ui.R as coreUiR
+import com.sofar.feature.ai.edge.chat.api.R as chatR
 
 class ChatVoiceOverlayView @JvmOverloads constructor(
   context: Context,
@@ -47,14 +48,14 @@ class ChatVoiceOverlayView @JvmOverloads constructor(
 
     cancelText.text = context.getString(
       if (state.isVoiceCanceling) {
-        R.string.feature_chat_voice_release_to_cancel
+        chatR.string.feature_chat_voice_release_to_cancel
       } else {
-        R.string.feature_chat_voice_slide_up_to_cancel
+        chatR.string.feature_chat_voice_slide_up_to_cancel
       }
     )
     overlayText.text = when {
       state.voiceRecognizedText.isNotEmpty() -> state.voiceRecognizedText
-      else -> context.getString(R.string.feature_chat_voice_listening)
+      else -> context.getString(chatR.string.feature_chat_voice_listening)
     }
 
     if (state.isVoiceCanceling) {
@@ -82,7 +83,7 @@ class ChatVoiceOverlayView @JvmOverloads constructor(
       layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
       gravity = Gravity.CENTER
       textAlignment = TEXT_ALIGNMENT_CENTER
-      setTextAppearance(R.style.CoreUiTextAppearance_Caption)
+      setTextAppearance(coreUiR.style.CoreUiTextAppearance_Caption)
     }
     addView(cancelText)
   }
@@ -90,7 +91,7 @@ class ChatVoiceOverlayView @JvmOverloads constructor(
   private fun addWaveView() {
     waveView.layoutParams =
       LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-        topMargin = resources.getDimensionPixelSize(R.dimen.core_ui_spacing_sm)
+        topMargin = resources.getDimensionPixelSize(coreUiR.dimen.core_ui_spacing_sm)
       }
     addView(waveView)
   }
@@ -98,13 +99,13 @@ class ChatVoiceOverlayView @JvmOverloads constructor(
   private fun addOverlayText() {
     overlayText.apply {
       layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-        topMargin = resources.getDimensionPixelSize(R.dimen.core_ui_spacing_sm)
+        topMargin = resources.getDimensionPixelSize(coreUiR.dimen.core_ui_spacing_sm)
       }
       gravity = Gravity.CENTER
       textAlignment = TEXT_ALIGNMENT_CENTER
       ellipsize = TextUtils.TruncateAt.END
       maxLines = 2
-      setTextAppearance(R.style.CoreUiTextAppearance_Body)
+      setTextAppearance(coreUiR.style.CoreUiTextAppearance_Body)
     }
     addView(overlayText)
   }

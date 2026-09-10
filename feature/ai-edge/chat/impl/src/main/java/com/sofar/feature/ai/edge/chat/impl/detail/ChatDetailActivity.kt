@@ -47,6 +47,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.UUID
+import com.sofar.core.res.icon.R as coreIconR
+import com.sofar.core.ui.R as coreUiR
+import com.sofar.feature.ai.edge.chat.api.R as chatR
 
 @AndroidEntryPoint
 class ChatDetailActivity : BaseUIActivity() {
@@ -82,7 +85,7 @@ class ChatDetailActivity : BaseUIActivity() {
     if (!isGranted) {
       Toast.makeText(
         this,
-        getString(R.string.feature_chat_voice_permission_denied),
+        getString(chatR.string.feature_chat_voice_permission_denied),
         Toast.LENGTH_SHORT
       ).show()
     }
@@ -148,7 +151,7 @@ class ChatDetailActivity : BaseUIActivity() {
     recyclerView.layoutManager = layoutManager
     adapter = ChatDetailAdapter()
     recyclerView.adapter = adapter
-    val padding = resources.getDimension(R.dimen.core_ui_spacing_lg).toInt()
+    val padding = resources.getDimension(coreUiR.dimen.core_ui_spacing_lg).toInt()
     recyclerView.addItemDecoration(
       LinearMarginItemDecoration(
         RecyclerView.VERTICAL,
@@ -171,7 +174,7 @@ class ChatDetailActivity : BaseUIActivity() {
       }
     )
     imageRecyclerView.adapter = imageAdapter
-    val imagePadding = resources.getDimension(R.dimen.core_ui_spacing_sm).toInt()
+    val imagePadding = resources.getDimension(coreUiR.dimen.core_ui_spacing_sm).toInt()
     imageRecyclerView.addItemDecoration(
       LinearMarginItemDecoration(
         RecyclerView.HORIZONTAL,
@@ -315,7 +318,7 @@ class ChatDetailActivity : BaseUIActivity() {
         } else {
           Toast.makeText(
             this,
-            getString(R.string.feature_chat_voice_unrecognized),
+            getString(chatR.string.feature_chat_voice_unrecognized),
             Toast.LENGTH_SHORT
           ).show()
         }
@@ -404,7 +407,7 @@ class ChatDetailActivity : BaseUIActivity() {
    */
   private fun renderToolbar(sessionTitle: String) {
     toolbar.title = sessionTitle.ifEmpty {
-      getString(R.string.feature_chat_title_default)
+      getString(chatR.string.feature_chat_title_default)
     }
   }
 
@@ -460,7 +463,7 @@ class ChatDetailActivity : BaseUIActivity() {
     // UI组件显隐控制
     // ------------------------------------------
     if (isVoiceMode) {
-      talkBtn.setIconResource(R.drawable.core_ic_edit_note)
+      talkBtn.setIconResource(coreIconR.drawable.core_ic_edit_note)
       chatEditText.visibility = View.INVISIBLE
       voicePressBtn.visibility = View.VISIBLE
 
@@ -468,7 +471,7 @@ class ChatDetailActivity : BaseUIActivity() {
       cancelBtn.visibility = View.GONE
       sendBtn.visibility = View.GONE
     } else {
-      talkBtn.setIconResource(R.drawable.core_ic_circle_talk)
+      talkBtn.setIconResource(coreIconR.drawable.core_ic_circle_talk)
       chatEditText.visibility = View.VISIBLE
       voicePressBtn.visibility = View.GONE
 
@@ -504,10 +507,10 @@ class ChatDetailActivity : BaseUIActivity() {
       }
       val downloadProgress = state.voiceState.speechModelDownloadProgress
       voicePressBtn.text = when (downloadProgress) {
-        VoiceInputUiState.SPEECH_MODEL_PROGRESS_CHECKING -> getString(R.string.feature_chat_voice_preparing)
-        VoiceInputUiState.SPEECH_MODEL_PROGRESS_UNZIPPING -> getString(R.string.feature_chat_speech_model_unzipping)
+        VoiceInputUiState.SPEECH_MODEL_PROGRESS_CHECKING -> getString(chatR.string.feature_chat_voice_preparing)
+        VoiceInputUiState.SPEECH_MODEL_PROGRESS_UNZIPPING -> getString(chatR.string.feature_chat_speech_model_unzipping)
         in 0..100 -> getString(
-          R.string.feature_chat_speech_model_download_progress,
+          chatR.string.feature_chat_speech_model_download_progress,
           downloadProgress
         )
 
