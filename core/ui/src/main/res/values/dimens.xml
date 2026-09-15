@@ -86,8 +86,6 @@
   <dimen name="core_ui_icon_size_medium">24dp</dimen>
   <!-- 大型图标：适用于重点功能引导、无盘冷启动列表的大按钮图标 -->
   <dimen name="core_ui_icon_size_large">32dp</dimen>
-  <!-- 巨型图标/头像级视窗：用于 Tab 1 列表左侧圆形头像的专属维度 -->
-  <dimen name="feature_chat_home_avatar_height">48dp</dimen>
   <!-- 顶配巨型图标：适用于 App 首次冷启动时，无数据的 Empty State 兜底大机器人图标 -->
   <dimen name="core_ui_icon_size_xxl">64dp</dimen>
 

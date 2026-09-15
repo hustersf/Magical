@@ -13,6 +13,7 @@ dependencies {
   implementation(project(":feature:ai-edge:chat:api"))
   implementation(project(":core:res:icon"))
   implementation(project(":core:ai-edge:data"))
+  implementation(project(":core:ai-edge:design-compose"))
 
   implementation(libs.androidx.compose.ui)
   implementation(libs.androidx.compose.material3)
