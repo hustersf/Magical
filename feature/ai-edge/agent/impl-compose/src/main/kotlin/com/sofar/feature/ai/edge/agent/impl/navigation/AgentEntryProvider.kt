@@ -8,6 +8,6 @@ import com.sofar.feature.ai.edge.agent.impl.AgentScreen
 
 fun EntryProviderScope<NavKey>.agentEntry(navigator: Navigator) {
   entry<AgentNavKey> {
-    AgentScreen()
+    AgentScreen(navigator = navigator)
   }
 }

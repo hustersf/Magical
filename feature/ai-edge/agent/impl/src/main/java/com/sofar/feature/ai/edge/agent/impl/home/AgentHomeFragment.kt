@@ -20,6 +20,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.sofar.core.ai.edge.data.entity.agent.AgentSourceType
 import com.sofar.core.ai.edge.database.entity.AgentEntity
 import com.sofar.feature.ai.edge.agent.impl.R
+import com.sofar.feature.ai.edge.agent.logic.AgentHomeViewModel
 import com.sofar.feature.ai.edge.chat.api.ChatNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest

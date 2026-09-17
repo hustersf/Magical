@@ -21,6 +21,7 @@ dependencies {
 
 
   implementation(project(":feature:ai-edge:agent:api"))
+  implementation(project(":feature:ai-edge:agent:logic"))
   implementation(project(":feature:ai-edge:chat:api"))
   implementation(project(":core:res:icon"))
   implementation(project(":core:res:view"))

@@ -71,6 +71,7 @@ include(":core:ai-edge:database")
 include(":core:ai-edge:domain")
 
 include(":feature:ai-edge:agent:api")
+include(":feature:ai-edge:agent:logic")
 include(":feature:ai-edge:agent:impl")
 include(":feature:ai-edge:agent:impl-compose")
 include(":feature:ai-edge:chat:api")

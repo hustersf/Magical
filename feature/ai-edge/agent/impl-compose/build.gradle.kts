@@ -11,11 +11,18 @@ android {
 
 dependencies {
   implementation(project(":feature:ai-edge:agent:api"))
+  implementation(project(":feature:ai-edge:agent:logic"))
+  implementation(project(":feature:ai-edge:chat:api"))
+  implementation(project(":core:res:icon"))
+  implementation(project(":core:ai-edge:data"))
+  implementation(project(":core:ai-edge:design-compose"))
+  implementation(project(":core:ai-edge:navigation"))
 
   implementation(libs.hilt.android)
   ksp(libs.hilt.compiler)
 
   implementation(libs.androidx.compose.ui)
   implementation(libs.androidx.compose.material3)
-
+  implementation(libs.androidx.lifecycle.viewmodel.compose)
+  implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
 }
