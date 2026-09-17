@@ -16,7 +16,7 @@ import com.sofar.core.ui.recyclerview.LinearMarginItemDecoration
 import com.sofar.feature.ai.edge.chat.impl.R
 import com.sofar.feature.ai.edge.chat.impl.detail.image.ImagePreviewActivity
 import com.sofar.feature.ai.edge.chat.impl.detail.image.SelectedImageAdapter
-import com.sofar.feature.ai.edge.chat.impl.detail.image.SelectedImageState
+import com.sofar.feature.ai.edge.chat.logic.detail.image.SelectedImageState
 import com.sofar.image.loadImage
 import io.noties.markwon.Markwon
 import com.sofar.core.ui.R as coreUiR

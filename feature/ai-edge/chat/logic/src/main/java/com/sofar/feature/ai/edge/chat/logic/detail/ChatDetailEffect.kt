@@ -1,4 +1,4 @@
-package com.sofar.feature.ai.edge.chat.impl.detail
+package com.sofar.feature.ai.edge.chat.logic.detail
 
 sealed interface ChatDetailEffect {
   data class ShowToast(val message: String) : ChatDetailEffect

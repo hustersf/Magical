@@ -7,9 +7,10 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.sofar.feature.ai.edge.chat.impl.R
+import com.sofar.feature.ai.edge.chat.logic.detail.image.SelectedImageState
 import com.sofar.image.clearImage
 import com.sofar.image.loadImage
-import com.sofar.feature.ai.edge.chat.impl.R
 
 internal class SelectedImageAdapter(
   private val onAddClick: ((View) -> Unit)? = null,

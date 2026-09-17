@@ -1,4 +1,4 @@
-package com.sofar.feature.ai.edge.chat.impl.detail.voice
+package com.sofar.feature.ai.edge.chat.logic.detail.voice
 
 data class VoiceInputUiState(
   val isVoiceMode: Boolean = false,           // 当前是否是语音模式

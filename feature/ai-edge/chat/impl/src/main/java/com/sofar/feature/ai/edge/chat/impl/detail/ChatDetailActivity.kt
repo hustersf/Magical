@@ -39,9 +39,12 @@ import com.sofar.core.ui.activity.BaseUIActivity
 import com.sofar.core.ui.recyclerview.LinearMarginItemDecoration
 import com.sofar.feature.ai.edge.chat.impl.R
 import com.sofar.feature.ai.edge.chat.impl.detail.image.SelectedImageAdapter
-import com.sofar.feature.ai.edge.chat.impl.detail.image.SelectedImageState
 import com.sofar.feature.ai.edge.chat.impl.detail.voice.ChatVoiceOverlayView
-import com.sofar.feature.ai.edge.chat.impl.detail.voice.VoiceInputUiState
+import com.sofar.feature.ai.edge.chat.logic.detail.ChatDetailEffect
+import com.sofar.feature.ai.edge.chat.logic.detail.ChatDetailUiState
+import com.sofar.feature.ai.edge.chat.logic.detail.ChatDetailViewModel
+import com.sofar.feature.ai.edge.chat.logic.detail.image.SelectedImageState
+import com.sofar.feature.ai.edge.chat.logic.detail.voice.VoiceInputUiState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map

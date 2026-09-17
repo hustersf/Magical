@@ -1,8 +1,8 @@
-package com.sofar.feature.ai.edge.chat.impl.detail
+package com.sofar.feature.ai.edge.chat.logic.detail
 
 import com.sofar.core.ai.edge.database.entity.MessageEntity
-import com.sofar.feature.ai.edge.chat.impl.detail.image.SelectedImageState
-import com.sofar.feature.ai.edge.chat.impl.detail.voice.VoiceInputUiState
+import com.sofar.feature.ai.edge.chat.logic.detail.image.SelectedImageState
+import com.sofar.feature.ai.edge.chat.logic.detail.voice.VoiceInputUiState
 
 data class ChatDetailUiState(
   val sessionTitle: String = "",

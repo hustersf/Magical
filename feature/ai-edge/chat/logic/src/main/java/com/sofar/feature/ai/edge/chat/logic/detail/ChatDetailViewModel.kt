@@ -1,4 +1,4 @@
-package com.sofar.feature.ai.edge.chat.impl.detail
+package com.sofar.feature.ai.edge.chat.logic.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -6,8 +6,8 @@ import com.sofar.core.ai.edge.data.entity.models.Model
 import com.sofar.core.ai.edge.data.repository.AgentRepository
 import com.sofar.core.ai.edge.data.repository.ChatRepository
 import com.sofar.core.ai.edge.domain.usecase.ActiveModelHolder
-import com.sofar.feature.ai.edge.chat.impl.detail.image.SelectedImageState
-import com.sofar.feature.ai.edge.chat.impl.detail.voice.VoiceInputUiState
+import com.sofar.feature.ai.edge.chat.logic.detail.image.SelectedImageState
+import com.sofar.feature.ai.edge.chat.logic.detail.voice.VoiceInputUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel

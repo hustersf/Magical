@@ -1,4 +1,4 @@
-package com.sofar.feature.ai.edge.chat.impl.home
+package com.sofar.feature.ai.edge.chat.logic.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

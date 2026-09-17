@@ -8,6 +8,7 @@ import android.view.Gravity
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.sofar.core.ui.wave.VoiceWaveView
+import com.sofar.feature.ai.edge.chat.logic.detail.voice.VoiceInputUiState
 import com.sofar.core.ui.R as coreUiR
 import com.sofar.feature.ai.edge.chat.api.R as chatR
 

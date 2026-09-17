@@ -19,6 +19,7 @@ import com.sofar.core.ai.edge.data.entity.chat.ChatPriority
 import com.sofar.core.ai.edge.database.entity.SessionEntity
 import com.sofar.feature.ai.edge.chat.impl.R
 import com.sofar.feature.ai.edge.chat.impl.detail.ChatDetailActivity
+import com.sofar.feature.ai.edge.chat.logic.home.ChatHomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
