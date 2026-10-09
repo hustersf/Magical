@@ -18,4 +18,14 @@
   <string name="feature_chat_speech_model_download_progress">下载中 %1$d%%</string>
   <string name="feature_chat_speech_model_unzipping">正在解压…</string>
   <string name="feature_chat_voice_preparing">语音引擎准备中，请稍候…</string>
+  <string name="feature_chat_home_action_new_chat_desc">发起新对话</string>
+  <string name="feature_chat_home_session_type_vision_preview">[图片分析] 点击查看识图详情</string>
+  <string name="feature_chat_home_session_type_meeting_preview">[会议摘要] 点击查看录音摘要</string>
+  <string name="feature_chat_home_session_type_text_empty_preview">点击继续自由对话</string>
+  <string name="feature_chat_home_session_type_agent_preview">智能体对话中…</string>
+  <string name="feature_chat_home_session_type_default_preview">继续对话</string>
+  <string name="feature_chat_home_dialog_action_hint">请选择对当前会话的操作：</string>
+  <string name="feature_chat_home_action_cancel">取消</string>
+  <string name="feature_chat_detail_error_title">发生错误</string>
+  <string name="feature_chat_detail_ok">确定</string>
 </resources>

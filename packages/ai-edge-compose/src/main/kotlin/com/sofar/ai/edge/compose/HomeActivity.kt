@@ -24,6 +24,7 @@ import com.sofar.core.ai.edge.design.theme.AppTheme
 import com.sofar.core.ai.edge.navigation.NavigationState
 import com.sofar.core.ai.edge.navigation.Navigator
 import com.sofar.core.ai.edge.navigation.rememberNavigationState
+import com.sofar.core.ai.edge.navigation.toEntries
 import com.sofar.feature.ai.edge.agent.api.navigation.AgentNavKey
 import com.sofar.feature.ai.edge.agent.impl.navigation.agentEntry
 import com.sofar.feature.ai.edge.chat.api.navigation.ChatNavKey
@@ -64,23 +65,28 @@ class HomeActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen(navigationState: NavigationState, navigator: Navigator) {
+  // 判断当前激活的最上层 Key 是否属于一级 Tab 路由
+  val showBottomBar = navigationState.currentKey in navigationState.topLevelKeys
+
   Scaffold(
     bottomBar = {
-      NavigationBar {
-        val currentTopLevelKey = navigationState.currentTopLevelKey
-        navigationState.topLevelKeys.forEach { key ->
-          NavigationBarItem(
-            icon = {
-              Icon(
-                painter = painterResource(id = getIconResForKey(key)),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
-              )
-            },
-            label = { Text(text = stringResource(id = getLabelResForKey(key))) },
-            selected = currentTopLevelKey == key,
-            onClick = { navigator.navigate(key) }
-          )
+      if (showBottomBar) {
+        NavigationBar {
+          val currentTopLevelKey = navigationState.currentTopLevelKey
+          navigationState.topLevelKeys.forEach { key ->
+            NavigationBarItem(
+              icon = {
+                Icon(
+                  painter = painterResource(id = getIconResForKey(key)),
+                  contentDescription = null,
+                  modifier = Modifier.size(24.dp)
+                )
+              },
+              label = { Text(text = stringResource(id = getLabelResForKey(key))) },
+              selected = currentTopLevelKey == key,
+              onClick = { navigator.navigate(key) }
+            )
+          }
         }
       }
     }
@@ -95,10 +101,9 @@ fun MainScreen(navigationState: NavigationState, navigator: Navigator) {
     }
 
     NavDisplay(
-      modifier = Modifier.padding(innerPadding),
-      backStack = navigationState.currentSubStack,
-      onBack = { navigator.goBack() },
-      entryProvider = entryProvider
+      modifier = if (showBottomBar) Modifier.padding(innerPadding) else Modifier,
+      entries = navigationState.toEntries(entryProvider),  // entryProvider 页面 与 ViewModel 生命周期绑定
+      onBack = { navigator.goBack() }
     )
   }
 }

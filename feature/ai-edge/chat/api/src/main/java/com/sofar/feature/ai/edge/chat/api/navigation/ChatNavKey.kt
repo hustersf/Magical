@@ -5,3 +5,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data object ChatNavKey : NavKey
+
+@Serializable
+data class ChatDetailNavKey(
+  val sessionId: String,
+  val agentId: String? = null
+) : NavKey

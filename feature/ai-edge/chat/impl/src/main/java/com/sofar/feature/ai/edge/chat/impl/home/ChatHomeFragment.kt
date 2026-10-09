@@ -103,6 +103,7 @@ class ChatHomeFragment : Fragment() {
     // 2. 展开美观的 Material3 卡片级弹窗
     MaterialAlertDialogBuilder(context)
       .setTitle(session.title.ifEmpty { getString(chatR.string.feature_chat_title_default) })
+      .setMessage(chatR.string.feature_chat_home_dialog_action_hint)
       .setItems(menuItems) { dialog, which ->
         if (isPinned) {
           // 🚀 场景 A：置顶会话，无论怎么选都只有这一项，直接触发“清空”

@@ -225,6 +225,24 @@ class ChatDetailViewModel @Inject constructor(
     }
   }
 
+  /**
+   * 统一的多选图片增量去重与数据缝合
+   */
+  fun handleSelectedImages(paths: List<String>) {
+    val oldImages = _uiState.value.selectedImages
+    val oldPaths = oldImages.mapNotNull { it.path }
+
+    val newUniquePaths = paths.filter { it !in oldPaths }
+    val newStates = newUniquePaths.map { SelectedImageState(path = it, isAddButton = false) }
+
+    updateSelectedImages(oldImages + newStates)
+  }
+
+  fun removeSelectedImage(imageState: SelectedImageState) {
+    val currentImages = _uiState.value.selectedImages
+    updateSelectedImages(currentImages.filterNot { it.path == imageState.path })
+  }
+
   fun onInputTextChanged(text: String) {
     _uiState.update { it.copy(chatInputText = text) }
   }

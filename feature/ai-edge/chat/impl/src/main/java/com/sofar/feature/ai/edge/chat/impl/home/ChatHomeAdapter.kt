@@ -59,28 +59,33 @@ class ChatHomeViewHolder(
 
     var targetColorRes = R.color.feature_chat_home_avatar_pink
     tagTv.visibility = View.GONE
+    val context = itemView.context
     when (item.type) {
       ChatSessionType.VISION -> {
         avatarTv.text = "🖼️"
-        previewTv.text = "[图片分析] 点击查看识图详情"
+        previewTv.text =
+          context.getString(chatR.string.feature_chat_home_session_type_vision_preview)
         targetColorRes = R.color.feature_chat_home_avatar_blue
       }
 
       ChatSessionType.MEETING -> {
         avatarTv.text = "🎙️"
-        previewTv.text = "[会议摘要] 点击查看录音摘要"
+        previewTv.text =
+          context.getString(chatR.string.feature_chat_home_session_type_meeting_preview)
         targetColorRes = R.color.feature_chat_home_avatar_green
       }
 
       ChatSessionType.TEXT -> {
         if (item.agentId.isNullOrEmpty()) {
           avatarTv.text = "💬"
-          previewTv.text = "点击继续自由对话"
+          previewTv.text =
+            context.getString(chatR.string.feature_chat_home_session_type_text_empty_preview)
           targetColorRes = R.color.feature_chat_home_avatar_pink
         } else {
           val agent = agentCache.get(item.agentId)
           avatarTv.text = agent?.avatar ?: "🤖"
-          previewTv.text = "智能体对话中..."
+          previewTv.text =
+            context.getString(chatR.string.feature_chat_home_session_type_agent_preview)
           targetColorRes = R.color.feature_chat_home_avatar_agent
           agent?.name?.let {
             tagTv.visibility = View.VISIBLE
@@ -91,7 +96,8 @@ class ChatHomeViewHolder(
 
       else -> {
         avatarTv.text = "✉️"
-        previewTv.text = "继续对话"
+        previewTv.text =
+          context.getString(chatR.string.feature_chat_home_session_type_default_preview)
       }
     }
 

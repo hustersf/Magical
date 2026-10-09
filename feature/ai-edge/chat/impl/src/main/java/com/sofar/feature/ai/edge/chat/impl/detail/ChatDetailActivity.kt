@@ -172,8 +172,7 @@ class ChatDetailActivity : BaseUIActivity() {
         showMoreMenu(view)
       },
       onDeleteClick = { imageState ->
-        val currentImages = viewModel.uiState.value.selectedImages
-        viewModel.updateSelectedImages(currentImages.filterNot { it.path == imageState.path })
+        viewModel.removeSelectedImage(imageState)
       }
     )
     imageRecyclerView.adapter = imageAdapter
@@ -530,10 +529,10 @@ class ChatDetailActivity : BaseUIActivity() {
 
       is ChatDetailEffect.ShowAlert -> {
         MaterialAlertDialogBuilder(this)
-          .setTitle("发生错误")
+          .setTitle(chatR.string.feature_chat_detail_error_title)
           .setMessage(effect.message)
           .setCancelable(true)
-          .setPositiveButton("确定") { dialog, _ ->
+          .setPositiveButton(chatR.string.feature_chat_detail_ok) { dialog, _ ->
             dialog.dismiss()
           }
           .show()
@@ -568,14 +567,7 @@ class ChatDetailActivity : BaseUIActivity() {
 
   private fun handleSelectedImages(paths: List<String>) {
     Log.d(TAG, "收到图片结果，总共选择了 ${paths.size} 张图片")
-    val oldImages = viewModel.uiState.value.selectedImages
-    val oldPaths = oldImages.mapNotNull { it.path }
-
-    // 多选增量去重
-    val newUniquePaths = paths.filter { it !in oldPaths }
-    val newStates = newUniquePaths.map { SelectedImageState(path = it, isAddButton = false) }
-
-    viewModel.updateSelectedImages(oldImages + newStates)
+    viewModel.handleSelectedImages(paths)
   }
 
   private fun showMoreMenu(anchorView: View) {
