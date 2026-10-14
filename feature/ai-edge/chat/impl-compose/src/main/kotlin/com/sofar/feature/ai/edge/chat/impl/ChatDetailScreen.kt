@@ -104,7 +104,9 @@ import com.sofar.feature.ai.edge.chat.logic.detail.ChatDetailViewModel
 import com.sofar.feature.ai.edge.chat.logic.detail.image.SelectedImageState
 import com.sofar.feature.ai.edge.chat.logic.detail.voice.VoiceInputUiState
 import com.sofar.image.fetchImage
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.withContext
 import com.sofar.core.res.icon.R as coreIconR
 import com.sofar.feature.ai.edge.chat.api.R as chatR
 
@@ -190,8 +192,10 @@ fun ChatDetailScreen(
 
   // 监听语音识别回调
   LaunchedEffect(speechClient) {
-    speechClient.events.collect { event ->
-      handleSpeechEvent(event, viewModel, sessionId, agentId, context)
+    withContext(Dispatchers.Main.immediate) {
+      speechClient.events.collect { event ->
+        handleSpeechEvent(event, viewModel, sessionId, agentId, context)
+      }
     }
   }
 
@@ -694,6 +698,9 @@ private fun VoicePressButton(
         CircleShape
       )
       .pointerInteropFilter { event ->
+        if (!enabled) {
+          return@pointerInteropFilter false
+        }
         when (event.action) {
           MotionEvent.ACTION_DOWN -> {
             if (ContextCompat.checkSelfPermission(
