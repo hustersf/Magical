@@ -58,7 +58,7 @@ import com.sofar.core.ai.edge.design.theme.iconSizes
 import com.sofar.core.ai.edge.design.theme.spacing
 import com.sofar.core.ai.edge.design.theme.widgetSizes
 import com.sofar.core.ai.edge.navigation.Navigator
-import com.sofar.feature.ai.edge.chat.api.navigation.ChatNavKey
+import com.sofar.feature.ai.edge.chat.api.navigation.ChatDetailNavKey
 import com.sofar.feature.ai.edge.models.api.R
 import com.sofar.feature.ai.edge.models.logic.ModelManagerUiState
 import com.sofar.feature.ai.edge.models.logic.ModelsManagerViewModel
@@ -123,7 +123,7 @@ internal fun ModelsScreen(
         onDelete = { showDeleteDialog = model },
         onTry = {
           viewModel.selectActiveModel(model)
-          navigator.navigate(ChatNavKey)
+          navigator.navigate(ChatDetailNavKey.newSession())
         }
       )
     }

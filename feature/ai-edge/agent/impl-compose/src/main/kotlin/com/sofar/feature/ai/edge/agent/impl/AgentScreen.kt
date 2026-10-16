@@ -56,7 +56,7 @@ import com.sofar.core.ai.edge.design.theme.spacing
 import com.sofar.core.ai.edge.design.theme.widgetSizes
 import com.sofar.core.ai.edge.navigation.Navigator
 import com.sofar.feature.ai.edge.agent.logic.AgentHomeViewModel
-import com.sofar.feature.ai.edge.chat.api.navigation.ChatNavKey
+import com.sofar.feature.ai.edge.chat.api.navigation.ChatDetailNavKey
 import com.sofar.core.res.icon.R as coreIconR
 import com.sofar.feature.ai.edge.agent.api.R as agentR
 
@@ -90,7 +90,7 @@ internal fun AgentScreen(
     } else {
       AgentListContent(
         agentList = agentList,
-        onAgentClick = { navigator.navigate(ChatNavKey) },
+        onAgentClick = { agent -> navigator.navigate(ChatDetailNavKey.newSession(agent.id)) },
         onEditClick = { showEditorDialogByAgent = it },
         onDeleteClick = { showDeleteConfirmDialogByAgent = it }
       )

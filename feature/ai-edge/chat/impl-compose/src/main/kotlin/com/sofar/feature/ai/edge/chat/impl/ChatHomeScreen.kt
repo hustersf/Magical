@@ -46,7 +46,6 @@ import com.sofar.core.ai.edge.design.theme.widgetSizes
 import com.sofar.core.ai.edge.navigation.Navigator
 import com.sofar.feature.ai.edge.chat.api.navigation.ChatDetailNavKey
 import com.sofar.feature.ai.edge.chat.logic.home.ChatHomeViewModel
-import java.util.UUID
 import com.sofar.core.res.icon.R as coreIconR
 import com.sofar.feature.ai.edge.chat.api.R as chatR
 
@@ -67,8 +66,7 @@ fun ChatHomeScreen(
 
   Column(modifier = Modifier.fillMaxSize()) {
     ChatHeader(onCreateClick = {
-      val newSessionId = UUID.randomUUID().toString()
-      navigator.navigate(ChatDetailNavKey(sessionId = newSessionId))
+      navigator.navigate(ChatDetailNavKey.newSession())
     })
 
     if (sessions.isEmpty()) {

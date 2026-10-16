@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.sofar.core.ai.edge.data.entity.chat.ChatDetailArgs
 import com.sofar.core.ai.edge.data.entity.chat.ChatPriority
 import com.sofar.core.ai.edge.database.entity.SessionEntity
 import com.sofar.feature.ai.edge.chat.impl.R
@@ -61,10 +60,9 @@ class ChatHomeFragment : Fragment() {
       agentCache = viewModel.agentCache,
       onItemClick = { session, view ->
         ChatDetailActivity.launch(
-          requireContext(), ChatDetailArgs(
-            sessionId = session.id,
-            agentId = session.agentId
-          )
+          requireContext(),
+          sessionId = session.id,
+          agentId = session.agentId
         )
       },
       onItemLongClick = { session, view ->

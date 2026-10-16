@@ -27,9 +27,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.sofar.core.ai.edge.data.entity.chat.ChatDetailArgs
 import com.sofar.core.ai.edge.database.entity.MessageEntity
-import com.sofar.core.common.extension.getParcelableCompat
 import com.sofar.core.media.GetMediaContract
 import com.sofar.core.media.MediaAction
 import com.sofar.core.speech.SpeechRecognitionClient
@@ -95,13 +93,23 @@ class ChatDetailActivity : BaseUIActivity() {
   }
 
   companion object {
-    private const val EXTRA_CHAT_DETAIL_ARGS = "extra_chat_detail_args"
+    private const val EXTRA_SESSION_ID = "extra_session_id"
+    private const val EXTRA_AGENT_ID = "extra_agent_id"
     private const val TAG = "ChatDetailActivity"
 
+    /**
+     * @param sessionId 为 null 表示新建会话。兜底 ID 必须在这里（startActivity 之前）生成并写入 Intent，
+     * 不能放到 onCreate 里生成，否则 Activity 重建时会重新生成，切到一个空会话。
+     */
     @JvmStatic
-    fun launch(context: Context, args: ChatDetailArgs? = null) {
+    fun launch(
+      context: Context,
+      sessionId: String? = null,
+      agentId: String? = null
+    ) {
       val intent = Intent(context, ChatDetailActivity::class.java).apply {
-        putExtra(EXTRA_CHAT_DETAIL_ARGS, args)
+        putExtra(EXTRA_SESSION_ID, sessionId ?: UUID.randomUUID().toString())
+        putExtra(EXTRA_AGENT_ID, agentId)
         if (context !is Activity) {
           addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
@@ -119,9 +127,8 @@ class ChatDetailActivity : BaseUIActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.feature_chat_detail_activity)
-    val detailArgs = intent.getParcelableCompat<ChatDetailArgs>(EXTRA_CHAT_DETAIL_ARGS)
-    currentSessionId = detailArgs?.sessionId ?: UUID.randomUUID().toString()
-    agentId = detailArgs?.agentId
+    currentSessionId = intent.getStringExtra(EXTRA_SESSION_ID) ?: UUID.randomUUID().toString()
+    agentId = intent.getStringExtra(EXTRA_AGENT_ID)
     initView()
     initSpeechRecognitionClient()
     setupListeners()
